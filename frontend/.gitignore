@@ -25,3 +25,9 @@ logs
 
 # IDE preferences
 .vscode
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
