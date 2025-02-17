@@ -4,7 +4,8 @@
 from sqlalchemy.orm import Session
 from models.user import User, Editor, Admin
 from schemas.user import UserInput, UserLogin, UserUpdate, UserRole
-from core.security import get_password_hash, verify_password, ADMIN_USERNAME, ADMIN_PASSWORD
+from core.security import get_password_hash, verify_password
+from core.config import CONFIG
 from fastapi import HTTPException, status
 
 def create_editor(db: Session, username: str, user_input: UserInput) -> Editor:
@@ -25,14 +26,14 @@ def create_admin(db: Session, username: str) -> Admin:
     return admin
 
 def create_default_admin(db: Session) -> Admin:
-    admin_exists = get_by_username(db, ADMIN_USERNAME) != None
+    admin_exists = get_by_username(db, CONFIG.ADMIN_USERNAME) != None
     if not admin_exists:
         user = User(
-            username=ADMIN_USERNAME,
-            hashed_password=get_password_hash(ADMIN_PASSWORD),
+            username=CONFIG.ADMIN_USERNAME,
+            hashed_password=get_password_hash(CONFIG.ADMIN_PASSWORD),
         )
         db.add(user)
-        admin = create_admin(db, ADMIN_USERNAME)
+        admin = create_admin(db, CONFIG.ADMIN_USERNAME)
         db.commit()
         db.refresh(user)
         db.refresh(admin)
