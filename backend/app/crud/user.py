@@ -3,7 +3,7 @@
 """
 from sqlalchemy.orm import Session
 from models.user import User, Editor, Admin
-from schemas.user import UserInput, UserUpdate, UserRole
+from schemas.user import UserInput, UserUpdate, UserRole, UserOutput
 from core.security import get_password_hash, verify_password
 from core.config import CONFIG
 from fastapi import HTTPException, status
@@ -63,6 +63,23 @@ def create_user(db: Session, user_input: UserInput) -> User:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e)
 
     return user
+
+def create_user_output(user: User) -> UserOutput:
+    """
+        Creates a UserOutput response for a user.
+    """
+    role = get_role(user)
+
+    output = UserOutput(username=user.username, role=role)
+
+    # Add editor fields
+    if role == UserRole.editor:
+        editor = user.editor
+        output.contact_email = editor.contact_email
+        output.biography = editor.biography
+        output.display_name = editor.display_name
+
+    return output
 
 # Get user by username
 def get_by_username(db: Session, username: str) -> User|None:
