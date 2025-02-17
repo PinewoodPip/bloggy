@@ -3,7 +3,7 @@
 """
 from sqlalchemy.orm import Session
 from models.user import User, Editor, Admin
-from schemas.user import UserInput, UserLogin, UserUpdate, UserRole
+from schemas.user import UserInput, UserUpdate, UserRole
 from core.security import get_password_hash, verify_password
 from core.config import CONFIG
 from fastapi import HTTPException, status

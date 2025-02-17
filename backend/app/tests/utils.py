@@ -25,8 +25,13 @@ def create_random_user_input() -> UserInput:
     biography = random_lower_string()
     return UserInput(username=username, password=pwd, display_name=display_name, contact_email=contact_email, biography=biography)
 
-def create_random_editor(db: Session):
-    return create_user(db, create_random_user_input())
+def create_random_editor(db: Session) -> tuple[User, str]:
+    """
+        Creates an editor account.
+        Returns the user and their plain-text password.
+    """
+    user_input = create_random_user_input()
+    return create_user(db, user_input), user_input.password
 
 def get_session():
     return next(get_db())

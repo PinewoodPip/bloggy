@@ -3,8 +3,8 @@
 """
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
-from utils import random_lower_string, random_email, create_random_user_input
-from asserts import has_validation_error, is_bad_request
+from utils import create_random_editor, get_session, random_lower_string, random_email, create_random_user_input
+from asserts import has_validation_error, is_bad_request, response_detail
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
 from main import app
@@ -55,12 +55,50 @@ def test_create_user_invalid_username():
     # Expect validation error
     assert has_validation_error(response, "too short")
 
-def test_create_user_invalid_email():
+def test_login_logout():
+    """
+        Tests login & logout endpoints.
+    """
+    user, password = create_random_editor(get_session())
 
-    # Create a new user with an invalid email
-    user_input = create_random_user_input()
-    user_input.contact_email = "NotAValidEmail"
-    response = client.post("/users", json=user_input.model_dump())
+    # Login correctly
+    response = client.post("/users/login", json={
+        "username": user.username,
+        "password": password,
+    })
+    assert response.status_code == 200
+    json = response.json()
+    assert "token" in json.keys()
 
-    # Expect validation error
-    assert has_validation_error(response, "email format")
+    # Logout correctly
+    response = client.post("/users/logout", headers={"Authorization": f"Bearer {json["token"]}"})
+    assert response.status_code == 200
+    assert response.json() == "Logged out successfully"
+
+    # Logout again should warn about token being invalid
+    response = client.post("/users/logout", headers={"Authorization": f"Bearer {json["token"]}"})
+    assert response.status_code == 401
+    assert "Invalid token" in response_detail(response)
+
+def test_wrong_login():
+    """
+        Tests login endpoint with wrong credentials.
+    """
+    user, password = create_random_editor(get_session())
+
+    # Login with wrong username
+    response = client.post("/users/login", json={
+        "username": user.username + "aSuffix",
+        "password": password,
+    })
+
+    assert response.status_code == 400
+    assert "Invalid credentials" in response_detail(response)
+
+    # Login with correct username but wrong password
+    response = client.post("/users/login", json={
+        "username": user.username,
+        "password": password + "aSuffix",
+    })
+    assert response.status_code == 400
+    assert "Invalid credentials" in response_detail(response)

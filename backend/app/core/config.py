@@ -9,6 +9,11 @@ class AppConfig():
     """
         Holds configuration environment values for the app.
     """
+    # Security settings
+    SECRET_KEY: str # JWT encryption key
+    ALGORITHM: str # JWT encryption algorithm
+    ACCESS_TOKEN_EXPIRE_DAYS: int # Expiration duration for JWT tokens
+
     # Default admin credentials
     ADMIN_USERNAME: str
     ADMIN_PASSWORD: str
@@ -23,7 +28,14 @@ class AppConfig():
         # Load config from env
         load_dotenv()
         for field in fields(AppConfig): # Assign fields
-            setattr(self, field.name, os.getenv(field.name))
+            value = os.getenv(field.name)
+            if value != None:
+                # Convert types
+                if field.type == int:
+                    value = int(value)
+                setattr(self, field.name, value)
+            else:
+                raise ValueError("A required environment variable is unset: " + field.name)
 
 CONFIG = AppConfig()
 

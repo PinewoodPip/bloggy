@@ -9,10 +9,9 @@ from core.config import Base
 class User(Base):
     __tablename__ = "users"
 
-    # TODO token field
-
     username = Column(String, index=True, primary_key=True, unique=True)
     hashed_password = Column(String)
+    current_token = Column(String, nullable=True, default=None) # JWT token
 
     editor: Mapped["Editor"] = relationship("Editor")
     admin: Mapped["Admin"] = relationship("Admin")
