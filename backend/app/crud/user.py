@@ -25,7 +25,7 @@ def create_admin(db: Session, username: str) -> Admin:
     return admin
 
 def create_default_admin(db: Session) -> Admin:
-    admin_exists = get_user_by_username(db, ADMIN_USERNAME) != None
+    admin_exists = get_by_username(db, ADMIN_USERNAME) != None
     if not admin_exists:
         user = User(
             username=ADMIN_USERNAME,
@@ -64,7 +64,7 @@ def create_user(db: Session, user_input: UserInput) -> User:
     return user
 
 # Get user by username
-def get_user_by_username(db: Session, username: str) -> User|None:
+def get_by_username(db: Session, username: str) -> User|None:
     user = db.query(User).filter(User.username == username).first()
     return user
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 from core.config import get_db
-from crud.user import create_user, get_user_by_username as get_by_username, get_role
+import crud.user as UserCrud
 from schemas.user import UserInput, UserLogin, UserOutput, UserRole
 from models.user import User
 
@@ -9,12 +9,12 @@ router = APIRouter()
 
 @router.post("/", response_model=UserOutput)
 async def add_user(user_input: UserInput, db: Session = Depends(get_db)):
-    user = create_user(db, user_input)
+    user = UserCrud.create_user(db, user_input)
     return create_user_output(user)
 
 # TODO where should this go? into schemas?
 def create_user_output(user: User) -> UserOutput:
-    role = get_role(user)
+    role = UserCrud.get_role(user)
 
     output = UserOutput(username=user.username, role=role)
 
@@ -29,7 +29,7 @@ def create_user_output(user: User) -> UserOutput:
 
 @router.get("/{username}", response_model=UserOutput)
 async def get_user_by_username(username: str, db: Session = Depends(get_db)):
-    user = get_by_username(db, username)
+    user = UserCrud.get_by_username(db, username)
     return create_user_output(user)
 
 # TODO
