@@ -4,6 +4,7 @@
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
 from utils import random_lower_string, random_email, create_random_user_input
+from asserts import has_validation_error, is_bad_request
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
 from main import app
@@ -30,7 +31,7 @@ def test_create_editor():
     response = client.get(f"/users/{user_input.username}")
     assert response.status_code == 200
     new_json = response.json()
-    for k,v in new_json.items():
+    for k,v in new_json.items(): # Check all fields match the initial response
         assert v == json[k]
 
 def test_create_editor_duplicate_username():
@@ -43,8 +44,7 @@ def test_create_editor_duplicate_username():
 
     # Attempt to create another user with same username
     response = client.post("/users", json=user_input.model_dump())
-    assert response.status_code == 400
-    assert "already exists" in response.json()["detail"]
+    assert is_bad_request(response, "already exists")
 
 def test_create_user_invalid_username():
     # Try to create a user with a short name
@@ -52,8 +52,8 @@ def test_create_user_invalid_username():
     user_input.username = "a" * (MIN_USERNAME_LENGTH - 1) # Right below min length
     response = client.post("/users", json=user_input.model_dump())
 
-    assert response.status_code == 422
-    assert "too short" in response.json()["detail"][0]["msg"]
+    # Expect validation error
+    assert has_validation_error(response, "too short")
 
 def test_create_user_invalid_email():
 
@@ -62,6 +62,5 @@ def test_create_user_invalid_email():
     user_input.contact_email = "NotAValidEmail"
     response = client.post("/users", json=user_input.model_dump())
 
-    # Check object returned
-    assert response.status_code == 422
-    assert "email format" in response.json()['detail'][0]["msg"]
+    # Expect validation error
+    assert has_validation_error(response, "email format")
