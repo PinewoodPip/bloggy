@@ -20,7 +20,7 @@ class Admin(Base):
     __tablename__ = "admins"
 
     # Links back to user
-    username = Column(String, ForeignKey('users.username', ondelete="CASCADE"), primary_key=True, unique=True, nullable=False)
+    username = Column(String, ForeignKey('users.username', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True, unique=True, nullable=False)
 
     user: Mapped["User"] = relationship("User", back_populates="admin", cascade="all", single_parent=True)
 
@@ -28,7 +28,7 @@ class Editor(Base):
     __tablename__ = "editors"
     
     # Links back to user
-    username = Column(String, ForeignKey('users.username', ondelete="CASCADE"), primary_key=True, unique=True, nullable=False)
+    username = Column(String, ForeignKey('users.username', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True, unique=True, nullable=False)
     
     display_name = Column(String)
     contact_email = Column(String, nullable=True, default=None) # TODO custom validator

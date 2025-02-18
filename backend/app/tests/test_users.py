@@ -3,7 +3,7 @@
 """
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
-from utils import create_random_editor, get_session, random_lower_string, random_email, create_random_user_input
+from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input
 from asserts import has_validation_error, is_bad_request, response_detail
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
@@ -59,24 +59,24 @@ def test_login_logout():
     """
         Tests login & logout endpoints.
     """
-    user, password = create_random_editor(get_session())
+    user = create_random_editor(get_session())
 
     # Login correctly
     response = client.post("/users/login", json={
         "username": user.username,
-        "password": password,
+        "password": user.password,
     })
     assert response.status_code == 200
     json = response.json()
     assert "token" in json.keys()
 
     # Logout correctly
-    response = client.post("/users/logout", headers={"Authorization": f"Bearer {json["token"]}"})
+    response = client.post("/users/logout", headers=get_token_header(json["token"]))
     assert response.status_code == 200
     assert response.json() == "Logged out successfully"
 
     # Logout again should warn about token being invalid
-    response = client.post("/users/logout", headers={"Authorization": f"Bearer {json["token"]}"})
+    response = client.post("/users/logout", headers=get_token_header(json["token"]))
     assert response.status_code == 401
     assert "Invalid token" in response_detail(response)
 
@@ -84,12 +84,12 @@ def test_wrong_login():
     """
         Tests login endpoint with wrong credentials.
     """
-    user, password = create_random_editor(get_session())
+    user = create_random_editor(get_session())
 
     # Login with wrong username
     response = client.post("/users/login", json={
         "username": user.username + "aSuffix",
-        "password": password,
+        "password": user.password,
     })
 
     assert response.status_code == 400
@@ -98,7 +98,79 @@ def test_wrong_login():
     # Login with correct username but wrong password
     response = client.post("/users/login", json={
         "username": user.username,
-        "password": password + "aSuffix",
+        "password": user.password + "aSuffix",
     })
     assert response.status_code == 400
     assert "Invalid credentials" in response_detail(response)
+
+def test_patch_user():
+    """
+        Tests patching user data.
+    """
+    user = create_random_auth_editor(get_session())
+    header = get_token_header(user.token)
+
+    # Edit biography and display name
+    new_data = {
+        "biography": "new bio",
+        "display_name": "new displayname",
+    }
+    old_contact_email = user.contact_email # Keep email intact
+    response = client.patch("/users", headers=header, json=new_data)
+
+    # Ensure fields changed accordingly
+    assert response.status_code == 200
+    json = response.json()
+    for k,v in new_data.items():
+        assert json[k] == v
+    assert json["contact_email"] == old_contact_email # Ensure unmodified email field hasn't changed
+
+    # Unset contact email
+    new_data = {
+        "contact_email": None,
+    }
+    old_contact_email = user.contact_email # Keep email intact
+    response = client.patch("/users", headers=header, json=new_data)
+    json = response.json()
+    assert response.status_code == 200
+    assert json["contact_email"] == None
+
+    # Change password and username
+    new_data = {
+        "password": random_lower_string(),
+        "username": random_lower_string(),
+    }
+    response = client.patch("/users", headers=header, json=new_data)
+    assert response.status_code == 200
+    assert response.json()["username"] == new_data["username"]
+
+    # Logout and log back in
+    response = client.post("/users/logout", headers=header)
+
+    # Ensure previous credentials are no longer valid
+    response = client.post("/users/login", json={
+        "username": user.username,
+        "password": user.password, # Old password
+    })
+    assert is_bad_request(response, "Invalid credentials")
+
+    response = client.post("/users/login", json={
+        "username": new_data["username"],
+        "password": new_data["password"],
+    })
+    assert response.status_code == 200
+
+def test_patch_wrong_fields():
+    """
+        Tests trying to patch fields that an account type doesn't support.
+    """
+    user = create_random_admin(get_session())
+    header = get_token_header(user.token)
+
+    # Edit biography and display name, which admins don't have
+    new_data = {
+        "biography": "new bio",
+        "display_name": "new displayname",
+    }
+    response = client.patch("/users", headers=header, json=new_data)
+    assert is_bad_request(response, "Cannot set editor fields")

@@ -64,9 +64,9 @@ class UserOutput(BaseModel):
 class UserLoginOutput(UserOutput):
     token: str
 
-# TODO split into multiple forms?
 class UserUpdate(BaseModel):
     username: Optional[str] = None
+    password: Optional[str] = None
     biography: Optional[str] = None
     contact_email: Optional[str] = None
     display_name: Optional[str] = None
