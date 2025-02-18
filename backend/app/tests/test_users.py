@@ -183,3 +183,13 @@ def test_patch_wrong_fields():
     }
     response = client.patch("/users", headers=header, json=new_data)
     assert is_bad_request(response, "Cannot set editor fields")
+
+def test_query_admin_as_guest():
+    """
+        Tests trying to get information of an admin account with no auth provided.
+    """
+    admin = create_random_admin(get_session())
+
+    # Expect no resource found
+    response = client.get(f"/users/{admin.username}")
+    assert response.status_code == 404

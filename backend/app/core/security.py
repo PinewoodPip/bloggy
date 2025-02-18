@@ -14,6 +14,7 @@ from jose import jwt
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 get_HTTPBearer = HTTPBearer()
+get_optional_HTTPBearer = HTTPBearer(auto_error=False) # For endpoints that admit auth for extra functionality, but don't require it.
 
 def create_access_token(subject: str, expires_delta: timedelta=None) -> str:
     """

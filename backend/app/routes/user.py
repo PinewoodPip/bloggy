@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from core.config import get_db
 from schemas.user import UserInput, UserOutput, UserLogin, UserLoginOutput, UserUpdate
-from core.utils import get_current_user
+from core.utils import get_current_user, get_current_user_optional
 from models.user import User
 import crud.user as UserCrud
 
@@ -43,8 +43,14 @@ async def add_user(user_input: UserInput, db: Session=Depends(get_db), current_u
     return UserCrud.create_user_output(user)
 
 @router.get("/{username}", response_model=UserOutput)
-async def get_user_by_username(username: str, db: Session=Depends(get_db)):
+async def get_user_by_username(username: str, db: Session=Depends(get_db), current_user: User=Depends(get_current_user_optional)):
     user = UserCrud.get_by_username(db, username)
+
+    # Only staff accounts can query admin account information,
+    # so attackers cannot stumble upon them.
+    if user.admin and not current_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+
     return UserCrud.create_user_output(user)
 
 @router.patch("/", response_model=UserOutput)
