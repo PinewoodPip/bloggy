@@ -8,16 +8,6 @@ from core.security import get_password_hash, verify_password, create_access_toke
 from core.config import CONFIG
 from fastapi import HTTPException, status
 
-def create_editor(db: Session, username: str, user_input: UserInput) -> Editor:
-    editor = Editor(
-        username=username,
-        display_name=user_input.display_name,
-        contact_email=user_input.contact_email,
-        biography=user_input.biography,
-    )
-    db.add(editor)
-    return editor
-
 def create_admin(db: Session, username: str, password: str) -> Admin:
     """
         Creates an admin account.
@@ -47,11 +37,25 @@ def create_default_admin(db: Session):
     if not admin_exists:
         create_admin(CONFIG.ADMIN_USERNAME, CONFIG.ADMIN_PASSWORD)
 
-def create_user(db: Session, user_input: UserInput) -> User:
+def create_editor_by_user(db: Session, creator_user: User, user_input: UserInput) -> User:
+    """
+        Creates an editor account on the behalf of creator_user,
+        if they have the privileges to create accounts.
+    """
+    # Only admins can create accounts
+    if not creator_user.admin:
+        raise ValueError("Only admins can create editor accounts")
+    
+    return create_editor(db, user_input)
+
+def create_editor(db: Session, user_input: UserInput) -> User:
+    """
+        Creates an editor account.
+    """
     # Check if username is unique
     existing_user_by_username = db.query(User).filter(User.username == user_input.username).first()
     if existing_user_by_username:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="An account with that username already exists") # TODO don't raise HTTPExceptions in crud
+        raise ValueError("An account with that username already exists")
 
     # Create user
     try:
@@ -62,14 +66,20 @@ def create_user(db: Session, user_input: UserInput) -> User:
         db.add(user)
 
         # Create corresponding editor table entry
-        editor = create_editor(db, user.username, user_input)
+        editor = Editor(
+            username=user_input.username,
+            display_name=user_input.display_name,
+            contact_email=user_input.contact_email,
+            biography=user_input.biography,
+        )
+        db.add(editor)
 
         db.commit()
         db.refresh(user)
         db.refresh(editor)
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=e)
+        raise RuntimeError(str(e))
 
     return user
 

@@ -31,8 +31,15 @@ async def logout(db: Session=Depends(get_db), current_user: User=Depends(get_cur
     return "Logged out successfully"
 
 @router.post("/", response_model=UserOutput)
-async def add_user(user_input: UserInput, db: Session=Depends(get_db)):
-    user = UserCrud.create_user(db, user_input)
+async def add_user(user_input: UserInput, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+    try:
+        user = UserCrud.create_editor_by_user(db, current_user, user_input)
+    except ValueError as e:
+        msg = str(e)
+        if "Only admins can create" in msg: # Lack of privilege uses 401 code
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=msg)
+        else: # Other errors are bad requests
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=msg)
     return UserCrud.create_user_output(user)
 
 @router.get("/{username}", response_model=UserOutput)

@@ -14,10 +14,13 @@ from core.config import Base
 client = TestClient(app)
 
 def test_create_editor():
+    admin = create_random_admin(get_session())
+    header = get_token_header(admin.token)
+
     # Create the user
     user_input = create_random_user_input()
 
-    response = client.post("/users", json=user_input.model_dump())
+    response = client.post("/users", headers=header, json=user_input.model_dump())
 
     # Check response
     assert response.status_code == 200
@@ -35,22 +38,28 @@ def test_create_editor():
         assert v == json[k]
 
 def test_create_editor_duplicate_username():
+    admin = create_random_admin(get_session())
+    header = get_token_header(admin.token)
+
     # Create a user
     user_input = create_random_user_input()
-    response = client.post("/users", json=user_input.model_dump())
+    response = client.post("/users", headers=header, json=user_input.model_dump())
 
     # Ensure first user creation passes
     assert response.status_code == 200
 
     # Attempt to create another user with same username
-    response = client.post("/users", json=user_input.model_dump())
+    response = client.post("/users", headers=header, json=user_input.model_dump())
     assert is_bad_request(response, "already exists")
 
 def test_create_user_invalid_username():
+    admin = create_random_admin(get_session())
+    header = get_token_header(admin.token)
+
     # Try to create a user with a short name
     user_input = create_random_user_input()
     user_input.username = "a" * (MIN_USERNAME_LENGTH - 1) # Right below min length
-    response = client.post("/users", json=user_input.model_dump())
+    response = client.post("/users", headers=header, json=user_input.model_dump())
 
     # Expect validation error
     assert has_validation_error(response, "too short")

@@ -6,7 +6,7 @@ from core.config import get_db, engine
 from main import app
 from fastapi.testclient import TestClient
 from schemas.user import UserInput, UserLogin
-from crud.user import create_admin, create_user, authenticate, create_user_output
+from crud.user import create_admin, create_editor, authenticate, create_user_output
 from schemas.user import UserOutput
 from models.user import User, Editor, Admin
 from dataclasses import dataclass
@@ -41,7 +41,7 @@ def create_random_editor(db: Session) -> RandomEditor:
         Returns the user and their plain-text password.
     """
     user_input = create_random_user_input()
-    user = create_user(db, user_input)
+    user = create_editor(db, user_input)
     output = RandomEditor(password=user_input.password, **create_user_output(user).model_dump())
     
     return output
