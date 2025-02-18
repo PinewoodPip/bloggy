@@ -24,13 +24,19 @@ class RandomEditor(UserOutput):
 def random_lower_string() -> str:
     return "".join(random.choices(string.ascii_lowercase, k=10))
 
+def random_password() -> str:
+    """
+        Creates a random valid password.
+    """
+    return "".join(random.choices(string.ascii_lowercase, k=8)) + "".join(random.choices(string.digits, k=3)) + "".join(random.choices(string.punctuation, k=3))
+
 def random_email() -> str:
     return f"{random_lower_string()}@{random_lower_string()}.com"
 
 def create_random_user_input() -> UserInput:
     username = random_lower_string()
     display_name = random_lower_string().capitalize()
-    pwd = random_lower_string()
+    pwd = random_password()
     contact_email = random_email()
     biography = random_lower_string()
     return UserInput(username=username, password=pwd, display_name=display_name, contact_email=contact_email, biography=biography)
@@ -60,7 +66,7 @@ def create_random_admin(db: Session) -> RandomEditor:
     """
         Creates an admin user and signs them in.
     """
-    username, password = random_lower_string(), random_lower_string()
+    username, password = random_lower_string(), random_password()
     admin = create_admin(db, username, password)
     _, token = authenticate(db, UserLogin(username=username, password=password))
 

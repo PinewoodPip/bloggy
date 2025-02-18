@@ -3,7 +3,9 @@ from pydantic import BaseModel, field_validator, HttpUrl
 import enum
 import re
 
-MIN_USERNAME_LENGTH = 3 # In characters.
+MIN_USERNAME_LENGTH = 8 # In characters.
+MIN_PASSWORD_LENGTH = 8 # In characters.
+DIGIT_PATTERN = re.compile(r".*\d.*") # Matches whole string if there is any digit.
 
 # Account role enum
 class UserRole(enum.Enum):
@@ -16,13 +18,21 @@ class UserLogin(BaseModel):
     password: str
 
     @field_validator("username", check_fields=False)
-    def validate_username(cls, v):
+    def validate_username(cls, v: str):
         # Min length check
         if len(v) < MIN_USERNAME_LENGTH:
-            raise ValueError("Username too short")
-        # Avoid conflicts with endpoint names
-        if v == "login" or v == "logout":
-            raise ValueError("Username not allowed")
+            raise ValueError(f"Username is too short; must be at least {MIN_USERNAME_LENGTH} characters")
+        return v
+
+    @field_validator("password", check_fields=False)
+    def validate_password(cls, v: str):
+        # Min length check
+        if len(v) < MIN_PASSWORD_LENGTH:
+            raise ValueError(f"Password is too short; must be at least {MIN_PASSWORD_LENGTH} characters")
+        if v.isalnum():
+            raise ValueError("Password must have 1+ non-alpha-numeric character")
+        if not DIGIT_PATTERN.search(v):
+            raise ValueError("Password must have 1+ digit characters")
         return v
 
 # JSON payload containing access token

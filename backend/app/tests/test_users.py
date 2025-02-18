@@ -3,7 +3,7 @@
 """
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
-from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input
+from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input, random_password
 from asserts import has_validation_error, is_bad_request, response_detail
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
@@ -52,7 +52,10 @@ def test_create_editor_duplicate_username():
     response = client.post("/users", headers=header, json=user_input.model_dump())
     assert is_bad_request(response, "already exists")
 
-def test_create_user_invalid_username():
+def test_create_user_invalid_credentials():
+    """
+        Tests creating an account with invalid username or password.
+    """
     admin = create_random_admin(get_session())
     header = get_token_header(admin.token)
 
@@ -60,9 +63,19 @@ def test_create_user_invalid_username():
     user_input = create_random_user_input()
     user_input.username = "a" * (MIN_USERNAME_LENGTH - 1) # Right below min length
     response = client.post("/users", headers=header, json=user_input.model_dump())
-
-    # Expect validation error
     assert has_validation_error(response, "too short")
+
+    # Try to create a user with a password with only alpha-numeric characters
+    user_input = create_random_user_input()
+    user_input.password = "onlyalphanumeric123"
+    response = client.post("/users", headers=header, json=user_input.model_dump())
+    assert has_validation_error(response, "must have 1+ non-alpha-numeric")
+
+    # Try to create a user with a password with no digit characters
+    user_input = create_random_user_input()
+    user_input.password = "onlyletters#"
+    response = client.post("/users", headers=header, json=user_input.model_dump())
+    assert has_validation_error(response, "must have 1+ digit characters")
 
 def test_login_logout():
     """
@@ -146,8 +159,8 @@ def test_patch_user():
 
     # Change password and username
     new_data = {
-        "password": random_lower_string(),
         "username": random_lower_string(),
+        "password": random_password(),
     }
     response = client.patch("/users", headers=header, json=new_data)
     assert response.status_code == 200
