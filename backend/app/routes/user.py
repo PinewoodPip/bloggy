@@ -61,6 +61,24 @@ async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), cu
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return UserCrud.create_user_output(user)
 
+@router.delete("/{username}", response_model=str)
+async def update_user(username: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+        Deletes a user account.
+        The auth user must be an admin.
+        Fails if the account to be deleted is the last remaining admin account.
+    """
+    if not current_user.admin:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only admins can delete accounts")
+    
+    try:
+        user = UserCrud.get_by_username(db, username)
+        UserCrud.delete_user(db, user)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    
+    return "Account deleted successfully"
+
 # TODO
 # @router.delete("/user", status_code=status.HTTP_200_OK)
 # async def delete_user(

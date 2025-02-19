@@ -33,9 +33,11 @@ def create_default_admin(db: Session):
     """
         Creates an admin account with the default credentials, if an account with the default username doesn't exist.
     """
-    admin_exists = get_by_username(db, CONFIG.ADMIN_USERNAME) != None
-    if not admin_exists:
-        create_admin(CONFIG.ADMIN_USERNAME, CONFIG.ADMIN_PASSWORD)
+    try:
+        admin = get_by_username(db, CONFIG.ADMIN_USERNAME)
+    except ValueError as e:
+        if "not found" in str(e):
+            create_admin(db, CONFIG.ADMIN_USERNAME, CONFIG.ADMIN_PASSWORD)
 
 def create_editor_by_user(db: Session, creator_user: User, user_input: UserInput) -> User:
     """
@@ -113,16 +115,31 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
 
     return user
 
+def delete_user(db: Session, user: User):
+    """
+        Deletes a user account.
+    """
+    # Ensure the app never loses all admins
+    if user.admin and db.query(Admin).count() == 1:
+        raise ValueError("Cannot delete the only admin account")
+
+    # TODO first check the user has no articles they are the sole author of, once articles are implemented
+    db.delete(user)
+    db.commit()
+
 def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     """
         Creates a JWT token for a user given their credentials.
         Returns the user and their token.
     """
-    user = get_by_username(db, login_input.username)
-
     # Verify credentials
     # The error message is the same for either failure (username or password mismatch)
     # to prevent attackers from knowing if they got either of them right
+    try:
+        user = get_by_username(db, login_input.username)
+    except ValueError as e:
+        raise ValueError("Invalid credentials")
+
     if not user or not verify_password(login_input.password, user.hashed_password):
         raise ValueError("Invalid credentials")
     

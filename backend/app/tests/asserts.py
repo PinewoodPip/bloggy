@@ -15,6 +15,12 @@ def is_bad_request(response: Response, msg: str) -> bool:
     """
     return response.status_code == 400 and msg in response_detail(response)
 
+def is_unauthorized_request(response: Response, msg: str) -> bool:
+    """
+    Returns whether the request failed due to lack of privileges.
+    """
+    return response.status_code == 401 and msg in response_detail(response)
+
 def has_validation_error(response: Response, msg: str) -> bool:
     """
     Returns whether the request failed field validation for a specific reason.

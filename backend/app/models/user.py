@@ -13,8 +13,8 @@ class User(Base):
     hashed_password = Column(String)
     current_token = Column(String, nullable=True, default=None) # JWT token
 
-    editor: Mapped["Editor"] = relationship("Editor")
-    admin: Mapped["Admin"] = relationship("Admin")
+    editor: Mapped["Editor"] = relationship("Editor", back_populates="user", cascade="all")
+    admin: Mapped["Admin"] = relationship("Admin", back_populates="user", cascade="all")
 
 class Admin(Base):
     __tablename__ = "admins"

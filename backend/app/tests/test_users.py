@@ -4,7 +4,7 @@
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
 from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input, random_password
-from asserts import has_validation_error, is_bad_request, response_detail
+from asserts import has_validation_error, is_bad_request, is_unauthorized_request, response_detail
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
 from main import app
@@ -206,3 +206,23 @@ def test_query_admin_as_guest():
     # Expect no resource found
     response = client.get(f"/users/{admin.username}")
     assert response.status_code == 404
+
+def test_delete_user():
+    """
+        Tests deleting user accounts.
+    """
+    db = get_session()
+    admin, editor = create_random_admin(db), create_random_auth_editor(db)
+    admin_header, editor_header = get_token_header(admin.token), get_token_header(editor.token)
+
+    # Editors cannot delete accounts
+    response = client.delete(f"/users/{editor.username}", headers=editor_header)
+    assert is_unauthorized_request(response, "Only admins can delete accounts")
+
+    # Admins can delete editor accounts
+    response = client.delete(f"/users/{editor.username}", headers=admin_header)
+    assert response.status_code == 200
+
+    # Admins can delete their own account
+    response = client.delete(f"/users/{admin.username}", headers=admin_header)
+    assert response.status_code == 200
