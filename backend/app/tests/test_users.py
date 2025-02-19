@@ -4,7 +4,7 @@
 from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
 from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input, random_password
-from asserts import has_validation_error, is_bad_request, is_unauthorized_request, response_detail
+from asserts import has_validation_error, is_bad_request, is_not_found, is_unauthorized_request, response_detail
 from fastapi.testclient import TestClient
 from core.config import get_db, engine
 from main import app
@@ -124,6 +124,15 @@ def test_wrong_login():
     })
     assert response.status_code == 400
     assert "Invalid credentials" in response_detail(response)
+
+def test_get_nonexistent_user():
+    """
+        Tests fetching data of an account that doesn't exist.
+    """
+    USERNAME = "aaa" # Too short to correspond to any user
+
+    response = client.get(f"/users/{USERNAME}")
+    assert is_not_found(response)
 
 def test_patch_user():
     """

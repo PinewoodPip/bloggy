@@ -176,9 +176,13 @@ def create_user_output(user: User) -> UserOutput:
 
     return output
 
-# Get user by username
-def get_by_username(db: Session, username: str) -> User|None:
+def get_by_username(db: Session, username: str) -> User:
+    """
+        Returns a user account by their username.
+    """
     user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise ValueError("User not found")
     return user
 
 # Returns an editor by their username

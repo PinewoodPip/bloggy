@@ -44,12 +44,20 @@ async def add_user(user_input: UserInput, db: Session=Depends(get_db), current_u
 
 @router.get("/{username}", response_model=UserOutput)
 async def get_user_by_username(username: str, db: Session=Depends(get_db), current_user: User=Depends(get_current_user_optional)):
-    user = UserCrud.get_by_username(db, username)
+    """
+        Returns a user's data by their username.
+    """
+    try:
+        user = UserCrud.get_by_username(db, username)
 
-    # Only staff accounts can query admin account information,
-    # so attackers cannot stumble upon them.
-    if user.admin and not current_user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+        # Only staff accounts can query admin account information,
+        # so attackers cannot stumble upon them.
+        if user.admin and not current_user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    except ValueError as e:
+        msg = str(e)
+        if "not found" in msg:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
     return UserCrud.create_user_output(user)
 

@@ -15,6 +15,9 @@ def is_bad_request(response: Response, msg: str) -> bool:
     """
     return response.status_code == 400 and msg in response_detail(response)
 
+def is_not_found(response: Response) -> bool:
+    return response.status_code == 404
+
 def is_unauthorized_request(response: Response, msg: str) -> bool:
     """
     Returns whether the request failed due to lack of privileges.
