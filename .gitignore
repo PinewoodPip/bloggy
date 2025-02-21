@@ -132,3 +132,5 @@ dist
 # Backend caches
 *.pyc
 backend/.venv
+
+/backend/docker.env
