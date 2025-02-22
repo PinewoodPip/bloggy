@@ -15,6 +15,7 @@
     "@nuxt/test-utils": "^3.15.4",
     "@nuxt/ui": "^2.21.0",
     "@playwright/test": "^1.50.1",
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^22.13.1",
     "@vue/test-utils": "^2.4.6",
     "happy-dom": "^16.8.1",
@@ -26,6 +27,7 @@
   "dependencies": {
     "@nuxtjs/color-mode": "^3.5.2",
     "axios": "^1.7.9",
-    "daisyui": "^4.12.23"
+    "daisyui": "^4.12.23",
+    "js-cookie": "^3.0.5"
   }
 }

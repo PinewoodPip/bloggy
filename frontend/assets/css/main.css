@@ -1,4 +1,15 @@
 
+/* Semantic utility classes */
 .large-content-block {
   @apply bg-primary border-primary rounded-box p-4
+}
+
+/* Global element styles */
+h1 {
+  @apply font-bold
+}
+
+/* Macros */
+.flexcol {
+  @apply flex flex-col
 }

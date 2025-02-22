@@ -1,5 +1,5 @@
 <template>
-  <div class="large-content-block flex flex-col gap-y-1">
+  <div class="large-content-block flexcol gap-y-1">
     <!-- Section links -->
     <RouterLink to="/admin/content">
       <IconButton icon="i-heroicons-book-open" :class="buttonHighlightClass('content')" class="min-w-full">Content</IconButton>
@@ -23,7 +23,7 @@
           <span class="text-3xl">P</span>
         </div>
       </div>
-      <div class="flex flex-col p-2">
+      <div class="flexcol p-2">
         <p>{{ username }}</p>
         <p>{{ accountRole }}</p>
         <div class="flex justify-end gap-x-2 mt-2">

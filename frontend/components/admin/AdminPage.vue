@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col">
+  <div class="flexcol">
     <h1>{{ siteName }} control panel</h1>
 
     <!-- Main -->

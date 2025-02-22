@@ -2,4 +2,5 @@
   <UContainer>
     <RouterView/>
   </UContainer>
+  <UNotifications />
 </template>

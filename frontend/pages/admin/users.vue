@@ -18,7 +18,7 @@
       </div>
 
       <!-- Users list -->
-      <div class="flex flex-col gap-y-2">
+      <div class="flexcol gap-y-2">
         <AdminUserListEntry v-for="user in users" :user="user"/>
       </div>
     </div>
