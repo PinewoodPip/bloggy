@@ -1,22 +1,17 @@
 <template>
-  <div class="flexcol">
-    <h1>{{ siteName }} control panel</h1>
+  <div class="flexcol h-screen p-5">
 
     <!-- Main -->
-    <div class="flex gap-x-3">
+    <div class="flex gap-x-3 h-full">
       <!-- Sidebar -->
-      <AdminSidebar />
+      <AdminSidebar class="h-100" />
 
       <!-- Content -->
-      <slot class="flex-grow"/>
+      <slot/>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-
-const siteName = computed((): string => {
-  return "TODO"
-})
 
 </script>

@@ -71,6 +71,16 @@ class UserService {
     }
   }
 
+  /** Fetches all user accounts. Requires auth. */
+  async getAll(): Promise<User[]> {
+    try {
+      const response = await this.axios.get("/users/", this.getConfig());
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /** Returns whether auth cookies are present. Does not validate them. */
   isLoggedIn() {
     return (Cookies.get("auth_token") !== undefined) && (Cookies.get("username") !== undefined) // Checks both cookies for coherency.

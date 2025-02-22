@@ -1,18 +1,24 @@
 <template>
-  <div class="large-content-block flexcol gap-y-1">
+  <div class="large-content-block flexcol gap-y-1 max-w-sm h-full">    
+    <h1>{{ siteName }} control panel</h1>
+
     <!-- Section links -->
-    <RouterLink to="/admin/content">
-      <IconButton icon="i-heroicons-book-open" :class="buttonHighlightClass('content')" class="min-w-full">Content</IconButton>
-    </RouterLink>
-    <RouterLink to="/admin/users">
-      <IconButton icon="i-heroicons-user" :class="buttonHighlightClass('users')" class="min-w-full">Users</IconButton>
-    </RouterLink>
-    <RouterLink to="/admin/events">
-      <IconButton icon="i-heroicons-calendar" :class="buttonHighlightClass('events')" class="min-w-full">Events</IconButton>
-    </RouterLink>
-    <RouterLink to="/admin/config">
-      <IconButton icon="i-heroicons-cog-6-tooth" :class="buttonHighlightClass('config')" class="min-w-full">Configuration</IconButton>
-    </RouterLink>
+    <div class="flexcol gap-y-2 overflow-y-auto">
+      <RouterLink to="/admin/content">
+        <IconButton icon="i-heroicons-book-open" :class="buttonHighlightClass('content')" class="min-w-full">Content</IconButton>
+      </RouterLink>
+      <RouterLink to="/admin/users">
+        <IconButton icon="i-heroicons-user" :class="buttonHighlightClass('users')" class="min-w-full">Users</IconButton>
+      </RouterLink>
+      <RouterLink to="/admin/events">
+        <IconButton icon="i-heroicons-calendar" :class="buttonHighlightClass('events')" class="min-w-full">Events</IconButton>
+      </RouterLink>
+      <RouterLink to="/admin/config">
+        <IconButton icon="i-heroicons-cog-6-tooth" :class="buttonHighlightClass('config')" class="min-w-full">Configuration</IconButton>
+      </RouterLink>
+    </div>
+
+    <VerticalFill/>
 
     <!-- User info -->
     <hr/>
@@ -47,6 +53,10 @@ function buttonHighlightClass(page: string) {
 function isCurrentPage(page: string): boolean {
   return route.path === '/admin/' + page
 }
+
+const siteName = computed((): string => {
+  return "TODO"
+})
 
 const username = computed(() => {
   return "TODO"
