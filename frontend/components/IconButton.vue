@@ -1,6 +1,6 @@
 <!-- A button with an UIcon prefix. -->
 <template>
-    <button class="sidebar-button"><UIcon :name="icon" /> <slot/></button>
+    <button class="icon-button btn btn-sm"><UIcon :name="icon" /> <slot/></button>
 </template>
 
 <script setup lang="ts">
@@ -13,8 +13,8 @@ const props = defineProps<{
 
 <style lang="css">
 
-.sidebar-button {
-  @apply btn btn-sm
+.icon-button {
+  height: 2.5rem !important;
 }
 
 </style>

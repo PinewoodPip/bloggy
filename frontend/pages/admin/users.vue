@@ -13,8 +13,11 @@
 
       <!-- TODO search bar -->
       <div class="flex py-3">
+        <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
+
         <HorizontalFill/>
-        <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="addUser">Add editor</IconButton>
+
+        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
       </div>
 
       <hr/>
@@ -22,7 +25,7 @@
       <!-- Users list -->
       <div class="flex-grow overflow-x-auto">
         <div class="flexcol gap-y-2">
-          <AdminUserListEntry v-for="user in users" :user="user"/>
+          <AdminUserListEntry v-for="user in filteredUsers" :user="user"/>
         </div>
       </div>
     </div>
@@ -34,18 +37,34 @@ import UserService from "../../services/user"
 
 const config = useRuntimeConfig()
 const userService = new UserService(config.public.API_URL as string)
+
 const users: Ref<User[]> = ref([])
+const searchTerm = ref("")
+
+function addUser() {
+  // TODO
+}
+
+const filteredUsers = computed(() => {
+  if (searchTerm.value !== "") {
+    let validUsers = [...users.value]
+    // Search by username or display name, case-insensitive
+    validUsers = validUsers.filter((user) => {
+      return user.username.toLowerCase().includes(searchTerm.value) || (user.role === "editor" && user.display_name.toLowerCase().includes(searchTerm.value))
+    })
+    return validUsers
+  } else {
+    return users.value
+  }
+})
 
 onMounted(() => {
+  // Fetch all users
   userService.getAll().then((resp) => {
     users.value = resp
   }).catch((e) => {
     // TODO
   })
 })
-
-function addUser() {
-  // TODO
-}
 
 </script>
