@@ -61,6 +61,24 @@ async def get_user_by_username(username: str, db: Session=Depends(get_db), curre
 
     return UserCrud.create_user_output(user)
 
+@router.get("/", response_model=list[UserOutput])
+async def get_users(db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+    """
+        Returns all user accounts.
+        Admin accounts are only returned for admins.
+    """
+    role_filter = None
+    if not current_user.admin: # If the auth user is not admin, only return editor accounts
+        role_filter = set([UserCrud.UserRole.editor.name])
+
+    # Fetch users and build schemas
+    users = UserCrud.get_all(db, role_filter)
+    users_output = []
+    for user in users:
+        users_output.append(UserCrud.create_user_output(user))
+
+    return users_output
+
 @router.patch("/", response_model=UserOutput)
 async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:

@@ -235,3 +235,39 @@ def test_delete_user():
     # Admins can delete their own account
     response = client.delete(f"/users/{admin.username}", headers=admin_header)
     assert response.status_code == 200
+
+def test_get_all_users():
+    """
+    Tests fetching all users.
+    """
+    db = get_session()
+    admin, editor = create_random_admin(db), create_random_auth_editor(db)
+    admin_header, editor_header = get_token_header(admin.token), get_token_header(editor.token)
+    
+    # GET as admin
+    response = client.get(f"/users/", headers=admin_header)
+    json = response.json()
+    assert response.status_code == 200
+
+    # Check both accounts are in response
+    has_admin, has_editor = False, False
+    for user in json:
+        if user["username"] == admin.username:
+            has_admin = True
+        if user["username"] == editor.username:
+            has_editor = True
+    assert has_admin and has_editor
+
+    # GET as editor
+    response = client.get(f"/users/", headers=editor_header)
+    json = response.json()
+    assert response.status_code == 200
+
+    # Check only editor account is in response
+    has_admin, has_editor = False, False
+    for user in json:
+        if user["username"] == admin.username:
+            has_admin = True
+        if user["username"] == editor.username:
+            has_editor = True
+    assert not has_admin and has_editor

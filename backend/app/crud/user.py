@@ -115,6 +115,22 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
 
     return user
 
+def get_all(db: Session, roles: set[UserRole]|None) -> list[User]:
+    """
+    Returns all user accounts, optionally filtered by role.
+    """
+    users = db.query(User).all()
+    valid_users = users
+
+    # Filter by role
+    if roles:
+        valid_users = []
+        for user in users:
+            if get_role(user).name in roles:
+                valid_users.append(user)
+
+    return valid_users
+
 def delete_user(db: Session, user: User):
     """
         Deletes a user account.
