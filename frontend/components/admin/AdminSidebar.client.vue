@@ -16,6 +16,14 @@
       <RouterLink to="/admin/config">
         <IconButton icon="i-heroicons-cog-6-tooth" :class="buttonHighlightClass('config')" class="min-w-full">Configuration</IconButton>
       </RouterLink>
+
+      <!-- Theme picker. TODO remove later -->
+      <div class="p-4 flex gap-4">
+        <select class="select w-full max-w-xs" v-model="colorMode.preference">
+          <option disabled selected>Theme</option>
+          <option v-for="theme of themes" :key="theme">{{ theme }}</option>
+        </select>
+      </div>
     </div>
 
     <VerticalFill/>
@@ -42,11 +50,17 @@
 </template>
 
 <script setup lang="ts">
+import { _themes as daisyThemes } from '#tailwind-config/daisyui'
 import { useQuery } from '@tanstack/vue-query'
 
 const route = useRoute()
 const router = useRouter()
+const colorMode = useColorMode();
 const userService = useUserService()
+
+const themes = [
+  "system", ...new Set(daisyThemes)
+];
 
 function logout() {
   userService.logout().then(() => {
