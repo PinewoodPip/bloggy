@@ -4,6 +4,7 @@ export { }
 declare global {
   type User = {
     username: string,
-    displayName: string,
+    role: "admin"|"editor",
+    display_name: string,
   }
 }

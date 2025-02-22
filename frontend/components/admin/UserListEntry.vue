@@ -7,8 +7,9 @@
       </div>
     </div>
 
-    <span>{{ user.displayName }}</span>
-    <span class="italic">({{ user.username }})</span>
+    <!-- Name displays; admins have no displayname, so display their role instead -->
+    <span>{{ user.role === "editor" ? user.display_name : user.username }}</span>
+    <span class="italic">({{ user.role === "editor" ? user.username : "admin" }})</span>
 
     <div class="mx-auto"/>
 
