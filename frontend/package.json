@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@nuxtjs/color-mode": "^3.5.2",
+    "@tanstack/vue-query": "^5.66.9",
     "axios": "^1.7.9",
     "daisyui": "^4.12.23",
     "js-cookie": "^3.0.5"

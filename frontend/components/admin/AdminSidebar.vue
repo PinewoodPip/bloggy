@@ -30,11 +30,11 @@
         </div>
       </div>
       <div class="flexcol p-2">
-        <p>{{ username }}</p>
-        <p>{{ accountRole }}</p>
+        <p>{{ user ? user.username : "..." }}</p>
+        <p>{{ user ? (user.display_name || user.role) : "..." }}</p> <!-- TODO capitalize role -->
         <div class="flex justify-end gap-x-2 mt-2">
           <IconButton icon="i-heroicons-pencil" class="btn-secondary">Edit account</IconButton>
-          <IconButton icon="i-heroicons-arrow-left-start-on-rectangle-20-solid" class="btn-secondary">Logout</IconButton>
+          <IconButton icon="i-heroicons-arrow-left-start-on-rectangle-20-solid" class="btn-secondary" @click="logout">Logout</IconButton>
         </div>
       </div>
     </div>
@@ -42,8 +42,19 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
 
 const route = useRoute()
+const router = useRouter()
+const userService = useUserService()
+
+function logout() {
+  userService.logout().then(() => {
+    router.push("/admin/login") // TODO change to home once we have it
+  }).catch(() => {
+    // TODO
+  })
+}
 
 function buttonHighlightClass(page: string) {
   const isHighlighted = isCurrentPage(page)
@@ -58,12 +69,14 @@ const siteName = computed((): string => {
   return "TODO"
 })
 
-const username = computed(() => {
-  return "TODO"
-})
-
-const accountRole = computed(() => {
-  return "TODO"
+const { isPending: userIsPending, isError: userIsError, data: user, error: userError } = useQuery({
+  queryKey: ["user"],
+  queryFn: async () => {
+    const currentUsername = userService.getCurrentUsername()
+    // return await userService.getUser("pip12345")
+    console.log(currentUsername)
+    return currentUsername ? await userService.getUser(currentUsername) : null
+  },
 })
 
 </script>

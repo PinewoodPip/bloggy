@@ -47,7 +47,7 @@ const filteredUsers = computed(() => {
     let validUsers = [...users.value]
     // Search by username or display name, case-insensitive
     validUsers = validUsers.filter((user) => {
-      return user.username.toLowerCase().includes(searchTerm.value) || (user.role === "editor" && user.display_name.toLowerCase().includes(searchTerm.value))
+      return user.username.toLowerCase().includes(searchTerm.value) || (user.role === "editor" && user.display_name?.toLowerCase().includes(searchTerm.value))
     })
     return validUsers
   } else {
