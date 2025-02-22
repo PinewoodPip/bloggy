@@ -134,3 +134,6 @@ dist
 backend/.venv
 
 /backend/docker.env
+
+# IDE preferences
+.vscode/settings.json

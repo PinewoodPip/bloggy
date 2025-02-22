@@ -1,0 +1,4 @@
+
+.large-content-block {
+  @apply bg-primary border-primary rounded-box p-4
+}
