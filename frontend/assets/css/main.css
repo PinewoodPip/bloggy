@@ -9,6 +9,11 @@ h1 {
   @apply font-bold
 }
 
+/* Add background fade to fullscreen Nuxt UI modals */
+div[role=dialog] > div > div {
+  @apply bg-neutral/50
+}
+
 /* Macros */
 .flexcol {
   @apply flex flex-col

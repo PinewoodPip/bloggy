@@ -30,17 +30,32 @@
       </div>
     </div>
   </AdminPage>
+
+  <!-- User creation modal -->
+  <UModal v-model="userCreationVisible" :overlay="true">
+    <AdminUserCreationModal @create="onUserCreated" @close="userCreationVisible = false"/>
+  </UModal>
 </template>
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 
 const userService = useUserService()
+const toast = useToast()
 
 const searchTerm = ref("")
+const userCreationVisible = ref(false)
 
 function addUser() {
-  // TODO
+  // Toggle creation modal
+  userCreationVisible.value = true
+}
+
+function onUserCreated(user: User) {
+  userCreationVisible.value = false // Close modal
+  refetchUsers() // Update user list
+
+  toast.add({title: "User created", description: `Account for ${user.display_name} was created.`, color: "green"})
 }
 
 /** Displayed users, after search filters */
@@ -58,7 +73,8 @@ const filteredUsers = computed(() => {
 })
 
 /** Query for user list */
-const { isPending: usersArePending, isError: usersHasError, data: users, error: usersError } = useQuery({
+// TODO display fetch errors
+const { isPending: usersArePending, isError: usersHasError, data: users, error: usersError, refetch: refetchUsers } = useQuery({
   queryKey: ["allUsers"],
   queryFn: async () => {
     return await userService.getAll()

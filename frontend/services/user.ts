@@ -72,6 +72,15 @@ class UserService extends Service {
     }
   }
 
+  async createUser(userData: UserCreationRequest): Promise<User> {
+    try {
+      const response = await this.post("/users/", userData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   /** Returns whether auth cookies are present. Does not validate them. */
   isLoggedIn() {
     return (Cookies.get("auth_token") !== undefined) && (Cookies.get("username") !== undefined) // Checks both cookies for coherency.
