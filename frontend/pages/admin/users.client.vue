@@ -33,7 +33,7 @@
 
   <!-- User creation modal -->
   <UModal v-model="userCreationVisible" :overlay="true">
-    <AdminUserCreationModal @create="onUserCreated" @close="userCreationVisible = false"/>
+    <AdminUserCreationForm @create="onUserCreated" @close="userCreationVisible = false"/>
   </UModal>
 </template>
 
