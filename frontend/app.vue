@@ -1,6 +1,6 @@
 <template>
   <UContainer>
-    <RouterView/>
+    <NuxtPage/>
   </UContainer>
   <UNotifications />
 </template>
