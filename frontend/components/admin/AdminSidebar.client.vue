@@ -4,18 +4,10 @@
 
     <!-- Section links -->
     <div class="flexcol gap-y-2 overflow-y-auto">
-      <RouterLink to="/admin/content">
-        <IconButton icon="i-heroicons-book-open" :class="buttonHighlightClass('content')" class="min-w-full">Content</IconButton>
-      </RouterLink>
-      <RouterLink to="/admin/users">
-        <IconButton icon="i-heroicons-user" :class="buttonHighlightClass('users')" class="min-w-full">Users</IconButton>
-      </RouterLink>
-      <RouterLink to="/admin/events">
-        <IconButton icon="i-heroicons-calendar" :class="buttonHighlightClass('events')" class="min-w-full">Events</IconButton>
-      </RouterLink>
-      <RouterLink to="/admin/config">
-        <IconButton icon="i-heroicons-cog-6-tooth" :class="buttonHighlightClass('config')" class="min-w-full">Configuration</IconButton>
-      </RouterLink>
+      <AdminSidebarButton icon="i-heroicons-book-open" page="content">Content</AdminSidebarButton>
+      <AdminSidebarButton icon="i-heroicons-user" page="users">Users</AdminSidebarButton>
+      <AdminSidebarButton icon="i-heroicons-calendar" page="events">Events</AdminSidebarButton>
+      <AdminSidebarButton icon="i-heroicons-cog-6-tooth" page="config">Configuration</AdminSidebarButton>
 
       <!-- Theme picker. TODO remove later -->
       <div class="p-4 flex gap-4">
@@ -53,7 +45,6 @@
 import { _themes as daisyThemes } from '#tailwind-config/daisyui'
 import { useQuery } from '@tanstack/vue-query'
 
-const route = useRoute()
 const router = useRouter()
 const colorMode = useColorMode();
 const userService = useUserService()
@@ -68,15 +59,6 @@ function logout() {
   }).catch(() => {
     // TODO
   })
-}
-
-function buttonHighlightClass(page: string) {
-  const isHighlighted = isCurrentPage(page)
-  return { "btn-secondary": isHighlighted, "btn-primary": !isHighlighted }
-}
-
-function isCurrentPage(page: string): boolean {
-  return route.path === '/admin/' + page
 }
 
 const siteName = computed((): string => {
