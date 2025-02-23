@@ -87,8 +87,6 @@ const { isPending: userIsPending, isError: userIsError, data: user, error: userE
   queryKey: ["user"],
   queryFn: async () => {
     const currentUsername = userService.getCurrentUsername()
-    // return await userService.getUser("pip12345")
-    console.log(currentUsername)
     return currentUsername ? await userService.getUser(currentUsername) : null
   },
 })

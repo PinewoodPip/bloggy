@@ -33,18 +33,20 @@
 </template>
 
 <script setup lang="ts">
+import { useQuery } from '@tanstack/vue-query'
+
 const userService = useUserService()
 
-const users: Ref<User[]> = ref([])
 const searchTerm = ref("")
 
 function addUser() {
   // TODO
 }
 
+/** Displayed users, after search filters */
 const filteredUsers = computed(() => {
   if (searchTerm.value !== "") {
-    let validUsers = [...users.value]
+    let validUsers = users.value? [...users.value] : []
     // Search by username or display name, case-insensitive
     validUsers = validUsers.filter((user) => {
       return user.username.toLowerCase().includes(searchTerm.value) || (user.role === "editor" && user.display_name?.toLowerCase().includes(searchTerm.value))
@@ -55,13 +57,12 @@ const filteredUsers = computed(() => {
   }
 })
 
-onMounted(() => {
-  // Fetch all users
-  userService.getAll().then((resp) => {
-    users.value = resp
-  }).catch((e) => {
-    // TODO
-  })
+/** Query for user list */
+const { isPending: usersArePending, isError: usersHasError, data: users, error: usersError } = useQuery({
+  queryKey: ["allUsers"],
+  queryFn: async () => {
+    return await userService.getAll()
+  },
 })
 
 </script>
