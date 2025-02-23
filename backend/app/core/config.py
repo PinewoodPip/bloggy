@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from dotenv import load_dotenv
 from dataclasses import dataclass, fields
 import os
 
@@ -25,8 +24,6 @@ class AppConfig():
     DB_PASSWORD: str
 
     def __init__(self):
-        # Load config from env
-        load_dotenv()
         for field in fields(AppConfig): # Assign fields
             value = os.getenv(field.name)
             if value != None:
