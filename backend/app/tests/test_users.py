@@ -147,7 +147,7 @@ def test_patch_user():
         "display_name": "new displayname",
     }
     old_contact_email = user.contact_email # Keep email intact
-    response = client.patch("/users", headers=header, json=new_data)
+    response = client.patch("/users/" + user.username, headers=header, json=new_data)
 
     # Ensure fields changed accordingly
     assert response.status_code == 200
@@ -161,7 +161,7 @@ def test_patch_user():
         "contact_email": None,
     }
     old_contact_email = user.contact_email # Keep email intact
-    response = client.patch("/users", headers=header, json=new_data)
+    response = client.patch("/users/" + user.username, headers=header, json=new_data)
     json = response.json()
     assert response.status_code == 200
     assert json["contact_email"] == None
@@ -171,7 +171,7 @@ def test_patch_user():
         "username": random_lower_string(),
         "password": random_password(),
     }
-    response = client.patch("/users", headers=header, json=new_data)
+    response = client.patch("/users/" + user.username, headers=header, json=new_data)
     assert response.status_code == 200
     assert response.json()["username"] == new_data["username"]
 
@@ -191,6 +191,18 @@ def test_patch_user():
     })
     assert response.status_code == 200
 
+    # Ensure non-admin users cannot patch each other
+    other_user = create_random_auth_editor(get_session())
+    other_user_header = get_token_header(other_user.token)
+    response = client.patch("/users/" + new_data["username"], headers=other_user_header, json=new_data)
+    assert is_unauthorized_request(response, "Only admins can edit")
+
+    # Check admins can edit anyone's account
+    admin_user = create_random_admin(get_session())
+    admin_user_header = get_token_header(admin_user.token)
+    response = client.patch("/users/" + new_data["username"], headers=admin_user_header, json=new_data)
+    assert response.status_code == 200
+
 def test_patch_wrong_fields():
     """
         Tests trying to patch fields that an account type doesn't support.
@@ -203,7 +215,7 @@ def test_patch_wrong_fields():
         "biography": "new bio",
         "display_name": "new displayname",
     }
-    response = client.patch("/users", headers=header, json=new_data)
+    response = client.patch("/users/" + user.username, headers=header, json=new_data)
     assert is_bad_request(response, "Cannot set editor fields")
 
 def test_query_admin_as_guest():

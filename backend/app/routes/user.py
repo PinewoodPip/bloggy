@@ -79,10 +79,16 @@ async def get_users(db: Session=Depends(get_db), current_user: User=Depends(get_
 
     return users_output
 
-@router.patch("/", response_model=UserOutput)
-async def update_user(user_update: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+@router.patch("/{username}", response_model=UserOutput)
+async def update_user(username: str, user_update: UserUpdate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     try:
-        user = UserCrud.update_user(db, current_user, user_update)
+        userToEdit = UserCrud.get_by_username(db, username)
+
+        # Only admins can edit accounts that aren't theirs
+        if not current_user.admin and userToEdit.username != current_user.username:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only admins can edit other users's accounts")
+
+        user = UserCrud.update_user(db, userToEdit, user_update)
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     return UserCrud.create_user_output(user)
