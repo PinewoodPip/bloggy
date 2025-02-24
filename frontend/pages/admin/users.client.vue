@@ -72,7 +72,7 @@ function onUserEdited(user: User) {
   userEditFormVisible.value = false // Close modal
   refetchUsers() // Update user list
 
-  toast.add({title: "User update", description: `${user.display_name}'s account information was updated.`, color: "green"})
+  toast.add({title: "User update", description: `${user.display_name ? user.display_name : user.username}'s account information was updated.`, color: "green"})
 }
 
 /** Displayed users, after search filters */
