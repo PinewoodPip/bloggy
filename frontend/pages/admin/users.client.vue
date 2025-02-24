@@ -25,15 +25,18 @@
       <!-- Users list -->
       <div class="flex-grow overflow-x-auto">
         <div class="flexcol gap-y-2">
-          <AdminUserListEntry v-for="user in filteredUsers" :user="user"/>
+          <AdminUserListEntry v-for="user in filteredUsers" :user="user" @edit="editUser"/>
         </div>
       </div>
     </div>
   </AdminPage>
 
-  <!-- User creation modal -->
-  <UModal v-model="userCreationVisible" :overlay="true">
-    <AdminUserCreationForm @create="onUserCreated" @close="userCreationVisible = false"/>
+  <!-- User creation & editing modals -->
+  <UModal v-model="userCreationFormVisible" :overlay="true">
+    <AdminUserCreationForm @create="onUserCreated" @close="userCreationFormVisible = false"/>
+  </UModal>
+  <UModal v-model="userEditFormVisible" :overlay="true">
+    <AdminUserCreationForm :user-to-edit="userToEdit" @update="onUserEdited" @close="userEditFormVisible = false"/>
   </UModal>
 </template>
 
@@ -44,18 +47,32 @@ const userService = useUserService()
 const toast = useToast()
 
 const searchTerm = ref("")
-const userCreationVisible = ref(false)
+const userCreationFormVisible = ref(false)
+const userEditFormVisible = ref(false)
+const userToEdit: Ref<User|null> = ref(null)
 
 function addUser() {
   // Toggle creation modal
-  userCreationVisible.value = true
+  userCreationFormVisible.value = true
+}
+
+function editUser(user: User) {
+  userToEdit.value = user
+  userEditFormVisible.value = true
 }
 
 function onUserCreated(user: User) {
-  userCreationVisible.value = false // Close modal
+  userCreationFormVisible.value = false // Close modal
   refetchUsers() // Update user list
 
   toast.add({title: "User created", description: `Account for ${user.display_name} was created.`, color: "green"})
+}
+
+function onUserEdited(user: User) {
+  userEditFormVisible.value = false // Close modal
+  refetchUsers() // Update user list
+
+  toast.add({title: "User update", description: `${user.display_name}'s account information was updated.`, color: "green"})
 }
 
 /** Displayed users, after search filters */

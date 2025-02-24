@@ -28,6 +28,11 @@ class Service {
     return this.axios.post(route, payload, this.getConfig())
   }
 
+  /** Sends an PATCH request. */
+  patch(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
+    return this.axios.patch(route, payload, this.getConfig())
+  }
+
   /** Returns the headers to use for requests */
   getConfig() {
     if (!Cookies.get("auth_token")) {

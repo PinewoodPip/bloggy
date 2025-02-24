@@ -21,4 +21,13 @@ declare global {
     biography?: string,
     contact_email?: string,
   }
+
+    /** Schema for PATCH /users/ */
+  type UserUpdateRequest = {
+    username?: string,
+    password?: string,
+    display_name?: string,
+    biography?: string,
+    contact_email?: string|null,
+  }
 }

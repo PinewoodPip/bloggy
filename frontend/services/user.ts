@@ -72,9 +72,20 @@ class UserService extends Service {
     }
   }
 
+  /** Creates an editor account. */
   async createUser(userData: UserCreationRequest): Promise<User> {
     try {
       const response = await this.post("/users/", userData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /** Updates a user's data. */
+  async updateUser(username:string, userData: UserUpdateRequest): Promise<User> {
+    try {
+      const response = await this.patch("/users/" + username, userData);
       return response.data;
     } catch (error) {
       throw error;
@@ -90,7 +101,6 @@ class UserService extends Service {
   getCurrentUsername(): string|null {
     return this.isLoggedIn() ? Cookies.get("username") as string : null // isLoggedIn() tests for both cookies as sanity check.
   }
-
 }
 
 export default UserService

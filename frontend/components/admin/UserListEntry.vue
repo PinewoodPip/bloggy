@@ -27,12 +27,16 @@ const props = defineProps<{
   user: User,
 }>()
 
+const emit = defineEmits<{
+  edit: [user: User],
+}>()
+
 function showArticles() {
   // TODO
 }
 
 function editAccount() {
-  // TODO
+  emit('edit', props.user)
 }
 
 </script>

@@ -2,7 +2,7 @@
   <div class="flexcol p-4">
     <!-- Header -->
     <div class="flex content-center pb-2">
-      <h2>Create user</h2>
+      <h2>{{ isEditing ? "Edit user" : "Create user" }}</h2>
       <HorizontalFill/>
       <!-- TODO confirm to close -->
       <button class="btn btn-sm btn-error aspect-square" @click="emit('close')"><UIcon name="i-heroicons-x-mark"/></button>
@@ -23,11 +23,11 @@
       <UFormGroup label="Username" help="Should be 8+ characters long">
         <UInput v-model="username" placeholder="username" icon="i-heroicons-user" required />
       </UFormGroup>
-      <UFormGroup label="Password" help="Should be 8+ characters, with at least 1 digit and special character" :error="passwordError">
-        <UInput v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" required />
+      <UFormGroup :label="isEditing ? 'New password' : 'Password'" help="Should be 8+ characters, with at least 1 digit and special character" :error="passwordError">
+        <UInput v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
       </UFormGroup>
       <UFormGroup label="Repeat password" :error="passwordConfirmationError">
-        <UInput v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" required />
+        <UInput v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
       </UFormGroup>
       <UFormGroup label="Display name">
         <UInput v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
@@ -44,11 +44,11 @@
 
     <!-- Footer -->
     <div class="flex justify-center pt-4">
-      <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="createAccount" :disabled="!canCreate || createUserIsPending">
+      <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="confirm" :disabled="!canCreate || createUserIsPending">
         <span>
           <!-- Show loading spinner while posting -->
-          <span v-if="createUserIsPending" class="loading loading-spinner"/>
-          <span v-else>Create account</span>
+          <span v-if="createUserIsPending || updateUserIsPending" class="loading loading-spinner"/>
+          <span v-else>{{ isEditing ? "Apply changes" : "Create account" }}</span>
         </span>
       </IconButton>
     </div>
@@ -65,8 +65,13 @@ const toast = useToast()
 
 const MINIMUM_PASSWORD_LENGTH = 8 // Should be same as in backend
 
+const props = defineProps<{
+  userToEdit?: User,
+}>()
+
 const emit = defineEmits<{
   create: [user: User],
+  update: [user: User],
   close: [],
 }>()
 
@@ -77,16 +82,67 @@ const displayName = ref("")
 const contactEmail = ref("")
 const biography = ref("")
 
-/** Sends a POST to create the user */
-function createAccount() {
-  requestCreateAccount({
-    username: username.value,
-    password: password.value,
-    display_name: displayName.value,
-    contact_email: contactEmail.value !== "" ? contactEmail.value : undefined,
-    biography: biography.value !== "" ? biography.value : undefined,
-  })
+/** Sends a POST/PATCH to create/update the user */
+function confirm() {
+  if (props.userToEdit) {
+    const oldData = props.userToEdit
+
+    // Check if email should be nulled
+    let newEmail: string|undefined|null = contactEmail.value !== oldData.contact_email ? contactEmail.value : undefined
+    if (newEmail === "" && !oldData.contact_email) {
+      newEmail = null
+    }
+
+    // Only pass the fields that actually changed
+    requestUpdateAccount({
+      username: username.value !== oldData.username ? username.value : undefined,
+      password: password.value !== "" ? password.value : undefined,
+      display_name: displayName.value !== oldData.display_name ? displayName.value : undefined,
+      contact_email: newEmail,
+      biography: biography.value !== oldData.biography ? biography.value : undefined,
+    })
+  } else {
+    requestCreateAccount({
+      username: username.value,
+      password: password.value,
+      display_name: displayName.value,
+      contact_email: contactEmail.value !== "" ? contactEmail.value : undefined,
+      biography: biography.value !== "" ? biography.value : undefined,
+    })
+  }
 }
+
+function resetFields() {
+  const user = props.userToEdit
+  // Set fields to the user's current values
+  if (user) {
+    username.value = user.username
+    displayName.value = user.display_name ?? ''
+    password.value = ''
+    passwordConfirmation.value = ''
+    contactEmail.value = user.contact_email ?? ''
+    biography.value = user.biography ?? ''
+  } else {
+    username.value = ''
+    displayName.value = ''
+    password.value = ''
+    passwordConfirmation.value = ''
+    contactEmail.value = ''
+    biography.value = ''
+  }
+}
+
+// Initialize fields for editing users
+onMounted(() => {
+  if (props.userToEdit) {
+    resetFields()
+  }
+})
+
+// Reset fields when user to edit prop changes
+watch(() => props.userToEdit, (newUser) => {
+  resetFields()
+});
 
 /** Whether the form is valid and can be submitted. */
 const canCreate = computed(() => {
@@ -96,7 +152,7 @@ const canCreate = computed(() => {
 /** Checks whether the password field is valid according to backend requirements. */
 const passwordIsValid = computed(() => {
   const pw = password.value
-  return pw.length >= MINIMUM_PASSWORD_LENGTH && pw.search("\d") !== -1 && pw.search("[^\d\w]") !== -1 // Must have enough characters, at least one digit and at least one special character
+  return (isEditing.value && pw === "") || (pw.length >= MINIMUM_PASSWORD_LENGTH && pw.search("\d") !== -1 && pw.search("[^\d\w]") !== -1) // Must have enough characters, at least one digit and at least one special character. In edit mode, the password field can be left empty to indicate the password is not being changed.
 })
 
 /** Error label for password field */
@@ -116,6 +172,11 @@ const emailError = computed(() => {
   return (contactEmail.value !== "" && contactEmail.value.search("@.+\\..+") === -1) ? "Invalid e-mail format" : ""
 })
 
+/** Whether the form is editing an existing user. */
+const isEditing = computed(() => {
+  return props.userToEdit !== undefined
+})
+
 /** Query for creating users */
 const { isPending: createUserIsPending, mutate: requestCreateAccount } = useMutation({
   mutationFn: (newUser: UserCreationRequest) => {
@@ -129,13 +190,29 @@ const { isPending: createUserIsPending, mutate: requestCreateAccount } = useMuta
   }
 })
 
+/** Query for updating a user */
+const { isPending: updateUserIsPending, mutate: requestUpdateAccount } = useMutation({
+  mutationFn: (newUser: UserUpdateRequest) => {
+    if (!props.userToEdit) {
+      throw "Tried to update account while not editing one"
+    }
+    return userService.updateUser(props.userToEdit.username, newUser)
+  },
+  onSuccess: (user) => {
+    emit("update", user)
+  },
+  onError: (err) => {
+    toast.add({title: "Failed to update user", description: errorStringifier.stringify(err as AxiosError), color: "red"})
+  }
+})
+
 defineShortcuts({
   // Enter key submits the form
   enter: {
     usingInput: true,
     whenever: [canCreate],
     handler: () => {
-      createAccount()
+      confirm()
     },
   }
 })

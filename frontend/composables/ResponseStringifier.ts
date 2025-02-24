@@ -22,6 +22,9 @@ class ResponseStringifier {
         return validationErrors.join("; ") // Semicolon as divider creates the most readable results
       } else if (error.status == 400) {
         return response.data.detail
+      } else if (error.status == 401) {
+        const detail = response.data.detail
+        return detail === 'Invalid token' ? 'Credentials expired; try logging in again' : detail // Make invalid token message a bit more user-friendly
       }
     }
 
