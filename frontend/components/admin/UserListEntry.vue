@@ -1,11 +1,7 @@
 <template>
   <div class="flex content-center hover:bg-secondary/50 rounded-btn">
     <!-- Avatar TODO -->
-    <div class="avatar placeholder size-8 mr-2">
-      <div class="bg-neutral text-neutral-content w-full rounded-full">
-        <p>U</p>
-      </div>
-    </div>
+    <AvatarIcon class="size-8 mr-2"/>
 
     <!-- Name displays; admins have no displayname, so display their role instead -->
     <span>{{ user.role === "editor" ? user.display_name : user.username }}</span>

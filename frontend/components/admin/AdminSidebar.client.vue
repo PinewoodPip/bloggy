@@ -24,11 +24,7 @@
     <hr/>
     <div class="flex p-2">
       <!-- TODO -->
-      <div class="avatar placeholder size-24">
-        <div class="bg-neutral text-neutral-content w-full rounded-full">
-          <span class="text-3xl">P</span>
-        </div>
-      </div>
+      <AvatarIcon class="size-24"/>
       <div class="flexcol p-2">
         <p>{{ user ? user.username : "..." }}</p>
         <p>{{ user ? (user.display_name || user.role) : "..." }}</p> <!-- TODO capitalize role -->

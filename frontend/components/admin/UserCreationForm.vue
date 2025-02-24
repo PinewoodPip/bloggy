@@ -13,11 +13,7 @@
     <!-- Form -->
     <div class="flexcol gap-y-2 py-3">
       <!-- TODO avatar -->
-      <div class="avatar placeholder size-24 mx-auto">
-        <div class="bg-neutral text-neutral-content w-full rounded-full">
-          <span class="text-3xl">P</span>
-        </div>
-      </div>
+      <AvatarIcon class="size-24 mx-auto"/>
 
       <!-- Form fields -->
       <UFormGroup label="Username" help="Should be 8+ characters long">
