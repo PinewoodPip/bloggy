@@ -6,10 +6,10 @@
     <!-- Form fields -->
     <div class="flexcol gap-y-2">
       <UFormGroup label="Username">
-        <UInput v-model="username" placeholder="username" icon="i-heroicons-user" required />
+        <InputField v-model="username" placeholder="username" icon="i-heroicons-user" required />
       </UFormGroup>
       <UFormGroup label="Password">
-        <UInput v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" required />
+        <InputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" required />
       </UFormGroup>
     </div>
 

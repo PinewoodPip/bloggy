@@ -1,5 +1,5 @@
 <template>
-  <div class="flexcol h-screen p-5">
+  <div class="flexcol bg-base-100 h-screen p-5">
 
     <!-- Main -->
     <div class="flex gap-x-3 h-full">

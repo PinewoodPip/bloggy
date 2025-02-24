@@ -1,7 +1,7 @@
 
 /* Semantic utility classes */
 .large-content-block {
-  @apply bg-primary border-primary rounded-box p-4
+  @apply bg-base-200 border-primary rounded-box p-4
 }
 
 /* Global element styles */
@@ -9,12 +9,52 @@ h1 {
   @apply font-bold
 }
 
-/* Add background fade to fullscreen Nuxt UI modals */
+p, span, h1, h2, h3, h4, h5, h6 {
+  /* color: oklch(var(--nc)); */
+}
+
+/* Undo default font color within buttons,
+as daisyUI applies different colors to their inner content */
+button > span {
+  /* color: unset; */
+}
+
+/* 
+  Nuxt UI style changes/workarounds for daisyUI conflicts
+*/
+
+div > input[data-nuxtui-input] {
+  @apply overflow-hidden
+}
+
+input[data-nuxtui-input] {
+  @apply bg-base-300
+}
+
+/* Add background fade to fullscreen modals */
 div[role=dialog] > div > div {
   @apply bg-neutral/50
 }
 
-/* Macros */
+/* Remove white modal background */
+div[role=dialog] > div > div > div {
+  background-color: transparent !important;
+}
+
+/* Override toast/notification BG & font colors */
+div[role=status] > div {
+  @apply bg-neutral
+}
+div[role=status] p {
+  color: oklch(var(--nc));
+}
+div[role=status] div {
+  color: oklch(var(--nc));
+}
+
+/*
+  Macros
+*/
 .flexcol {
   @apply flex flex-col
 }

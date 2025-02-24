@@ -1,5 +1,5 @@
 <template>
-  <div class="flexcol p-4">
+  <div class="flexcol bg-base-100 rounded-box p-4">
     <!-- Header -->
     <div class="flex content-center pb-2">
       <h2>{{ isEditing ? "Edit user" : "Create user" }}</h2>
@@ -17,21 +17,21 @@
 
       <!-- Form fields -->
       <UFormGroup label="Username" help="Should be 8+ characters long">
-        <UInput v-model="username" placeholder="username" icon="i-heroicons-user" required />
+        <InputField v-model="username" placeholder="username" icon="i-heroicons-user" required />
       </UFormGroup>
       <UFormGroup :label="isEditing ? 'New password' : 'Password'" help="Should be 8+ characters, with at least 1 digit and special character" :error="passwordError">
-        <UInput v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
+        <InputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" data-nuxtui-input />
       </UFormGroup>
       <UFormGroup label="Repeat password" :error="passwordConfirmationError">
-        <UInput v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
+        <InputField v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
       </UFormGroup>
 
       <!-- Following fields are valid for editor accounts only -->
       <UFormGroup v-if="!isEditingAdmin" label="Display name">
-        <UInput v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
+        <InputField v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
       </UFormGroup>
       <UFormGroup v-if="!isEditingAdmin" label="Contact e-mail" :error="emailError">
-        <UInput v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
+        <InputField v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
       </UFormGroup>
       <UFormGroup v-if="!isEditingAdmin" label="Biography">
         <UTextarea v-model="biography" />
