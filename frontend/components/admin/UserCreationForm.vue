@@ -32,6 +32,12 @@
       <UFormGroup label="Display name">
         <UInput v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
       </UFormGroup>
+      <UFormGroup label="Contact e-mail" :error="emailError">
+        <UInput v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
+      </UFormGroup>
+      <UFormGroup label="Biography">
+        <UTextarea v-model="biography" />
+      </UFormGroup>
     </div>
 
     <hr/>
@@ -68,6 +74,7 @@ const username = ref("")
 const password = ref("")
 const passwordConfirmation = ref("")
 const displayName = ref("")
+const contactEmail = ref("")
 const biography = ref("")
 
 /** Sends a POST to create the user */
@@ -76,13 +83,14 @@ function createAccount() {
     username: username.value,
     password: password.value,
     display_name: displayName.value,
+    contact_email: contactEmail.value !== "" ? contactEmail.value : undefined,
     biography: biography.value !== "" ? biography.value : undefined,
   })
 }
 
 /** Whether the form is valid and can be submitted. */
 const canCreate = computed(() => {
-  return username.value !== "" && passwordError.value !== "" && passwordConfirmationError.value === "" && displayName.value !== ""
+  return username.value !== "" && passwordError.value == "" && passwordConfirmationError.value === "" && displayName.value !== "" && emailError.value === ""
 })
 
 /** Checks whether the password field is valid according to backend requirements. */
@@ -100,6 +108,12 @@ const passwordError = computed(() => {
 const passwordConfirmationError = computed(() => {
   const passwordsMatch = password.value === passwordConfirmation.value
   return (passwordsMatch || password.value === "" || passwordConfirmation.value === "") ? "" : "Passwords do not match"
+})
+
+const emailError = computed(() => {
+  // E-mail requirements are intentionally very lax
+  // TODO domain does have a 2+ len req, double-check it
+  return (contactEmail.value !== "" && contactEmail.value.search("@.+\\..+") === -1) ? "Invalid e-mail format" : ""
 })
 
 /** Query for creating users */
