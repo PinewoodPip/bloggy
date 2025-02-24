@@ -29,13 +29,15 @@
       <UFormGroup label="Repeat password" :error="passwordConfirmationError">
         <UInput v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
       </UFormGroup>
-      <UFormGroup label="Display name">
+
+      <!-- Following fields are valid for editor accounts only -->
+      <UFormGroup v-if="!isEditingAdmin" label="Display name">
         <UInput v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
       </UFormGroup>
-      <UFormGroup label="Contact e-mail" :error="emailError">
+      <UFormGroup v-if="!isEditingAdmin" label="Contact e-mail" :error="emailError">
         <UInput v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
       </UFormGroup>
-      <UFormGroup label="Biography">
+      <UFormGroup v-if="!isEditingAdmin" label="Biography">
         <UTextarea v-model="biography" />
       </UFormGroup>
     </div>
@@ -44,7 +46,7 @@
 
     <!-- Footer -->
     <div class="flex justify-center pt-4">
-      <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="confirm" :disabled="!canCreate || createUserIsPending">
+      <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="confirm" :disabled="!canSubmit || createUserIsPending">
         <span>
           <!-- Show loading spinner while posting -->
           <span v-if="createUserIsPending || updateUserIsPending" class="loading loading-spinner"/>
@@ -89,7 +91,7 @@ function confirm() {
 
     // Check if email should be nulled
     let newEmail: string|undefined|null = contactEmail.value !== oldData.contact_email ? contactEmail.value : undefined
-    if (newEmail === "" && !oldData.contact_email) {
+    if (newEmail === "" && oldData.contact_email) {
       newEmail = null
     }
 
@@ -145,8 +147,8 @@ watch(() => props.userToEdit, (newUser) => {
 });
 
 /** Whether the form is valid and can be submitted. */
-const canCreate = computed(() => {
-  return username.value !== "" && passwordError.value == "" && passwordConfirmationError.value === "" && displayName.value !== "" && emailError.value === ""
+const canSubmit = computed(() => {
+  return username.value !== "" && passwordError.value == "" && passwordConfirmationError.value === "" && (isEditingAdmin.value || displayName.value !== "") && emailError.value === ""
 })
 
 /** Checks whether the password field is valid according to backend requirements. */
@@ -175,6 +177,10 @@ const emailError = computed(() => {
 /** Whether the form is editing an existing user. */
 const isEditing = computed(() => {
   return props.userToEdit !== undefined
+})
+
+const isEditingAdmin = computed(() => {
+  return isEditing.value && props.userToEdit?.role === 'admin'
 })
 
 /** Query for creating users */
@@ -210,7 +216,7 @@ defineShortcuts({
   // Enter key submits the form
   enter: {
     usingInput: true,
-    whenever: [canCreate],
+    whenever: [canSubmit],
     handler: () => {
       confirm()
     },

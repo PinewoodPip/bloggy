@@ -33,12 +33,16 @@
         <p>{{ user ? user.username : "..." }}</p>
         <p>{{ user ? (user.display_name || user.role) : "..." }}</p> <!-- TODO capitalize role -->
         <div class="flex justify-end gap-x-2 mt-2">
-          <!-- TODO edit account button -->
-          <IconButton icon="i-heroicons-pencil" class="btn-secondary">Edit account</IconButton>
+          <IconButton icon="i-heroicons-pencil" class="btn-secondary" @click="editAccount">Edit account</IconButton>
           <IconButton icon="i-heroicons-arrow-left-start-on-rectangle-20-solid" class="btn-secondary" @click="logout">Logout</IconButton>
         </div>
       </div>
     </div>
+    
+    <!-- User edit form modal -->
+    <UModal v-model="accountEditFormVisible" :overlay="true">
+      <AdminUserCreationForm :user-to-edit="user" @update="onUserEdited" @close="accountEditFormVisible = false"/>
+    </UModal>
   </div>
 </template>
 
@@ -46,6 +50,7 @@
 import { _themes as daisyThemes } from '#tailwind-config/daisyui'
 import { useQuery } from '@tanstack/vue-query'
 
+const toast = useToast()
 const router = useRouter()
 const colorMode = useColorMode();
 const userService = useUserService()
@@ -53,6 +58,12 @@ const userService = useUserService()
 const themes = [
   "system", ...new Set(daisyThemes)
 ];
+
+const accountEditFormVisible = ref(false)
+
+function editAccount() {
+  accountEditFormVisible.value = true
+}
 
 function logout() {
   userService.logout().then(() => {
@@ -62,11 +73,25 @@ function logout() {
   })
 }
 
+function onUserEdited(user: User) {
+  accountEditFormVisible.value = false // Close modal
+  toast.add({title: "User updated", description: `Your account information was updated.`, color: "green"})
+
+  // If the username changed, the token is no longer valid and the user must log back in
+  if (user.username !== userService.getCurrentUsername()) {
+    toast.add({title: "Username updated", description: `Your username was updated; please log back in.`, color: "yellow"})
+    userService.clearAuth()
+    router.push('/admin/login')
+  } else {
+    refetchUser() // Update user info
+  }
+}
+
 const siteName = computed((): string => {
   return "TODO"
 })
 
-const { isPending: userIsPending, isError: userIsError, data: user, error: userError } = useQuery({
+const { isPending: userIsPending, isError: userIsError, data: user, error: userError, refetch: refetchUser } = useQuery({
   queryKey: ["user"],
   queryFn: async () => {
     const currentUsername = userService.getCurrentUsername()
