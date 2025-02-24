@@ -4,6 +4,10 @@
   @apply bg-base-200 border-primary rounded-box p-4
 }
 
+.small-content-block {
+  @apply bg-base-200 border-primary rounded-box p-2
+}
+
 /* Global element styles */
 h1 {
   @apply font-bold
