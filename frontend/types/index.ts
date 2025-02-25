@@ -30,16 +30,4 @@ declare global {
     biography?: string,
     contact_email?: string|null,
   }
-
-  namespace Editor {
-    interface ActionDef {
-      name: string,
-      icon: string,
-    }
-    
-    interface Action {
-      def: ActionDef,
-    }
-  }
 }
-

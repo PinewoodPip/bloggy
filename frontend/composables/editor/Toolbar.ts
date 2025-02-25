@@ -1,64 +1,15 @@
+/**
+ * Exposes toolbar model data.
+ */
+import * as Editor from './Editor'
+import historyActionGroup from './action/History'
+import formattingActionGroup from './action/Formatting'
 
-class FormatBold implements Editor.Action {
-  def: Editor.ActionDef
-
-  constructor() {
-    this.def = {
-      name: 'Toggle Bold',
-      icon: 'i-heroicons-bold',
-    }
-  }
-}
-
-class FormatItalic implements Editor.Action {
-  def: Editor.ActionDef
-
-  constructor() {
-    this.def = {
-      name: 'Toggle Italics',
-      icon: 'i-heroicons-italic',
-    }
-  }
-}
-
-class Undo implements Editor.Action {
-  def: Editor.ActionDef
-
-  constructor() {
-    this.def = {
-      name: 'Undo',
-      icon: 'i-heroicons-arrow-uturn-left-solid',
-    }
-  }
-}
-
-class Redo implements Editor.Action {
-  def: Editor.ActionDef
-
-  constructor() {
-    this.def = {
-      name: 'Right',
-      icon: 'i-heroicons-arrow-uturn-right-solid',
-    }
-  }
-}
-
+// Initialize toolbar
 var tools: Editor.Toolbar = {
   actionGroups: [
-    {
-      name: 'History',
-      actions: [
-        new Undo(),
-        new Redo(),
-      ]
-    },
-    {
-      name: 'Formatting',
-      actions: [
-        new FormatBold(),
-        new FormatItalic(),
-      ]
-    },
+    historyActionGroup,
+    formattingActionGroup,
   ]
 }
 

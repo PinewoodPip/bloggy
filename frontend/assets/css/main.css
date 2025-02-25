@@ -13,18 +13,8 @@ h1 {
   @apply font-bold
 }
 
-p, span, h1, h2, h3, h4, h5, h6 {
-  /* color: oklch(var(--nc)); */
-}
-
-/* Undo default font color within buttons,
-as daisyUI applies different colors to their inner content */
-button > span {
-  /* color: unset; */
-}
-
 /* 
-  Nuxt UI style changes/workarounds for daisyUI conflicts
+  Nuxt UI & tailwind style changes/workarounds for daisyUI conflicts
 */
 
 div > input[data-nuxtui-input] {
@@ -54,6 +44,11 @@ div[role=status] p {
 }
 div[role=status] div {
   color: oklch(var(--nc));
+}
+
+/* Readd selection color */
+::selection {
+  @apply bg-accent !important
 }
 
 /*
