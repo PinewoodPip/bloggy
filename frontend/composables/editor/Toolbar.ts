@@ -2,18 +2,24 @@
  * Exposes toolbar model data.
  */
 import * as Editor from './Editor'
-import historyActionGroup from './action/History'
-import formattingActionGroup from './action/Formatting'
+import * as HistoryActions from './action/History'
+import * as FormattingActions from './action/Formatting'
 
-// Initialize toolbar
-var tools: Editor.Toolbar = {
-  actionGroups: [
-    historyActionGroup,
-    formattingActionGroup,
-  ]
-}
+export const useEditor = () => {
+  // Create editor
+  const editor: Editor.Editor = new Editor.Editor()
 
-export const useTools = () => {
-  return tools
+  // Add default actions and groups
+  // History actions
+  editor.registerAction(new HistoryActions.Undo())
+  editor.registerAction(new HistoryActions.Redo())
+  editor.registerActionGroup(HistoryActions.actionGroup)
+
+  // Formatting actions
+  editor.registerAction(new FormattingActions.FormatBold())
+  editor.registerAction(new FormattingActions.FormatItalic())
+  editor.registerActionGroup(FormattingActions.actionGroup)
+
+  return editor
 }
 

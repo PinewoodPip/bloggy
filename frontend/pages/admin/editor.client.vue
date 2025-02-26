@@ -31,7 +31,7 @@
     </div>
 
     <!-- Toolbar; only rendered once editor is initialized -->
-    <EditorToolbar v-if="state" :editor="editor" :state="state" @action-use="onActionUsed"/>
+    <EditorToolbar v-if="state" :editor="editor" :editor-view="editorView" :state="state" @action-use="onActionUsed"/>
 
     <!-- Content area -->
     <div class="flex gap-x-2">
@@ -55,8 +55,11 @@ import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '../../composables/editor/Editor'
+import { useEditor } from '~/composables/editor/Toolbar'
 
 const editorRef = useTemplateRef('documentRef')
+
+const editor = useEditor()
 
 /** Execute action commands */
 function onActionUsed(action: Editor.IAction) {
@@ -98,7 +101,7 @@ const fullPath = computed(() => {
 })
 
 /** ProseMirror EditorView. */
-const editor = computed(() => {
+const editorView = computed(() => {
   const editorRaw = toRaw(editorRef.value)
   const view = toRaw(editorRaw?.editorView) as EditorView
   return view
@@ -110,5 +113,44 @@ const state = computed(() => {
   const state = toRaw(editorRaw?.editorState) as EditorState
   return state
 })
+
+/** Returns the action bound to a key combination. */
+function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
+  return editor.getActionForKeyCombo(keyCombo)
+}
+
+/** Returns whether a key combo is bound to any action. */
+function isKeyComboBound(keyCombo: Editor.actionID) {
+  return getKeyComboAction(keyCombo) !== null
+}
+
+// Generate all possible modifier+key combinations
+// TODO allow 2 modifiers?
+let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
+let symbols = ';\'\",./?=+`\\'.split('')
+let specialKeys = [' ', 'enter', 'tab']
+let allKeys = [...alphabet, ...symbols, ...specialKeys]
+let modifiers = ['ctrl', 'alt', 'shift', '']
+let shortcutEntries: {[key: string]: object} = {} // TODO import type - but from where?
+for (const modifier of modifiers) {
+  for (const key of allKeys) {
+    const nuxtKeyComboID = modifier === '' ? key : `${modifier}_${key}`
+    const shortcutEntry = {
+      usingInput: true,
+      whenever: [() => {return isKeyComboBound(nuxtKeyComboID)}],
+      handler: () => {
+        const action = getKeyComboAction(nuxtKeyComboID)
+        console.log('combo:', nuxtKeyComboID, 'action:', action?.def.name)
+        if (action) {
+          onActionUsed(action)
+        }
+      }, 
+    }
+    shortcutEntries[nuxtKeyComboID] = shortcutEntry
+  }
+}
+
+// @ts-ignore The type used is not exported from Nuxt UI.
+defineShortcuts(shortcutEntries)
 
 </script>

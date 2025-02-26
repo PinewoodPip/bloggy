@@ -4,10 +4,12 @@
 import type { EditorState, NodeSelection, Transaction } from 'prosemirror-state'
 import { schema } from 'prosemirror-schema-basic'
 import { toggleMark } from 'prosemirror-commands'
-import type { ActionGroup } from '../Editor'
+import type { ActionGroup, keyCombo } from '../Editor'
 import { Action } from './Action'
 
-class FormatBold extends Action {
+export class FormatBold extends Action {
+  static override ID = 'FormatBold'
+
   constructor() {
     super({
       name: 'Toggle Bold',
@@ -23,9 +25,15 @@ class FormatBold extends Action {
   override isActive(state: EditorState): boolean {
     return this.isMarkActive(state, state.schema.marks.strong)
   }
+
+  override getDefaultKeyCombo(): keyCombo | null {
+    return 'ctrl_b' // Ctrl + B
+  }
 }
 
-class FormatItalic extends Action {
+export class FormatItalic extends Action {
+  static override ID = 'FormatItalic'
+
   constructor() {
     super({
       name: 'Toggle Italics',
@@ -41,13 +49,16 @@ class FormatItalic extends Action {
   override isActive(state: EditorState): boolean {
     return this.isMarkActive(state, state.schema.marks.em)
   }
+
+  override getDefaultKeyCombo(): keyCombo | null {
+    return 'ctrl_i' // Ctrl + I
+  }
 }
 
-const actionGroup: ActionGroup = {
+export const actionGroup: ActionGroup = {
   name: 'Formatting',
   actions: [
-    new FormatBold(),
-    new FormatItalic(),
+    FormatBold.ID,
+    FormatItalic.ID,
   ]
 }
-export default actionGroup

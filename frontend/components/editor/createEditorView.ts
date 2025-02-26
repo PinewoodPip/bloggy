@@ -10,6 +10,10 @@ import 'prosemirror-menu/style/menu.css'
 import 'prosemirror-view/style/prosemirror.css'
 import 'prosemirror-example-setup/style/style.css'
 
+/**
+ * Creates a ProseMirror EditorView.
+ * Adapted from https://github.com/prosekit/prosemirror-adapter
+ */
 export function createEditorView(element: HTMLElement, nodeViews: Record<string, NodeViewConstructor>, plugins: Plugin[], stateUpdateCallback: (newState: EditorState) => void) {
   const content = document.querySelector('#content')
   if (!content)
@@ -20,7 +24,13 @@ export function createEditorView(element: HTMLElement, nodeViews: Record<string,
       doc: DOMParser.fromSchema(schema).parse(content),
       schema, // Starting document
       plugins: [
-        ...exampleSetup({ schema }),
+        ...exampleSetup({ schema: schema, mapKeys: {
+          // Disable default keybinds from the example setup module
+          ['Mod-z']: false,
+          ['Mod-y']: false,
+          ['Mod-b']: false,
+          ['Mod-i']: false,
+        } }),
         keymap({
           // Ctrl + [ increases indent
           'Mod-[': (state, dispatch) => {

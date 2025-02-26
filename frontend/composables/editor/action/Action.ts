@@ -4,9 +4,10 @@
 import type { MarkType } from 'prosemirror-model'
 import { schema } from 'prosemirror-schema-basic'
 import type { Command, EditorState, NodeSelection, Transaction } from 'prosemirror-state'
-import type { ActionDef, IAction } from '../Editor'
+import type { ActionDef, IAction, actionID, keyCombo } from '../Editor'
 
 export abstract class Action implements IAction {
+  static ID: actionID
   def: ActionDef
 
   constructor(def: ActionDef) {
@@ -17,6 +18,10 @@ export abstract class Action implements IAction {
 
   isActive(state: EditorState): boolean {
     return false
+  }
+
+  getDefaultKeyCombo(): keyCombo | null {
+    return null
   }
 
   /** Returns whether a mark is being stored or is used in the selection. */

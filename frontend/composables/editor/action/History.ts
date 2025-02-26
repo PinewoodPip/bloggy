@@ -3,10 +3,12 @@
  */
 import { redo as redoCommand, undo as undoCommand } from 'prosemirror-history'
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { ActionGroup } from '../Editor'
+import type { ActionGroup, keyCombo } from '../Editor'
 import { Action } from './Action'
 
-class Undo extends Action {
+export class Undo extends Action {
+  static override ID: string = 'Undo'
+
   constructor() {
     super({
       name: 'Undo',
@@ -17,9 +19,15 @@ class Undo extends Action {
   execute(state: EditorState): Transaction | null {
     return this.getTransaction(undoCommand, state)
   }
+  
+  override getDefaultKeyCombo(): keyCombo | null {
+    return 'ctrl_z' // Ctrl + Z
+  }
 }
 
-class Redo extends Action {
+export class Redo extends Action {
+  static override ID: string = 'Redo'
+
   constructor() {
     super({
       name: 'Right',
@@ -30,13 +38,16 @@ class Redo extends Action {
   execute(state: EditorState): Transaction | null {
     return this.getTransaction(redoCommand, state)
   }
+
+  override getDefaultKeyCombo(): keyCombo | null {
+    return 'ctrl_y' // Ctrl + Y
+  }
 }
 
-const actionGroup: ActionGroup = {
+export const actionGroup: ActionGroup = {
   name: 'History',
   actions: [
-    new Undo(),
-    new Redo(),
+    Undo.ID,
+    Redo.ID,
   ]
 }
-export default actionGroup
