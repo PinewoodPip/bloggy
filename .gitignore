@@ -133,7 +133,8 @@ dist
 *.pyc
 backend/.venv
 
-/backend/docker.env
+/backend/.docker.env
+frontend/.docker.env
 
 # IDE preferences
 .vscode/settings.json
