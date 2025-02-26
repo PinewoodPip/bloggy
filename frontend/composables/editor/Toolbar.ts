@@ -18,6 +18,7 @@ export const useEditor = () => {
   // Formatting actions
   editor.registerAction(new FormattingActions.FormatBold())
   editor.registerAction(new FormattingActions.FormatItalic())
+  editor.registerAction(new FormattingActions.FormatUnderline())
   editor.registerActionGroup(FormattingActions.actionGroup)
 
   return editor

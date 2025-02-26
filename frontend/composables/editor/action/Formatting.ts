@@ -1,10 +1,10 @@
 /**
  * Implements text formatting actions: bold, italics, etc.
  */
-import type { EditorState, NodeSelection, Transaction } from 'prosemirror-state'
-import { schema } from 'prosemirror-schema-basic'
+import type { EditorState, Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
 import type { ActionGroup, keyCombo } from '../Editor'
+import { schema } from '../Schema'
 import { Action } from './Action'
 
 export class FormatBold extends Action {
@@ -55,10 +55,35 @@ export class FormatItalic extends Action {
   }
 }
 
+export class FormatUnderline extends Action {
+  static override ID = 'FormatUnderline'
+
+  constructor() {
+    super({
+      name: 'Toggle Underline',
+      icon: 'i-heroicons-underline',
+    })
+  }
+
+  execute(state: EditorState): Transaction | null {
+    const toggleUnderline = toggleMark(schema.marks.underline, null, {}) // TODO extract this helper
+    return this.getTransaction(toggleUnderline, state)
+  }
+
+  override isActive(state: EditorState): boolean {
+    return this.isMarkActive(state, state.schema.marks.underline)
+  }
+
+  override getDefaultKeyCombo(): keyCombo | null {
+    return 'ctrl_u' // Ctrl + U
+  }
+}
+
 export const actionGroup: ActionGroup = {
   name: 'Formatting',
   actions: [
     FormatBold.ID,
     FormatItalic.ID,
+    FormatUnderline.ID,
   ]
 }

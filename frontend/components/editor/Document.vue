@@ -24,16 +24,18 @@
 </template>
 
 <script setup lang="ts">
-import { useNodeViewFactory, usePluginViewFactory, useWidgetViewFactory } from '@prosemirror-adapter/vue'
+import { useMarkViewFactory, useNodeViewFactory, usePluginViewFactory, useWidgetViewFactory } from '@prosemirror-adapter/vue'
 import { EditorState, Plugin } from 'prosemirror-state'
 import { DecorationSet, EditorView } from 'prosemirror-view'
 import { createEditorView } from './createEditorView'
 import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
+import Underline from './mark/Underline.vue'
 import Size from './Size.vue'
 
 const nodeViewFactory = useNodeViewFactory()
+const markViewFactory = useMarkViewFactory()
 const pluginViewFactory = usePluginViewFactory()
 const widgetViewFactory = useWidgetViewFactory()
 
@@ -89,6 +91,11 @@ watchEffect((onCleanup) => {
 
           return DecorationSet.create(state.doc, [widget])
         },
+        markViews: {
+          underline: markViewFactory({
+            component: Underline,
+          }),
+        }
       },
     }),
   ], (newState) => {

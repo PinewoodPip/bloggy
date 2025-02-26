@@ -2,7 +2,6 @@
  * Base class for editor actions.
  */
 import type { MarkType } from 'prosemirror-model'
-import { schema } from 'prosemirror-schema-basic'
 import type { Command, EditorState, NodeSelection, Transaction } from 'prosemirror-state'
 import type { ActionDef, IAction, actionID, keyCombo } from '../Editor'
 
