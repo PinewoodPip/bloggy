@@ -119,3 +119,10 @@ def test_invalid_categories(scenario):
         "parent_category_path": "",
     })
     assert has_validation_error(response, "Invalid url")
+    
+    response = client.post("/categories", headers=scenario.editor_token_header, json={
+        "name": "test",
+        "url": "テスト",
+        "parent_category_path": "",
+    })
+    assert has_validation_error(response, "Invalid url")
