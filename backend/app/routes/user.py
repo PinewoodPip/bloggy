@@ -94,7 +94,7 @@ async def update_user(username: str, user_update: UserUpdate, db: Session = Depe
     return UserCrud.create_user_output(user)
 
 @router.delete("/{username}", response_model=str)
-async def update_user(username: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+async def delete_user(username: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
         Deletes a user account.
         The auth user must be an admin.

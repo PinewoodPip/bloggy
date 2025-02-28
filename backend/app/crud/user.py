@@ -103,7 +103,7 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
             setattr(user.admin, k, v)
 
     # Update email, which may be nulled
-    if "contact_email" in update_dict:
+    if "contact_email" in update_dict and user.editor:
         user.editor.contact_email = update_dict["contact_email"]
     
     # Update password
