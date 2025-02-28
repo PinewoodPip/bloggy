@@ -8,6 +8,8 @@ load_dotenv(dotenv_path="../.test.env")
 from utils import get_session
 from core.config import CONFIG
 import crud.user as UserCrud
+import crud.article as ArticleCrud
+import crud.category as CategoryCrud
 
 @pytest.fixture(scope="function", autouse=True)
 def db_session():
@@ -25,3 +27,9 @@ def db_session():
     for user in users:
         if user.username != CONFIG.ADMIN_USERNAME:
             UserCrud.delete_user(db, user)
+
+    # Delete all categories
+    categories = CategoryCrud.get_all(db)
+    for category in categories:
+        if category.url != "": # Don't delete root category
+            CategoryCrud.delete_category(db, category)
