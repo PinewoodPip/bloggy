@@ -11,6 +11,9 @@ def get_category_by_path(db: Session, path: str) -> Category:
     """
     Returns a category by its full path.
     """
+    # Remove leading slash
+    if len(path) > 0 and path[0] == "/":
+        path = path[1:]
     root_category = db.query(Category).filter(Category.parent_id == None).first()
     if not root_category:
         raise RuntimeError("There is no root category")
@@ -25,7 +28,7 @@ def get_category_by_path(db: Session, path: str) -> Category:
         url_component = components[i]
         parent_category = categories[-1]
 
-        category = db.query(Category).filter(Category.parent_id == parent_category.id and Category.url == url_component).first()
+        category = db.query(Category).filter(Category.parent_id == parent_category.id, Category.url == url_component).first()
         if not category:
             raise ValueError("There is no category at this path")
         
@@ -67,7 +70,7 @@ def get_category_path(db: Session, category: Category) -> str:
     Returns the full path to a category.
     """
     if category.parent_id == None: # Root category case
-        return "/"
+        return "/" # TODO this is a bit inconsistent, as other paths do not start with slash
     else:
         # Backtrack upwards to root
         path = [category.url]
