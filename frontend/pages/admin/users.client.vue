@@ -17,7 +17,8 @@
 
         <HorizontalFill/>
 
-        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
+        <!-- Only admins can create accounts -->
+        <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
       </div>
 
       <hr/>
@@ -25,7 +26,7 @@
       <!-- Users list -->
       <div class="flex-grow overflow-x-auto">
         <div class="flexcol gap-y-2">
-          <AdminUserListEntry v-for="user in filteredUsers" :user="user" @edit="editUser"/>
+          <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin'" @edit="editUser"/>
         </div>
       </div>
     </div>
@@ -35,7 +36,7 @@
   <UModal v-model="userCreationFormVisible" :overlay="true">
     <AdminUserCreationForm @create="onUserCreated" @close="userCreationFormVisible = false"/>
   </UModal>
-  <UModal v-model="userEditFormVisible" :overlay="true">
+  <UModal v-if="userToEdit" v-model="userEditFormVisible" :overlay="true">
     <AdminUserCreationForm :user-to-edit="userToEdit" @update="onUserEdited" @close="userEditFormVisible = false"/>
   </UModal>
 </template>
@@ -50,6 +51,7 @@ const searchTerm = ref("")
 const userCreationFormVisible = ref(false)
 const userEditFormVisible = ref(false)
 const userToEdit: Ref<User|null> = ref(null)
+const { data: loggedInUser } = useLoggedInUser()
 
 function addUser() {
   // Toggle creation modal

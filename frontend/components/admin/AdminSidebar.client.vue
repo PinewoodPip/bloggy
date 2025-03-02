@@ -36,7 +36,7 @@
     </div>
     
     <!-- User edit form modal -->
-    <UModal v-model="accountEditFormVisible" :overlay="true">
+    <UModal v-if="user" v-model="accountEditFormVisible" :overlay="true">
       <AdminUserCreationForm :user-to-edit="user" @update="onUserEdited" @close="accountEditFormVisible = false"/>
     </UModal>
   </div>
@@ -44,12 +44,12 @@
 
 <script setup lang="ts">
 import { _themes as daisyThemes } from '#tailwind-config/daisyui'
-import { useQuery } from '@tanstack/vue-query'
 
 const toast = useToast()
 const router = useRouter()
 const colorMode = useColorMode();
 const userService = useUserService()
+const { data: user, refetch: refetchUser } = useLoggedInUser()
 
 const themes = [
   "system", ...new Set(daisyThemes)
@@ -85,14 +85,6 @@ function onUserEdited(user: User) {
 
 const siteName = computed((): string => {
   return "TODO"
-})
-
-const { isPending: userIsPending, isError: userIsError, data: user, error: userError, refetch: refetchUser } = useQuery({
-  queryKey: ["user"],
-  queryFn: async () => {
-    const currentUsername = userService.getCurrentUsername()
-    return currentUsername ? await userService.getUser(currentUsername) : null
-  },
 })
 
 </script>

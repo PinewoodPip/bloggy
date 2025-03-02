@@ -12,7 +12,7 @@
     <!-- Management buttons -->
     <div class="flex gap-x-2">
       <IconButton icon="i-heroicons-book-open" class="btn-secondary" @click="showArticles">View articles</IconButton>
-      <IconButton icon="i-heroicons-pencil" class="btn-secondary" @click="editAccount">Edit account</IconButton>
+      <IconButton v-if="editable" icon="i-heroicons-pencil" class="btn-secondary" @click="editAccount">Edit account</IconButton>
     </div>
   </div>
 </template>
@@ -21,6 +21,7 @@
 
 const props = defineProps<{
   user: User,
+  editable: boolean,
 }>()
 
 const emit = defineEmits<{
