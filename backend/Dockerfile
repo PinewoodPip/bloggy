@@ -6,6 +6,9 @@ COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./app /app
 
+# Wait to ensure the DB container has enough time to start up
+CMD ["sleep", "5"]
+
 # Run app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
