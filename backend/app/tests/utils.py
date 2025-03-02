@@ -5,12 +5,14 @@ from sqlalchemy.orm import Session, joinedload, subqueryload
 from core.config import get_db, engine
 from main import app
 from fastapi.testclient import TestClient
-from schemas.user import UserInput, UserLogin
+from schemas.user import UserInput, UserLogin, UserOutput
 from crud.user import create_admin, create_editor, authenticate, create_user_output
-from schemas.user import UserOutput
+from schemas.category import CategoryInput, CategoryOutput
 from models.user import User, Editor, Admin
 from dataclasses import dataclass
 from typing import Optional
+import crud.user as UserCrud
+import crud.category as CategoryCrud
 import random
 import string
 
@@ -74,6 +76,17 @@ def create_random_admin(db: Session) -> RandomEditor:
     output.token = token
 
     return output
+
+def create_random_category(db: Session) -> CategoryOutput:
+    """
+    Creates a random category under the root category.
+    """
+    category = CategoryCrud.create_category(db, CategoryInput(
+        name=random_lower_string(),
+        url=random_lower_string(),
+        parent_category_path="",
+    ))
+    return CategoryCrud.create_category_output(db, category)
 
 def get_token_header(token: str) -> dict:
     """
