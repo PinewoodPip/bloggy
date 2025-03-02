@@ -3,6 +3,7 @@
 """
 from sqlalchemy import Column, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
+from models.article import Article
 from core.config import Base
 
 # User table
@@ -35,3 +36,4 @@ class Editor(Base):
     biography = Column(String)
 
     user: Mapped["User"] = relationship("User", back_populates="editor", cascade="all", single_parent=True)
+    articles: Mapped[list[Article]] = relationship(secondary="article_authors", back_populates="authors")

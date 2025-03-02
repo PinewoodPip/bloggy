@@ -8,11 +8,13 @@ from fastapi.testclient import TestClient
 from schemas.user import UserInput, UserLogin, UserOutput
 from crud.user import create_admin, create_editor, authenticate, create_user_output
 from schemas.category import CategoryInput, CategoryOutput
+from schemas.article import ArticleInput, ArticleOutput
 from models.user import User, Editor, Admin
 from dataclasses import dataclass
 from typing import Optional
 import crud.user as UserCrud
 import crud.category as CategoryCrud
+import crud.article as ArticleCrud
 import random
 import string
 
@@ -87,6 +89,18 @@ def create_random_category(db: Session) -> CategoryOutput:
         parent_category_path="",
     ))
     return CategoryCrud.create_category_output(db, category)
+
+def create_random_article(db: Session, category_path: str) -> ArticleOutput:
+    """
+    Creates a random article under a category.
+    """
+    author = create_random_auth_editor(db)
+    article = ArticleCrud.create_article(db, category_path, ArticleInput(
+        filename=random_lower_string(),
+        title=random_lower_string(),
+        content="Test content",
+    ), UserCrud.get_by_username(db, author.username).editor)
+    return ArticleCrud.create_article_output(db, article)
 
 def get_token_header(token: str) -> dict:
     """
