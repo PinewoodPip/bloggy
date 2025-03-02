@@ -34,7 +34,7 @@
         <InputField v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
       </UFormGroup>
       <UFormGroup v-if="!isEditingAdmin" label="Biography">
-        <UTextarea v-model="biography" />
+        <TextArea v-model="biography" />
       </UFormGroup>
     </div>
 

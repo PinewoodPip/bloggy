@@ -21,7 +21,8 @@ div > input[data-nuxtui-input] {
   @apply overflow-hidden
 }
 
-input[data-nuxtui-input] {
+/* Set theme background for form elements */
+input[data-nuxtui-input], textarea[data-nuxtui-input] {
   @apply bg-base-300
 }
 
