@@ -9,11 +9,15 @@ import crud.category as CategoryCrud
 router = APIRouter()
 
 @router.post("/", response_model=CategorySchemas.CategoryOutput)
-async def create_category(category_input: CategorySchemas.CategoryInput, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+async def create_category(category_input: CategorySchemas.CategoryInput, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)): # TODO rework to use catch-all path
     """
     Creates a category.
     """
     try:
+        # Prevent creating additional root categories
+        if category_input.url == "":
+            raise ValueError("Cannot create additional root categories")
+
         # TODO permissions system; don't allow editors to create categories under ones they don't have perms for 
         category = CategoryCrud.create_category(db, category_input)
         return CategoryCrud.create_category_output(db, category)

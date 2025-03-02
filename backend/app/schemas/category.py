@@ -17,9 +17,6 @@ class CategoryInput(BaseModel):
     
     @field_validator("url", check_fields=False)
     def validate_url(cls, url: str):
-        # Prevent creating additional root categories
-        if url == "":
-            raise ValueError("Cannot create additional root categories")
         if INVALID_URL_PATTERN.search(url): # Cannot contain slashes or characters that are reserved or would require url-encoding
             raise ValueError("Invalid url")
 
