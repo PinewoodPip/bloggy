@@ -119,3 +119,29 @@ def test_patch_article(article_scenario):
     )
     response = client.patch(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header, json=article_update.model_dump(exclude_none=True))
     assert is_bad_request(response, "must be editors")
+
+def test_article_change_category(article_scenario):
+    """
+    Tests changing an article's category.
+    """
+    db = get_session()
+    
+    # Attempt to move to a non-existent category
+    article_update = ArticleUpdate(
+        category_path=random_lower_string(),
+    )
+    response = client.patch(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header, json=article_update.model_dump(exclude_none=True))
+    assert is_bad_request(response, "category")
+
+    # Move to another category
+    new_category = create_random_category(db)
+    article_update = ArticleUpdate(
+        category_path=new_category.path,
+    )
+    response = client.patch(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header, json=article_update.model_dump(exclude_none=True))
+    assert is_ok_response(response)
+    assert ArticleOutput.model_validate(response.json()).category.id == new_category.id
+
+    # Check the article is no longer retrievable from old path
+    response = client.get(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header)
+    assert is_not_found(response)

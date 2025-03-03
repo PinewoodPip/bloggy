@@ -24,7 +24,7 @@ class ArticleUpdate(BaseModel):
     show_authors: Optional[bool] = None
     category_sorting_index: Optional[int] = None
     authors: Optional[list[str]] = None # List of usernames
-    # TODO moving to another category
+    category_path: Optional[str] = None
 
 class ArticleOutput(BaseModel):
     id: int

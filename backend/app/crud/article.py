@@ -9,7 +9,7 @@ import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.utils as CrudUtils
 
-PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors"])
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path"])
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
@@ -59,6 +59,15 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
             raise ValueError("All authors must be editors")
 
         article.authors = authors
+
+    # Update parent category
+    if article_update.category_path != None:
+        try:
+            category = CategoryCrud.get_category_by_path(db, article_update.category_path)
+            article.category = category
+        except Exception as e:
+            db.rollback()
+            raise e
 
     db.commit()
     db.refresh(article)
