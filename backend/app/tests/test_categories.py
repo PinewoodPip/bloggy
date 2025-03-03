@@ -3,6 +3,7 @@
 """
 from fastapi.testclient import TestClient
 from main import app
+from models.category import CategorySortingModeEnum
 from schemas.category import CategoryInput, CategoryOutput
 from asserts import *
 from fixtures import *
@@ -96,3 +97,46 @@ def test_create_invalid_categories(user_scenario):
         "parent_category_path": "",
     })
     assert has_validation_error(response, "Invalid url")
+
+def test_get_category_articles(article_scenario):
+    """
+    Tests fetching articles of a category.
+    """
+    db = get_session()
+
+    # Create articles
+    articles = [
+        article_scenario.article,
+        create_random_article(db, article_scenario.category_path),
+        create_random_article(db, article_scenario.category_path),
+        create_random_article(db, article_scenario.category_path),
+        create_random_article(db, article_scenario.category_path),
+    ]
+    article_names = set([article.filename for article in articles])
+
+    # Retrieve them
+    response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
+    assert response.status_code == 200
+    category_output = CategoryOutput.model_validate(response.json())
+    assert len(category_output.articles) == len(articles)
+    for fetched_article in category_output.articles:
+        assert fetched_article.filename in article_names
+
+    # Test ordering articles manually
+    response = client.patch(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header, json={
+        "sorting_type": CategorySortingModeEnum.manual.name,
+    })
+    assert response.status_code == 200
+    assert CategoryOutput.model_validate(response.json()).sorting_type == CategorySortingModeEnum.manual
+    for i, article in enumerate(articles):
+        response = client.patch(f"/articles/{article.path[1:]}", headers=article_scenario.editor_token_header, json={
+            "category_sorting_index": len(articles) - i, # Reverse order
+        })
+        assert response.status_code == 200
+    
+    # Expect articles to be ordered in reverse
+    response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
+    assert response.status_code == 200
+    category_output = CategoryOutput.model_validate(response.json())
+    for i, fetched_article in enumerate(category_output.articles):
+        assert fetched_article.filename == articles[len(articles) - i - 1].filename

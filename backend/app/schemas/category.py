@@ -11,6 +11,7 @@ import re
 INVALID_URL_PATTERN = re.compile(r"[^\w]", re.A) # Catches non-alphanumeric characters (including non-ASCII), except underscore.
 
 class CategoryInput(BaseModel):
+    """Schema for creation requests."""
     name: str
     url: str
     parent_category_path: str # Path to parent category
@@ -29,6 +30,13 @@ class CategoryInput(BaseModel):
             raise ValueError("Invalid path")
         return path
     
+class CategoryUpdate(BaseModel):
+    """Schema for patching requests."""
+    name: Optional[str] = None
+    url: Optional[str] = None
+    view_type: Optional[CategoryViewEnum] = None
+    sorting_type: Optional[CategorySortingModeEnum] = None
+    # TODO moving to another parent
 
 class CategoryOutput(CategoryDef):
     path: str

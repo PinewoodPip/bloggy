@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 from schemas.category import *
 from models.category import *
+import crud.article as ArticleCrud
+import crud.utils as CrudUtils
 from struct import pack
 
 def get_category_by_path(db: Session, path: str) -> Category:
@@ -65,6 +67,16 @@ def create_root_category(db: Session) -> Category:
         if "There is no root" in str(e):
             create_category(db, CategoryInput(name="", parent_category_path="", url=""))
 
+def update_category(db: Session, category: Category, category_update: CategoryUpdate) -> Category:
+    """
+    Updates a category's data.
+    """
+    CrudUtils.patch_entity(category, category_update)
+
+    db.commit()
+    db.refresh(category)
+    return category
+
 def get_category_path(db: Session, category: Category) -> str:
     """
     Returns the full path to a category.
@@ -85,6 +97,15 @@ def create_category_output(db: Session, category: Category) -> CategoryOutput:
     """
     Creates an output schema for a category.
     """
+    articles = [ArticleCrud.create_article_output(db, article) for article in category.articles]
+
+    # Sort articles TODO extract method
+    sort_mode = category.sorting_type
+    if sort_mode == CategorySortingModeEnum.chronological:
+        articles = sorted(articles, key=lambda article: article.publish_time or article.creation_time) # Fallback to using creation time for unpublished articles
+    elif sort_mode == CategorySortingModeEnum.manual:
+        articles = sorted(articles, key=lambda article: article.category_sorting_index)
+
     return CategoryOutput(
         id=category.id,
         name=category.name,
@@ -92,7 +113,7 @@ def create_category_output(db: Session, category: Category) -> CategoryOutput:
         view_type=CategoryViewEnum[category.view_type.name],
         sorting_type=CategorySortingModeEnum[category.sorting_type.name],
         path=get_category_path(db, category),
-        articles=[], # TODO
+        articles=articles,
     )
 
 def get_all(db: Session) -> list[Category]:

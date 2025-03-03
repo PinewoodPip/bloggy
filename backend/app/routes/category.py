@@ -23,7 +23,7 @@ async def create_category(category_input: CategorySchemas.CategoryInput, db: Ses
         return CategoryCrud.create_category_output(db, category)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+
 @router.get("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
 async def get_category(category_path: str, db: Session=Depends(get_db)):
     """
@@ -31,6 +31,18 @@ async def get_category(category_path: str, db: Session=Depends(get_db)):
     """
     try:
         category = CategoryCrud.get_category_by_path(db, category_path)
+        return CategoryCrud.create_category_output(db, category)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+@router.patch("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
+async def patch_category(category_path: str, category_update: CategorySchemas.CategoryUpdate, db: Session=Depends(get_db)):
+    """
+    Fetches a category by its full URL path.
+    """
+    try:
+        category = CategoryCrud.get_category_by_path(db, category_path)
+        category = CategoryCrud.update_category(db, category, category_update)
         return CategoryCrud.create_category_output(db, category)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
