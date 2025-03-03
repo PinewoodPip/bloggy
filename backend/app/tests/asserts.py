@@ -29,3 +29,12 @@ def has_validation_error(response: Response, msg: str) -> bool:
     Returns whether the request failed field validation for a specific reason.
     """
     return response.status_code == 422 and msg in response_detail(response)[0]["msg"]
+
+def is_ok_response(response: Response):
+    """
+    Returns whether the response was of the 200 status code,
+    and logs the response if it wasn't.
+    """
+    if response.status_code != 200:
+        print(response.json())
+    return response.status_code == 200

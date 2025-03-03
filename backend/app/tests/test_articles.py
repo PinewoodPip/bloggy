@@ -21,7 +21,7 @@ def test_create_article(article_scenario):
         content="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Retrieve article
     response = client.get(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header)
@@ -54,7 +54,7 @@ def test_create_article_duplicate_filename(article_scenario):
         content="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Create another article under the same filename
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())

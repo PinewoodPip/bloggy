@@ -22,7 +22,7 @@ def test_create_category(user_scenario):
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
 
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == category_input.name
@@ -36,7 +36,7 @@ def test_create_category(user_scenario):
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
 
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == category_input.name
@@ -116,7 +116,7 @@ def test_get_category_articles(article_scenario):
 
     # Retrieve them
     response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
-    assert response.status_code == 200
+    assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == len(articles)
     for fetched_article in category_output.articles:
@@ -126,7 +126,7 @@ def test_get_category_articles(article_scenario):
     amount = 3
     skip = 1
     response = client.get(f"/categories/{article_scenario.category_path}?articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
-    assert response.status_code == 200
+    assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == amount
     for i in range(skip, skip + amount):
@@ -137,17 +137,17 @@ def test_get_category_articles(article_scenario):
     response = client.patch(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header, json={
         "sorting_type": CategorySortingModeEnum.manual.name,
     })
-    assert response.status_code == 200
+    assert is_ok_response(response)
     assert CategoryOutput.model_validate(response.json()).sorting_type == CategorySortingModeEnum.manual
     for i, article in enumerate(articles):
         response = client.patch(f"/articles/{article.path[1:]}", headers=article_scenario.editor_token_header, json={
             "category_sorting_index": len(articles) - i, # Reverse order
         })
-        assert response.status_code == 200
+        assert is_ok_response(response)
     
     # Expect articles to be ordered in reverse
     response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
-    assert response.status_code == 200
+    assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     for i, fetched_article in enumerate(category_output.articles):
         assert fetched_article.filename == articles[len(articles) - i - 1].filename

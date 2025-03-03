@@ -1,15 +1,11 @@
 """
     Tests for /users/ API.
 """
-from models.user import User
 from schemas.user import UserRole, MIN_USERNAME_LENGTH
 from utils import create_random_auth_editor, create_random_editor, create_random_admin, get_session, get_token_header, random_lower_string, random_email, create_random_user_input, random_password
-from asserts import has_validation_error, is_bad_request, is_not_found, is_unauthorized_request, response_detail
+from asserts import *
 from fastapi.testclient import TestClient
-from core.config import get_db, engine
 from main import app
-from sqlalchemy.schema import MetaData
-from core.config import Base
 
 client = TestClient(app)
 
@@ -23,7 +19,7 @@ def test_create_editor():
     response = client.post("/users", headers=header, json=user_input.model_dump())
 
     # Check response
-    assert response.status_code == 200
+    assert is_ok_response(response)
     json = response.json()
     assert json['username'] == user_input.username
     assert json['role'] == UserRole.editor.name # This endpoint only creates editor accounts
@@ -32,7 +28,7 @@ def test_create_editor():
 
     # Ensure the user can be fetched
     response = client.get(f"/users/{user_input.username}")
-    assert response.status_code == 200
+    assert is_ok_response(response)
     new_json = response.json()
     for k,v in new_json.items(): # Check all fields match the initial response
         assert v == json[k]
@@ -46,7 +42,7 @@ def test_create_editor_duplicate_username():
     response = client.post("/users", headers=header, json=user_input.model_dump())
 
     # Ensure first user creation passes
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Attempt to create another user with same username
     response = client.post("/users", headers=header, json=user_input.model_dump())
@@ -88,13 +84,13 @@ def test_login_logout():
         "username": user.username,
         "password": user.password,
     })
-    assert response.status_code == 200
+    assert is_ok_response(response)
     json = response.json()
     assert "token" in json.keys()
 
     # Logout correctly
     response = client.post("/users/logout", headers=get_token_header(json["token"]))
-    assert response.status_code == 200
+    assert is_ok_response(response)
     assert response.json() == "Logged out successfully"
 
     # Logout again should warn about token being invalid
@@ -150,7 +146,7 @@ def test_patch_user():
     response = client.patch("/users/" + user.username, headers=header, json=new_data)
 
     # Ensure fields changed accordingly
-    assert response.status_code == 200
+    assert is_ok_response(response)
     json = response.json()
     for k,v in new_data.items():
         assert json[k] == v
@@ -163,7 +159,7 @@ def test_patch_user():
     old_contact_email = user.contact_email # Keep email intact
     response = client.patch("/users/" + user.username, headers=header, json=new_data)
     json = response.json()
-    assert response.status_code == 200
+    assert is_ok_response(response)
     assert json["contact_email"] == None
 
     # Change password and username
@@ -172,7 +168,7 @@ def test_patch_user():
         "password": random_password(),
     }
     response = client.patch("/users/" + user.username, headers=header, json=new_data)
-    assert response.status_code == 200
+    assert is_ok_response(response)
     assert response.json()["username"] == new_data["username"]
 
     # Logout and log back in
@@ -189,7 +185,7 @@ def test_patch_user():
         "username": new_data["username"],
         "password": new_data["password"],
     })
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Ensure non-admin users cannot patch each other
     other_user = create_random_auth_editor(get_session())
@@ -201,7 +197,7 @@ def test_patch_user():
     admin_user = create_random_admin(get_session())
     admin_user_header = get_token_header(admin_user.token)
     response = client.patch("/users/" + new_data["username"], headers=admin_user_header, json=new_data)
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
 def test_patch_wrong_fields():
     """
@@ -242,11 +238,11 @@ def test_delete_user():
 
     # Admins can delete editor accounts
     response = client.delete(f"/users/{editor.username}", headers=admin_header)
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Admins can delete their own account
     response = client.delete(f"/users/{admin.username}", headers=admin_header)
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
 def test_get_all_users():
     """
@@ -259,7 +255,7 @@ def test_get_all_users():
     # GET as admin
     response = client.get(f"/users/", headers=admin_header)
     json = response.json()
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Check both accounts are in response
     has_admin, has_editor = False, False
@@ -273,7 +269,7 @@ def test_get_all_users():
     # GET as editor
     response = client.get(f"/users/", headers=editor_header)
     json = response.json()
-    assert response.status_code == 200
+    assert is_ok_response(response)
 
     # Check only editor account is in response
     has_admin, has_editor = False, False
