@@ -25,13 +25,13 @@ async def create_category(category_input: CategorySchemas.CategoryInput, db: Ses
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
-async def get_category(category_path: str, db: Session=Depends(get_db)):
+async def get_category(category_path: str, articles_amount: int = 5, articles_skip: int = 0, db: Session=Depends(get_db)):
     """
     Fetches a category by its full URL path.
     """
     try:
         category = CategoryCrud.get_category_by_path(db, category_path)
-        return CategoryCrud.create_category_output(db, category)
+        return CategoryCrud.create_category_output(db, category, articles_amount, articles_skip)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 

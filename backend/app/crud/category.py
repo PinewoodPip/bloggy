@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.inspection import inspect
 from schemas.category import *
 from models.category import *
+from models.article import Article
 import crud.article as ArticleCrud
 import crud.utils as CrudUtils
 from struct import pack
@@ -93,18 +94,32 @@ def get_category_path(db: Session, category: Category) -> str:
 
         return "/".join(path[::-1])
 
-def create_category_output(db: Session, category: Category) -> CategoryOutput:
+def get_category_articles(db: Session, category: Category, amount: int = None, skip: int = 0) -> list[Article]:
+    """
+    Returns the sorted articles of a category.
+    """
+    articles_query = db.query(Article).filter(Article.category_id == category.id)
+
+    # Sort articles
+    sort_mode = category.sorting_type
+    if sort_mode == CategorySortingModeEnum.chronological:
+        articles_query = articles_query.order_by(Article.publish_time, Article.creation_time)
+    elif sort_mode == CategorySortingModeEnum.manual:
+        articles_query = articles_query.order_by(Article.category_sorting_index)
+
+    # Apply limit and skip
+    if amount != None:
+        articles_query = articles_query.limit(amount)
+    articles_query = articles_query.offset(skip)
+
+    return articles_query.all()
+
+def create_category_output(db: Session, category: Category, articles_amount: int = None, articles_skip: int = 0) -> CategoryOutput:
     """
     Creates an output schema for a category.
     """
-    articles = [ArticleCrud.create_article_output(db, article) for article in category.articles]
-
-    # Sort articles TODO extract method
-    sort_mode = category.sorting_type
-    if sort_mode == CategorySortingModeEnum.chronological:
-        articles = sorted(articles, key=lambda article: article.publish_time or article.creation_time) # Fallback to using creation time for unpublished articles
-    elif sort_mode == CategorySortingModeEnum.manual:
-        articles = sorted(articles, key=lambda article: article.category_sorting_index)
+    
+    articles = [ArticleCrud.create_article_output(db, article) for article in get_category_articles(db, category, articles_amount, articles_skip)]
 
     return CategoryOutput(
         id=category.id,

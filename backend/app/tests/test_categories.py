@@ -122,6 +122,17 @@ def test_get_category_articles(article_scenario):
     for fetched_article in category_output.articles:
         assert fetched_article.filename in article_names
 
+    # Test query params
+    amount = 3
+    skip = 1
+    response = client.get(f"/categories/{article_scenario.category_path}?articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
+    assert response.status_code == 200
+    category_output = CategoryOutput.model_validate(response.json())
+    assert len(category_output.articles) == amount
+    for i in range(skip, skip + amount):
+        article = articles[i]
+        assert category_output.articles[i - skip].filename == article.filename
+
     # Test ordering articles manually
     response = client.patch(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header, json={
         "sorting_type": CategorySortingModeEnum.manual.name,
