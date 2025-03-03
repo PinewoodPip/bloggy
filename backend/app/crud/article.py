@@ -7,6 +7,9 @@ from schemas.article import *
 from models.article import *
 import crud.user as UserCrud
 import crud.category as CategoryCrud
+import crud.utils as CrudUtils
+
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors"])
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
@@ -36,6 +39,29 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
     db.add(article)
     db.commit()
 
+    return article
+
+def update_article(db: Session, article: Article, article_update: ArticleUpdate) -> Article:
+    """
+    Updates an article's data.
+    """
+    CrudUtils.patch_entity(article, article_update, excluded_fields=PATCH_ARTICLE_EXCLUDED_FIELDS)
+
+    # Update content
+    if article_update.content:
+        article.content = article_update.content.encode()
+
+    # Update authors
+    if article_update.authors:
+        authors = [UserCrud.get_by_username(db, username).editor for username in article_update.authors]
+        if None in authors: # If None is present, then some user is missing the editor role
+            db.rollback()
+            raise ValueError("All authors must be editors")
+
+        article.authors = authors
+
+    db.commit()
+    db.refresh(article)
     return article
 
 def get_article_by_path(db: Session, category_path: str, article_url: str) -> Article:
@@ -73,5 +99,5 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         publish_time=article.publish_time,
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
-        path=CategoryCrud.get_category_path(db, article.category),
+        path=f"{CategoryCrud.get_category_path(db, article.category)}/{article.filename}",
     )
