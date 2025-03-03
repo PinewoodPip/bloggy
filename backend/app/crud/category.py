@@ -10,6 +10,8 @@ import crud.article as ArticleCrud
 import crud.utils as CrudUtils
 from struct import pack
 
+UPDATE_CATEGORY_EXCLUDED_FIELDS = set("parent_category_path")
+
 def get_category_by_path(db: Session, path: str) -> Category:
     """
     Returns a category by its full path.
@@ -72,7 +74,16 @@ def update_category(db: Session, category: Category, category_update: CategoryUp
     """
     Updates a category's data.
     """
-    CrudUtils.patch_entity(category, category_update)
+    CrudUtils.patch_entity(category, category_update, excluded_fields=UPDATE_CATEGORY_EXCLUDED_FIELDS)
+
+    # Update parent category
+    if category_update.parent_category_path != None:
+        try:
+            new_parent = get_category_by_path(db, category_update.parent_category_path)
+            category.parent_id = new_parent.id
+        except Exception as e:
+            db.rollback()
+            raise e
 
     db.commit()
     db.refresh(category)

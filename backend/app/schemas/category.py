@@ -36,7 +36,7 @@ class CategoryUpdate(BaseModel):
     url: Optional[str] = None
     view_type: Optional[CategoryViewEnum] = None
     sorting_type: Optional[CategorySortingModeEnum] = None
-    # TODO moving to another parent
+    parent_category_path: Optional[str] = None
 
 class CategoryOutput(CategoryDef):
     path: str

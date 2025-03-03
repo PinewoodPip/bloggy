@@ -4,7 +4,7 @@
 from fastapi.testclient import TestClient
 from main import app
 from models.category import CategorySortingModeEnum
-from schemas.category import CategoryInput, CategoryOutput
+from schemas.category import CategoryInput, CategoryOutput, CategoryUpdate
 from asserts import *
 from fixtures import *
 
@@ -151,3 +151,25 @@ def test_get_category_articles(article_scenario):
     category_output = CategoryOutput.model_validate(response.json())
     for i, fetched_article in enumerate(category_output.articles):
         assert fetched_article.filename == articles[len(articles) - i - 1].filename
+
+def test_category_change_parent(article_scenario):
+    """
+    Tests changing the parent category.
+    """
+    db = get_session()
+    new_category = create_random_category(db)
+
+    category_update = CategoryUpdate(
+        parent_category_path=new_category.path,
+    )
+    response = client.patch(f"/categories/{article_scenario.category.path[1:]}", headers=article_scenario.editor_token_header, json=category_update.model_dump(exclude_none=True))
+    assert is_ok_response(response)
+    category_output = CategoryOutput.model_validate(response.json())
+
+    # Attempt to fetch category from old path
+    response = client.get(f"/categories/{article_scenario.category.path[1:]}", headers=article_scenario.editor_token_header)
+    assert is_not_found(response)
+
+    # Get category from new path
+    response = client.get(f"/categories/{category_output.path[1:]}", headers=article_scenario.editor_token_header)
+    assert is_ok_response(response)

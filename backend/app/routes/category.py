@@ -33,7 +33,11 @@ async def get_category(category_path: str, articles_amount: int = 5, articles_sk
         category = CategoryCrud.get_category_by_path(db, category_path)
         return CategoryCrud.create_category_output(db, category, articles_amount, articles_skip)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        msg = str(e)
+        if "at this path" in msg: # Category not found, but path format is valid
+            raise HTTPException(status_code=404, detail=str(e))
+        else:
+            raise HTTPException(status_code=400, detail=str(e))
 
 @router.patch("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
 async def patch_category(category_path: str, category_update: CategorySchemas.CategoryUpdate, db: Session=Depends(get_db)):
