@@ -83,6 +83,14 @@ def get_article_by_path(db: Session, category_path: str, article_url: str) -> Ar
         raise ValueError("There is no article at the path")
     return article
 
+def create_article_preview(db: Session, article: Article) -> ArticlePreview:
+    """
+    Creates a preview schema for an article.
+    """
+    return CrudUtils.create_schema(article, ArticlePreview, {
+        "path": f"{CategoryCrud.get_category_path(db, article.category)}/{article.filename}",
+    })
+
 def create_article_output(db: Session, article: Article) -> ArticleOutput:
     """
     Creates an output schema for an article.
@@ -90,7 +98,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
     category = article.category
     return ArticleOutput(
         id=article.id,
-        category=CategoryDef(
+        category=CategoryPreview(
             id=category.id,
             name=category.name,
             url=category.url,

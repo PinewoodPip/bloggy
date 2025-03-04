@@ -130,7 +130,7 @@ def create_category_output(db: Session, category: Category, articles_amount: int
     Creates an output schema for a category.
     """
     
-    articles = [ArticleCrud.create_article_output(db, article) for article in get_category_articles(db, category, articles_amount, articles_skip)]
+    articles = [ArticleCrud.create_article_preview(db, article) for article in get_category_articles(db, category, articles_amount, articles_skip)]
 
     return CategoryOutput(
         id=category.id,

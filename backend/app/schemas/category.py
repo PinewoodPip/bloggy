@@ -4,8 +4,8 @@
 from typing import Optional
 from pydantic import BaseModel, field_validator
 from models.category import *
-from schemas.article import ArticleOutput
-from schemas.category_def import CategoryDef
+from schemas.article import ArticleOutput, ArticlePreview
+from schemas.category_preview import CategoryPreview
 import re
 
 INVALID_URL_PATTERN = re.compile(r"[^\w]", re.A) # Catches non-alphanumeric characters (including non-ASCII), except underscore.
@@ -38,6 +38,6 @@ class CategoryUpdate(BaseModel):
     sorting_type: Optional[CategorySortingModeEnum] = None
     parent_category_path: Optional[str] = None
 
-class CategoryOutput(CategoryDef):
+class CategoryOutput(CategoryPreview):
     path: str
-    articles: list[ArticleOutput]
+    articles: list[ArticlePreview]

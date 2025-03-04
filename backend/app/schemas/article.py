@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, field_validator
 from models.article import ArticleViewEnum # TODO move these enums here?
 from models.category import *
-from schemas.category_def import CategoryDef
+from schemas.category_preview import CategoryPreview
 import schemas.user as UserSchema
 
 class ArticleInput(BaseModel):
@@ -26,18 +26,22 @@ class ArticleUpdate(BaseModel):
     authors: Optional[list[str]] = None # List of usernames
     category_path: Optional[str] = None
 
-class ArticleOutput(BaseModel):
+class ArticlePreview(BaseModel):
+    """Schema for basic article metadata, without content fields."""
     id: int
-    category: CategoryDef
     filename: str
     title: str
-    content: str # Raw document text
     creation_time: datetime
     publish_time: Optional[datetime]
     is_visible: bool
+    path: str # Full path to article
+    category_sorting_index: int
+
+class ArticleOutput(ArticlePreview):
+    """Complete article schema that includes metadata and content."""
+    category: CategoryPreview
+    content: str # Raw document text
     view_type: ArticleViewEnum
     can_comment: bool
     show_authors: bool
-    category_sorting_index: int
-    path: str # Full path to article
     authors: list[UserSchema.UserOutput]
