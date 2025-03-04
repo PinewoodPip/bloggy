@@ -95,4 +95,34 @@ export class Editor {
     const customBindingAction = this.customBindingToAction[keyCombo]
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }
+
+  /** 
+   * Saves the user's editor settings to localstorage.
+   * Different storage keys may be used to distinguish
+   * preference sets across different editor contexts.
+   */
+  savePreferences(storageKey: string) {
+    const saveData = {
+      keybinds: this.customActionBindings,
+    }
+    window.localStorage.setItem(storageKey, JSON.stringify(saveData))
+  }
+
+  /**
+   * Applies the user's editor settings from localstorage.
+   * Different storage keys may be used to distinguish
+   * preference sets across different editor contexts.
+   */
+  loadPreferences(storageKey: string) {
+    const jsonData = window.localStorage.getItem(storageKey)
+    if (jsonData) {
+      const parsedSaveData = JSON.parse(jsonData)
+
+      // Apply keybinds
+      for (const actionID in parsedSaveData.keybinds) {
+        const keybind = parsedSaveData.keybinds[actionID]
+        this.setActionKeybind(actionID, keybind)
+      }
+    }
+  }
 }

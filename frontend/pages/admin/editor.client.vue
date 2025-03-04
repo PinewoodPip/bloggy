@@ -114,7 +114,15 @@ function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keyCombo | 
   }
   // Set new keybind
   editor.value.setActionKeybind(actionID, keybind)
+
+  // Persist settings
+  editor.value.savePreferences("ArticleEditor")
 }
+
+/** Load the user's editor preferences when editor initializes */
+watchEffect(() => {
+  editor.value.loadPreferences("ArticleEditor")
+})
 
 const fullPath = computed(() => {
   return 'TODO'
