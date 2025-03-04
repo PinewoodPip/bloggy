@@ -1,17 +1,10 @@
 <template>
-  <div class="flexcol bg-base-100 rounded-box p-4">
-    <!-- Header -->
-    <div class="flex content-center pb-2">
+  <Modal>
+    <template #headerTitle>
       <h2>{{ isEditing ? "Edit user" : "Create user" }}</h2>
-      <HorizontalFill/>
-      <!-- TODO confirm to close -->
-      <button class="btn btn-sm btn-error aspect-square" @click="emit('close')"><UIcon name="i-heroicons-x-mark"/></button>
-    </div>
-    
-    <hr/>
+    </template>
 
-    <!-- Form -->
-    <div class="flexcol gap-y-2 py-3">
+    <template #form>
       <!-- TODO avatar -->
       <AvatarIcon class="size-24 mx-auto"/>
 
@@ -36,12 +29,9 @@
       <UFormGroup v-if="!isEditingAdmin" label="Biography">
         <TextArea v-model="biography" />
       </UFormGroup>
-    </div>
+    </template>
 
-    <hr/>
-
-    <!-- Footer -->
-    <div class="flex justify-center pt-4">
+    <template #footer>
       <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="confirm" :disabled="!canSubmit || createUserIsPending">
         <span>
           <!-- Show loading spinner while posting -->
@@ -49,8 +39,8 @@
           <span v-else>{{ isEditing ? "Apply changes" : "Create account" }}</span>
         </span>
       </IconButton>
-    </div>
-  </div>
+    </template>
+  </Modal>
 </template>
 
 <script setup lang="ts">
