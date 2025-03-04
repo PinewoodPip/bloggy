@@ -85,7 +85,7 @@ def create_random_category(db: Session) -> CategoryOutput:
     """
     category = CategoryCrud.create_category(db, CategoryInput(
         name=random_lower_string(),
-        url=random_lower_string(),
+        directory_name=random_lower_string(),
         parent_category_path="",
     ))
     return CategoryCrud.create_category_output(db, category)

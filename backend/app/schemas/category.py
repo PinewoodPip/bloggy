@@ -12,14 +12,14 @@ INVALID_URL_PATTERN = re.compile(r"[^\w]", re.A) # Catches non-alphanumeric char
 
 class CategoryInput(BaseModel):
     """Schema for creation requests."""
-    name: str
-    url: str
+    name: str # User-friendly title
+    directory_name: str # The last URL component of the path
     parent_category_path: str # Path to parent category
     
-    @field_validator("url", check_fields=False)
+    @field_validator("directory_name", check_fields=False)
     def validate_url(cls, url: str):
         if INVALID_URL_PATTERN.search(url): # Cannot contain slashes or characters that are reserved or would require url-encoding
-            raise ValueError("Invalid url")
+            raise ValueError("Invalid directory name")
 
         return url
     
@@ -33,7 +33,7 @@ class CategoryInput(BaseModel):
 class CategoryUpdate(BaseModel):
     """Schema for patching requests."""
     name: Optional[str] = None
-    url: Optional[str] = None
+    directory_name: Optional[str] = None
     view_type: Optional[CategoryViewEnum] = None
     sorting_type: Optional[CategorySortingModeEnum] = None
     parent_category_path: Optional[str] = None

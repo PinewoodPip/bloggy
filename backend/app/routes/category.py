@@ -15,7 +15,7 @@ async def create_category(category_input: CategorySchemas.CategoryInput, db: Ses
     """
     try:
         # Prevent creating additional root categories
-        if category_input.url == "":
+        if category_input.directory_name == "":
             raise ValueError("Cannot create additional root categories")
 
         # TODO permissions system; don't allow editors to create categories under ones they don't have perms for 

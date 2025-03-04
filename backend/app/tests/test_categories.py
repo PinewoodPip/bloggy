@@ -17,7 +17,7 @@ def test_create_category(user_scenario):
     # Create a category at root (/)
     category_input = CategoryInput(
         name="new categ",
-        url="newcateg",
+        directory_name="newcateg",
         parent_category_path="",
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
@@ -31,7 +31,7 @@ def test_create_category(user_scenario):
     # Create a subcategory
     category_input = CategoryInput(
         name="new subcateg",
-        url="newsubcateg",
+        directory_name="newsubcateg",
         parent_category_path="newcateg",
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
@@ -74,7 +74,7 @@ def test_create_invalid_categories(article_scenario):
     # Attempt to create another root category
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "new root",
-        "url": "",
+        "directory_name": "",
         "parent_category_path": "",
     })
     assert is_bad_request(response, "additional root")
@@ -83,7 +83,7 @@ def test_create_invalid_categories(article_scenario):
     # Create article in the category
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "conflicting category",
-        "url": article_scenario.article.filename,
+        "directory_name": article_scenario.article.filename,
         "parent_category_path": article_scenario.article.category_path,
     })
     assert is_bad_request(response, "article already exists at this path")
@@ -91,24 +91,24 @@ def test_create_invalid_categories(article_scenario):
     # Try invalid path formats
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
-        "url": "test",
+        "directory_name": "test",
         "parent_category_path": "test//test",
     })
     assert has_validation_error(response, "Invalid path")
 
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
-        "url": "te/st",
+        "directory_name": "te/st",
         "parent_category_path": "",
     })
-    assert has_validation_error(response, "Invalid url")
+    assert has_validation_error(response, "Invalid directory name")
 
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
-        "url": "テスト",
+        "directory_name": "テスト",
         "parent_category_path": "",
     })
-    assert has_validation_error(response, "Invalid url")
+    assert has_validation_error(response, "Invalid directory name")
 
 def test_get_category_articles(article_scenario):
     """

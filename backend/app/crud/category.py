@@ -33,7 +33,7 @@ def get_category_by_path(db: Session, path: str) -> Category:
         url_component = components[i]
         parent_category = categories[-1]
 
-        category = db.query(Category).filter(Category.parent_id == parent_category.id, Category.url == url_component).first()
+        category = db.query(Category).filter(Category.parent_id == parent_category.id, Category.directory_name == url_component).first()
         if not category:
             raise ValueError("There is no category at this path")
         
@@ -59,16 +59,20 @@ def create_category(db: Session, category_input: CategoryInput) -> Category:
     """
     parent_path = category_input.parent_category_path
 
-    if ArticleCrud.article_exists(db, parent_path, category_input.url):
+    if ArticleCrud.article_exists(db, parent_path, category_input.directory_name):
         raise ValueError("An article already exists at this path")
 
     # Determine ID of parent category
-    if category_input.url == "": # Special case for root category
+    if category_input.directory_name == "": # Special case for root category
         parent_id = None
     else:
         parent_id = get_category_by_path(db, parent_path).id
 
-    category = Category(name=category_input.name, url=category_input.url, parent_id=parent_id)
+    category = Category(
+        name=category_input.name,
+        directory_name=category_input.directory_name,
+        parent_id=parent_id
+    )
 
     db.add(category)
     db.commit()
@@ -83,7 +87,7 @@ def create_root_category(db: Session) -> Category:
         category = get_category_by_path(db, "")
     except RuntimeError as e:
         if "There is no root" in str(e):
-            create_category(db, CategoryInput(name="", parent_category_path="", url=""))
+            create_category(db, CategoryInput(name="", parent_category_path="", directory_name=""))
 
 def update_category(db: Session, category: Category, category_update: CategoryUpdate) -> Category:
     """
