@@ -31,5 +31,5 @@ def db_session():
     # Delete all categories
     categories = CategoryCrud.get_all(db)
     for category in categories:
-        if category.url != "": # Don't delete root category
+        if category.directory_name != "": # Don't delete root category
             CategoryCrud.delete_category(db, category)

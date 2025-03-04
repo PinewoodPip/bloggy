@@ -29,3 +29,12 @@ def create_schema(obj: object, schema: BaseModel | T, extra_fields: dict[str, an
         schema_dict[key] = value
 
     return schema.model_validate(schema_dict)
+
+def concatenate_path(*components: str) -> str:
+    """
+    Concatenates path elements into a slash-delimited path.
+    """
+    path = "/".join(components)
+    if path.startswith("//"): # Will occur if first component is root ("/")
+        path = path[1:]
+    return path

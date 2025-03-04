@@ -5,14 +5,25 @@ from models.article import ArticleViewEnum # TODO move these enums here?
 from models.category import *
 from schemas.category_preview import CategoryPreview
 import schemas.user as UserSchema
+import re
 
-class ArticleInput(BaseModel):
+INVALID_URL_PATTERN = re.compile(r"[^\w]", re.A) # Catches non-alphanumeric characters (including non-ASCII), except underscore.
+
+class ArticleBase(BaseModel):
+    """Base schema class with common validators."""
+    @field_validator("filename", check_fields=False)
+    def validate_url(cls, filename: str):
+        if INVALID_URL_PATTERN.search(filename): # Cannot contain slashes or characters that are reserved or would require url-encoding
+            raise ValueError("Invalid filename")
+        return filename
+    
+class ArticleInput(ArticleBase):
     """Schema for creation requests."""
     filename: str
     title: str
     content: str # Raw document text
 
-class ArticleUpdate(BaseModel):
+class ArticleUpdate(ArticleBase):
     """Schema for patching requests."""
     filename: Optional[str] = None
     title: Optional[str] = None
@@ -26,7 +37,7 @@ class ArticleUpdate(BaseModel):
     authors: Optional[list[str]] = None # List of usernames
     category_path: Optional[str] = None
 
-class ArticlePreview(BaseModel):
+class ArticlePreview(ArticleBase):
     """Schema for basic article metadata, without content fields."""
     id: int
     filename: str

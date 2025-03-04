@@ -18,7 +18,7 @@ def test_create_category(user_scenario):
     category_input = CategoryInput(
         name="new categ",
         directory_name="newcateg",
-        parent_category_path="",
+        parent_category_path="/",
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
 
@@ -26,13 +26,13 @@ def test_create_category(user_scenario):
 
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == category_input.name
-    assert category_output.url == "newcateg"
+    assert category_output.directory_name == "newcateg"
 
     # Create a subcategory
     category_input = CategoryInput(
         name="new subcateg",
         directory_name="newsubcateg",
-        parent_category_path="newcateg",
+        parent_category_path="/newcateg",
     )
     response = client.post("/categories", headers=user_scenario.editor_token_header, json=category_input.model_dump())
 
@@ -40,7 +40,7 @@ def test_create_category(user_scenario):
 
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == category_input.name
-    assert category_output.url == "newsubcateg"
+    assert category_output.directory_name == "newsubcateg"
     assert category_output.path == "/newcateg/newsubcateg"
     deepest_category_id = category_output.id
 
@@ -49,7 +49,7 @@ def test_create_category(user_scenario):
     response = client.get("/categories/")
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == ""
-    assert category_output.url == ""
+    assert category_output.directory_name == ""
     assert category_output.path == "/"
     assert len(category_output.subcategories) == 1
     assert category_output.subcategories[0].subcategories[0].id == deepest_category_id
@@ -58,27 +58,19 @@ def test_create_category(user_scenario):
     response = client.get("/categories/newcateg")
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == "new categ"
-    assert category_output.url == "newcateg"
+    assert category_output.directory_name == "newcateg"
     assert category_output.path == "/newcateg"
     
     response = client.get("/categories/newcateg/newsubcateg")
     category_output = CategoryOutput.model_validate(response.json())
     assert category_output.name == "new subcateg"
-    assert category_output.url == "newsubcateg"
+    assert category_output.directory_name == "newsubcateg"
     assert category_output.path == "/newcateg/newsubcateg"
 
 def test_create_invalid_categories(article_scenario):
     """
     Tests creating categories with invalid inputs.
     """
-    # Attempt to create another root category
-    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
-        "name": "new root",
-        "directory_name": "",
-        "parent_category_path": "",
-    })
-    assert is_bad_request(response, "additional root")
-
     # Attempt to create a category that conflicts with an article url
     # Create article in the category
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
@@ -92,23 +84,30 @@ def test_create_invalid_categories(article_scenario):
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "directory_name": "test",
-        "parent_category_path": "test//test",
+        "parent_category_path": "/test//test",
     })
     assert has_validation_error(response, "Invalid path")
 
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "directory_name": "te/st",
-        "parent_category_path": "",
+        "parent_category_path": "/",
     })
     assert has_validation_error(response, "Invalid directory name")
 
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "directory_name": "テスト",
-        "parent_category_path": "",
+        "parent_category_path": "/",
     })
     assert has_validation_error(response, "Invalid directory name")
+
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
+        "name": "test",
+        "directory_name": "test",
+        "parent_category_path": "",
+    })
+    assert has_validation_error(response, "Invalid path")
 
 def test_get_category_articles(article_scenario):
     """
@@ -127,7 +126,7 @@ def test_get_category_articles(article_scenario):
     article_names = set([article.filename for article in articles])
 
     # Retrieve them
-    response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == len(articles)
@@ -137,7 +136,7 @@ def test_get_category_articles(article_scenario):
     # Test query params
     amount = 3
     skip = 1
-    response = client.get(f"/categories/{article_scenario.category_path}?articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}?articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == amount
@@ -158,7 +157,7 @@ def test_get_category_articles(article_scenario):
         assert is_ok_response(response)
     
     # Expect articles to be ordered in reverse
-    response = client.get(f"/categories/{article_scenario.category_path}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     for i, fetched_article in enumerate(category_output.articles):

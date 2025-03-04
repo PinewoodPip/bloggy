@@ -48,7 +48,7 @@ def test_create_article_category_name_conflict(article_scenario):
     Tests creating an article with a path that conflicts with a category.
     """
     article_input = ArticleInput(
-        filename=article_scenario.article.category.url,
+        filename=article_scenario.category.directory_name,
         title=random_lower_string(),
         content="A document",
     )
@@ -118,6 +118,12 @@ def test_patch_article(article_scenario):
     for author in article_output.authors:
         assert author.username == new_author.username or author.username == article_scenario.editor.username
 
+    # Attempt to use invalid filename
+    response = client.patch(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header, json={
+        "filename": "invalid/filename",
+    })
+    assert has_validation_error(response, "filename")
+
     # Attempt to remove all authors
     article_update = ArticleUpdate(
         authors = []
@@ -140,7 +146,7 @@ def test_article_change_category(article_scenario):
     
     # Attempt to move to a non-existent category
     article_update = ArticleUpdate(
-        category_path=random_lower_string(),
+        category_path="/" + random_lower_string(),
     )
     response = client.patch(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header, json=article_update.model_dump(exclude_none=True))
     assert is_bad_request(response, "category")

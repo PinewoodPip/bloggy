@@ -24,9 +24,9 @@ class CategoryInput(BaseModel):
         return url
     
     @field_validator("parent_category_path", check_fields=False)
-    def validate_username(cls, path: str):
+    def validate_category_parent_path(cls, path: str):
         # Prevent creating additional root categories
-        if path.find("//") != -1 or (len(path) > 0 and path[-1] == "/"): # Cannot have 2 consecutive slashes or end in a slash
+        if path.find("//") != -1 or (len(path) > 1 and path[-1] == "/") or (path == "" or path[0] != "/"): # Cannot have 2 consecutive slashes or end in a slash (except the root path "/")
             raise ValueError("Invalid path")
         return path
     

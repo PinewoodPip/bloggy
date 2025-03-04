@@ -20,7 +20,7 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
         raise ValueError("An article with this filename already exists in the category")
     
     # Check for name conflicts with categories
-    if CategoryCrud.category_exists(db, f"{category_path}/{article_input.filename}"):
+    if CategoryCrud.category_exists(db, CrudUtils.concatenate_path(category_path, article_input.filename)):
         raise ValueError("A category already exists at this path")
 
     category = CategoryCrud.get_category_by_path(db, category_path)
@@ -101,7 +101,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     category_path = CategoryCrud.get_category_path(db, article.category)
     return CrudUtils.create_schema(article, ArticlePreview, {
         "category_path": category_path,
-        "path": f"{"" if category_path == "/" else category_path}/{article.filename}",
+        "path": f"{category_path}/{article.filename}",
     })
 
 def create_article_output(db: Session, article: Article) -> ArticleOutput:
@@ -115,7 +115,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         category=CategoryPreview(
             id=category.id,
             name=category.name,
-            url=category.url,
+            directory_name=category.directory_name,
             view_type=CategoryViewEnum[category.view_type.name],
             sorting_type=CategorySortingModeEnum[category.sorting_type.name],
         ),
@@ -131,5 +131,5 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
         category_path=category_path,
-        path=f"{"" if category_path == "/" else category_path}/{article.filename}",
+        path=f"{category_path}/{article.filename}",
     )

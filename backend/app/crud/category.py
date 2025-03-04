@@ -2,13 +2,11 @@
     CRUD methods for category-related tables.
 """
 from sqlalchemy.orm import Session
-from sqlalchemy.inspection import inspect
 from schemas.category import *
 from models.category import *
 from models.article import Article
 import crud.article as ArticleCrud
 import crud.utils as CrudUtils
-from struct import pack
 
 UPDATE_CATEGORY_EXCLUDED_FIELDS = set("parent_category_path")
 
@@ -16,16 +14,21 @@ def get_category_by_path(db: Session, path: str) -> Category:
     """
     Returns a category by its full path.
     """
-    # Remove leading slash
-    if len(path) > 0 and path[0] == "/":
-        path = path[1:]
+    if len(path) == 0 or path[0] != "/":
+        raise ValueError("Paths must start with a leading slash " + path)
+    
+    # Try to fetch the category via cached URL field
+    cached_category = db.query(Category).filter(Category.cached_url == path).first()
+    if cached_category:
+        return cached_category
+    
+    # Fetch root category
     root_category = db.query(Category).filter(Category.parent_id == None).first()
     if not root_category:
         raise RuntimeError("There is no root category")
 
-    components = path.split("/") # Split path into category IDs
-    if path == "":
-        components = []
+    # Split path into category IDs
+    components = path[1:].split("/") if path != "/" else []
 
     # Check all categories along the path exist and have valid parent-child relations
     categories: list[Category] = [root_category] # Start with the root category already in the stack
@@ -73,21 +76,33 @@ def create_category(db: Session, category_input: CategoryInput) -> Category:
         directory_name=category_input.directory_name,
         parent_id=parent_id
     )
+    db.flush(category)
+    update_cached_url(db, category)
 
     db.add(category)
     db.commit()
 
     return category
 
+def update_cached_url(db: Session, category: Category):
+    """
+    Updates the cached full URL of a category and all its children.
+    """
+    try:
+        category.cached_url = get_category_path(db, category)
+        for subcategory in category.subcategories: # Update URL of child categories
+            update_cached_url(db, subcategory)
+    except Exception as e:
+        db.rollback()
+        raise e
+    db.commit()
+
 def create_root_category(db: Session) -> Category:
     """
     Creates the special root (/) category, if it doesn't already exist.
     """
-    try:
-        category = get_category_by_path(db, "")
-    except RuntimeError as e:
-        if "There is no root" in str(e):
-            create_category(db, CategoryInput(name="", parent_category_path="", directory_name=""))
+    if not category_exists(db, "/"):
+        create_category(db, CategoryInput(name="/", parent_category_path="/", directory_name=""))
 
 def update_category(db: Session, category: Category, category_update: CategoryUpdate) -> Category:
     """
@@ -100,6 +115,7 @@ def update_category(db: Session, category: Category, category_update: CategoryUp
         try:
             new_parent = get_category_by_path(db, category_update.parent_category_path)
             category.parent_id = new_parent.id
+            update_cached_url(db, category)
         except Exception as e:
             db.rollback()
             raise e
@@ -113,13 +129,13 @@ def get_category_path(db: Session, category: Category) -> str:
     Returns the full path to a category.
     """
     if category.parent_id == None: # Root category case
-        return "/" # TODO this is a bit inconsistent, as other paths do not start with slash
+        return "/"
     else:
         # Backtrack upwards to root
-        path = [category.url]
+        path = [category.directory_name]
         parent = db.query(Category).filter(Category.id == category.parent_id).first()
         while parent:
-            path.append(parent.url)
+            path.append(parent.directory_name)
             parent = db.query(Category).filter(Category.id == parent.parent_id).first()
 
         return "/".join(path[::-1])
@@ -155,7 +171,7 @@ def create_category_output(db: Session, category: Category, articles_amount: int
     return CategoryOutput(
         id=category.id,
         name=category.name,
-        url=category.url,
+        directory_name=category.directory_name,
         view_type=CategoryViewEnum[category.view_type.name],
         sorting_type=CategorySortingModeEnum[category.sorting_type.name],
         path=get_category_path(db, category),

@@ -15,7 +15,7 @@ async def create_category(category_input: CategorySchemas.CategoryInput, db: Ses
     """
     try:
         # Prevent creating additional root categories
-        if category_input.directory_name == "":
+        if category_input.directory_name == "/":
             raise ValueError("Cannot create additional root categories")
 
         # TODO permissions system; don't allow editors to create categories under ones they don't have perms for 
@@ -30,7 +30,7 @@ async def get_category(category_path: str, articles_amount: int = 5, articles_sk
     Fetches a category by its full URL path.
     """
     try:
-        category = CategoryCrud.get_category_by_path(db, category_path)
+        category = CategoryCrud.get_category_by_path(db, "/" + category_path)
         return CategoryCrud.create_category_output(db, category, articles_amount, articles_skip)
     except ValueError as e:
         msg = str(e)
@@ -45,7 +45,7 @@ async def patch_category(category_path: str, category_update: CategorySchemas.Ca
     Fetches a category by its full URL path.
     """
     try:
-        category = CategoryCrud.get_category_by_path(db, category_path)
+        category = CategoryCrud.get_category_by_path(db, "/" + category_path)
         category = CategoryCrud.update_category(db, category, category_update)
         return CategoryCrud.create_category_output(db, category)
     except ValueError as e:
