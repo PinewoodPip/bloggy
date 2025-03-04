@@ -43,6 +43,18 @@ def test_create_article_nonexistent_category(article_scenario):
     response = client.post(f"/articles/nonexistent{random_lower_string()}/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
     assert is_bad_request(response, "category")
 
+def test_create_article_category_name_conflict(article_scenario):
+    """
+    Tests creating an article with a path that conflicts with a category.
+    """
+    article_input = ArticleInput(
+        filename=article_scenario.article.category.url,
+        title=random_lower_string(),
+        content="A document",
+    )
+    response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
+    assert is_bad_request(response, "category already exists at this path")
+
 def test_create_article_duplicate_filename(article_scenario):
     """
     Tests creating an article under an already-used filename.

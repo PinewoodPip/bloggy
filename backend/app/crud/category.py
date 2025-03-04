@@ -41,11 +41,26 @@ def get_category_by_path(db: Session, path: str) -> Category:
 
     return categories[-1]
 
+def category_exists(db: Session, path: str) -> bool:
+    """
+    Returns whether a category exists at a path.
+    """
+    exists = False
+    try:
+        get_category_by_path(db, path)
+        exists = True
+    except:
+        pass
+    return exists
+
 def create_category(db: Session, category_input: CategoryInput) -> Category:
     """
     Creates a category.
     """
     parent_path = category_input.parent_category_path
+
+    if ArticleCrud.article_exists(db, parent_path, category_input.url):
+        raise ValueError("An article already exists at this path")
 
     # Determine ID of parent category
     if category_input.url == "": # Special case for root category

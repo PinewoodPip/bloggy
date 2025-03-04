@@ -67,34 +67,43 @@ def test_create_category(user_scenario):
     assert category_output.url == "newsubcateg"
     assert category_output.path == "/newcateg/newsubcateg"
 
-def test_create_invalid_categories(user_scenario):
+def test_create_invalid_categories(article_scenario):
     """
     Tests creating categories with invalid inputs.
     """
     # Attempt to create another root category
-    response = client.post("/categories", headers=user_scenario.editor_token_header, json={
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "new root",
         "url": "",
         "parent_category_path": "",
     })
     assert is_bad_request(response, "additional root")
+
+    # Attempt to create a category that conflicts with an article url
+    # Create article in the category
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
+        "name": "conflicting category",
+        "url": article_scenario.article.filename,
+        "parent_category_path": article_scenario.article.category_path,
+    })
+    assert is_bad_request(response, "article already exists at this path")
     
     # Try invalid path formats
-    response = client.post("/categories", headers=user_scenario.editor_token_header, json={
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "url": "test",
         "parent_category_path": "test//test",
     })
     assert has_validation_error(response, "Invalid path")
 
-    response = client.post("/categories", headers=user_scenario.editor_token_header, json={
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "url": "te/st",
         "parent_category_path": "",
     })
     assert has_validation_error(response, "Invalid url")
 
-    response = client.post("/categories", headers=user_scenario.editor_token_header, json={
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
         "name": "test",
         "url": "テスト",
         "parent_category_path": "",

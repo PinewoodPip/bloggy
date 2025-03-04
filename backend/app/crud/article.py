@@ -16,13 +16,12 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
     Creates an article.
     """
     # Check if article with the same filename already exists in the category
-    article_exists = True
-    try:
-        get_article_by_path(db, category_path, article_input.filename)
-    except:
-        article_exists = False
-    if article_exists:
+    if article_exists(db, category_path, article_input.filename):
         raise ValueError("An article with this filename already exists in the category")
+    
+    # Check for name conflicts with categories
+    if CategoryCrud.category_exists(db, f"{category_path}/{article_input.filename}"):
+        raise ValueError("A category already exists at this path")
 
     category = CategoryCrud.get_category_by_path(db, category_path)
 
@@ -83,12 +82,26 @@ def get_article_by_path(db: Session, category_path: str, article_url: str) -> Ar
         raise ValueError("There is no article at the path")
     return article
 
+def article_exists(db: Session, category_path: str, article_filename: str) -> bool:
+    """
+    Returns whether an article exists at a path.
+    """
+    has_article = False
+    try:
+        get_article_by_path(db, category_path, article_filename)
+        has_article = True
+    except:
+        pass
+    return has_article
+
 def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     """
     Creates a preview schema for an article.
     """
+    category_path = CategoryCrud.get_category_path(db, article.category)
     return CrudUtils.create_schema(article, ArticlePreview, {
-        "path": f"{CategoryCrud.get_category_path(db, article.category)}/{article.filename}",
+        "category_path": category_path,
+        "path": f"{"" if category_path == "/" else category_path}/{article.filename}",
     })
 
 def create_article_output(db: Session, article: Article) -> ArticleOutput:
@@ -96,6 +109,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
     Creates an output schema for an article.
     """
     category = article.category
+    category_path = CategoryCrud.get_category_path(db, article.category)
     return ArticleOutput(
         id=article.id,
         category=CategoryPreview(
@@ -116,5 +130,6 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         publish_time=article.publish_time,
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
-        path=f"{CategoryCrud.get_category_path(db, article.category)}/{article.filename}",
+        category_path=category_path,
+        path=f"{"" if category_path == "/" else category_path}/{article.filename}",
     )

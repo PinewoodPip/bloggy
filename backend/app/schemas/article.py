@@ -34,6 +34,7 @@ class ArticlePreview(BaseModel):
     creation_time: datetime
     publish_time: Optional[datetime]
     is_visible: bool
+    category_path: str
     path: str # Full path to article
     category_sorting_index: int
 
