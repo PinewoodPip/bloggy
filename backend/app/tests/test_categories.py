@@ -42,6 +42,7 @@ def test_create_category(user_scenario):
     assert category_output.name == category_input.name
     assert category_output.url == "newsubcateg"
     assert category_output.path == "/newcateg/newsubcateg"
+    deepest_category_id = category_output.id
 
     # Test fetching the categories
     # Root category
@@ -50,6 +51,8 @@ def test_create_category(user_scenario):
     assert category_output.name == ""
     assert category_output.url == ""
     assert category_output.path == "/"
+    assert len(category_output.subcategories) == 1
+    assert category_output.subcategories[0].subcategories[0].id == deepest_category_id
 
     # Fetch the created ones
     response = client.get("/categories/newcateg")

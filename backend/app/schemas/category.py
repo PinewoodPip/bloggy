@@ -41,3 +41,4 @@ class CategoryUpdate(BaseModel):
 class CategoryOutput(CategoryPreview):
     path: str
     articles: list[ArticlePreview]
+    subcategories: list["CategoryOutput"] # Child categories, recursive.
