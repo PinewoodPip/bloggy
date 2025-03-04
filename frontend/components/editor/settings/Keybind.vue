@@ -6,10 +6,21 @@
 
     <HorizontalFill/>
 
-    <button class="btn btn-sm btn-neutral" @click="rebind">
-      <UKbd v-if="props.keybind">{{ keybindStr }}</UKbd>
-      <span v-else>Unbound</span>
-    </button>
+    <!-- Right side -->
+    <div class="flex gap-x-2">
+      <!-- Reset keybind button -->
+      <UTooltip v-if="canReset" text="Reset to default">
+        <button class="flex items-center" @click="resetToDefault">
+          <UIcon class="text-error" name="i-heroicons-arrow-path-rounded-square"/>
+        </button>
+      </UTooltip>
+
+      <!-- Rebind button -->
+      <button class="btn btn-sm btn-neutral" @click="rebind">
+        <UKbd v-if="props.keybind">{{ keybindStr }}</UKbd>
+        <span v-else>Unbound</span>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -20,15 +31,21 @@ const keybindStringifier = useKeybindStringifier()
 
 const props = defineProps<{
   action: Editor.IAction,
+  canReset?: boolean,
   keybind: Editor.keyCombo | null,
 }>()
 
 const emit = defineEmits<{
-  rebind: [string],
+  rebind: [Editor.actionID],
+  resetToDefault: [Editor.actionID]
 }>()
 
 function rebind() {
   emit('rebind', props.action.def.id)
+}
+
+function resetToDefault() {
+  emit('resetToDefault', props.action.def.id)
 }
 
 const keybindStr = computed(() => {

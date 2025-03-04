@@ -12,7 +12,7 @@
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsKeybind v-for="actionID in group.actions" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" @rebind="onRebindRequested"/>
+          <EditorSettingsKeybind v-for="actionID in group.actions" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind"/>
         </div>
       </div>
     </template>
@@ -79,10 +79,22 @@ function resetBindingModal() {
   conflictingAction.value = null
 }
 
+/** Returns whether an action's keybind is the default one. */
+function isKeybindDefault(actionID: string) {
+  const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
+  const currentKeybind = props.editor.getActionKeybind(actionID)
+  return defaultKeybind === currentKeybind
+}
+
 function onRebindRequested(actionID: string) {
   resetBindingModal()
   rebindingModalVisible.value = true
   pendingRebindActionID.value = actionID
+}
+
+function onResetKeybind(actionID: string) {
+  const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
+  emit('rebind', actionID, defaultKeybind)
 }
 
 // @ts-ignore
