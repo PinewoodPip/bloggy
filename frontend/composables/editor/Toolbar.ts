@@ -21,6 +21,14 @@ export const useEditor = () => {
   editor.registerAction(new FormattingActions.FormatUnderline())
   editor.registerActionGroup(FormattingActions.actionGroup)
 
+  // Set default keybinds
+  for (const group of editor.actionGroups) {
+    for (const actionID of group.actions) {
+      const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
+      editor.setActionKeybind(actionID, defaultKeybind)
+    }
+  }
+
   return editor
 }
 

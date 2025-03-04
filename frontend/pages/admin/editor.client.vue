@@ -48,6 +48,11 @@
       </div>
     </div>
   </UContainer>
+
+  <!-- Settings menu modal -->
+  <UModal v-model="settingsMenuVisible" :overlay="true">
+    <EditorSettings :editor="editor" @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
+  </UModal>
 </template>
 
 <script setup lang="ts">
@@ -59,7 +64,9 @@ import { useEditor } from '~/composables/editor/Toolbar'
 
 const editorRef = useTemplateRef('documentRef')
 
-const editor = useEditor()
+const editor = ref(useEditor())
+
+const settingsMenuVisible = ref(false)
 
 /** Execute action commands */
 function onActionUsed(action: Editor.IAction) {
@@ -85,7 +92,7 @@ function openViewMenu() {
 }
 
 function openSettingsMenu() {
-  // TODO
+  settingsMenuVisible.value = true
 }
 
 function saveDocument() {
@@ -94,6 +101,19 @@ function saveDocument() {
 
 function saveDraft() {
   // TODO
+}
+
+function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keyCombo | null) {
+  // Clear keybind of the previous action bound to it
+  if (keybind) {
+    const previousAction = editor.value.getActionForKeybind(keybind)
+    console.log("unbinding", previousAction)
+    if (previousAction) {
+      editor.value.setActionKeybind(previousAction.def.id, null)
+    }
+  }
+  // Set new keybind
+  editor.value.setActionKeybind(actionID, keybind)
 }
 
 const fullPath = computed(() => {
@@ -116,7 +136,7 @@ const state = computed(() => {
 
 /** Returns the action bound to a key combination. */
 function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
-  return editor.getActionForKeyCombo(keyCombo)
+  return editor.value.getActionForKeybind(keyCombo)
 }
 
 /** Returns whether a key combo is bound to any action. */
@@ -124,32 +144,19 @@ function isKeyComboBound(keyCombo: Editor.actionID) {
   return getKeyComboAction(keyCombo) !== null
 }
 
-// Generate all possible modifier+key combinations
-// TODO allow 2 modifiers?
-let alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-let symbols = ';\'\",./?=+`\\'.split('')
-let specialKeys = [' ', 'enter', 'tab']
-let allKeys = [...alphabet, ...symbols, ...specialKeys]
-let modifiers = ['ctrl', 'alt', 'shift', '']
-let shortcutEntries: {[key: string]: object} = {} // TODO import type - but from where?
-for (const modifier of modifiers) {
-  for (const key of allKeys) {
-    const nuxtKeyComboID = modifier === '' ? key : `${modifier}_${key}`
-    const shortcutEntry = {
-      usingInput: true,
-      whenever: [() => {return isKeyComboBound(nuxtKeyComboID)}],
-      handler: () => {
-        const action = getKeyComboAction(nuxtKeyComboID)
-        console.log('combo:', nuxtKeyComboID, 'action:', action?.def.name)
-        if (action) {
-          onActionUsed(action)
-        }
-      }, 
+// TODO would be clearer to reader if this used an object
+const shortcutEntries = useArbitraryKeyshortcuts(
+  (keys) => {
+    const action = getKeyComboAction(keys)
+    console.log('combo:', keys, 'action:', action?.def.name)
+    if (action) {
+      onActionUsed(action)
     }
-    shortcutEntries[nuxtKeyComboID] = shortcutEntry
-  }
-}
-
+  },
+  (keys) => {
+    return isKeyComboBound(keys)
+  },
+)
 // @ts-ignore The type used is not exported from Nuxt UI.
 defineShortcuts(shortcutEntries)
 

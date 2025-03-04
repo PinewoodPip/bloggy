@@ -11,6 +11,7 @@ export class Undo extends Action {
 
   constructor() {
     super({
+      id: 'Undo',
       name: 'Undo',
       icon: 'i-heroicons-arrow-uturn-left-solid',
     })
@@ -30,6 +31,7 @@ export class Redo extends Action {
 
   constructor() {
     super({
+      id: 'Redo',
       name: 'Right',
       icon: 'i-heroicons-arrow-uturn-right-solid',
     })

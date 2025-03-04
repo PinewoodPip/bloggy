@@ -9,6 +9,7 @@ export type keyCombo = string
 
 /** Action descriptor. */
 export interface ActionDef {
+  id: string,
   name: string,
   icon: string,
 }
@@ -38,8 +39,12 @@ export interface ActionGroup {
 
 /** Main editor model class. Holds registered actions. */
 export class Editor {
-  actions: {[key: actionID]: IAction} = {}
+  actions: {[id: actionID]: IAction} = {}
   actionGroups: ActionGroup[] = []
+
+  // Action keybind mappings
+  customActionBindings: {[id: actionID]: keyCombo} = {}
+  customBindingToAction: {[combo: keyCombo]: actionID} = {}
 
   registerAction(action: Action) {
     var actionClass = <typeof Action>action.constructor; 
@@ -61,14 +66,33 @@ export class Editor {
     return this.actions[id]
   }
 
-  getActionForKeyCombo(keyCombo: keyCombo): IAction | null {
-    // TODO optimize; pre-compute a map
-    for (let actionID in this.actions) {
-      const action = this.actions[actionID]
-      if (action.getDefaultKeyCombo() === keyCombo) {
-        return action
-      }
+  getActionKeybind(id: actionID): keyCombo | null {
+    const customKeybind = this.customActionBindings[id]
+    return customKeybind
+  }
+
+  /** Sets the custom keybind for an action. Use null to clear a binding. */
+  setActionKeybind(actionID: actionID, combo: keyCombo | null | undefined) {
+    // Clear previous binding
+    const previousBinding = this.customActionBindings[actionID]
+    if (previousBinding) {
+      delete this.customBindingToAction[previousBinding]
     }
-    return null
+    delete this.customActionBindings[actionID]
+
+    // Set binding
+    if (combo && this.customBindingToAction[combo] !== actionID && this.customBindingToAction[combo]) {
+      throw "Binding is already in use by another action " + this.customBindingToAction[combo]
+    }
+    if (combo) {
+      this.customBindingToAction[combo] = actionID
+      this.customActionBindings[actionID] = combo
+    }
+  }
+
+  /** Returns the action associated to a keybind. */
+  getActionForKeybind(keyCombo: keyCombo): IAction | null {
+    const customBindingAction = this.customBindingToAction[keyCombo]
+    return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }
 }
