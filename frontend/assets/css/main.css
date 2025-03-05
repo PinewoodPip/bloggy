@@ -72,6 +72,19 @@ div[aria-haspopup=menu] > button {
   box-shadow: none !important;
 }
 
+/* Apply theming to USelectMenu elements and combobox children */
+div[data-nuxtui-selectmenu] > div > div > div > button {
+  color: oklch(var(--pc));
+  @apply bg-base-300 hover:bg-base-200 cursor-pointer
+}
+ul[role=listbox] {
+  color: oklch(var(--pc));
+  @apply bg-base-300
+}
+ul[role=listbox] > li {
+  @apply hover:bg-base-200 cursor-pointer
+}
+
 /* Place floating menus and tooltips in front of all other elements */
 div[data-popper-placement] {
   z-index: 999;

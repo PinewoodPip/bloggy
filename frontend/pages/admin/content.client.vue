@@ -41,6 +41,11 @@
   <UModal v-model="creationModalVisible" :overlay="true">
     <AdminContentCategoryCreationModal :parentCategoryPath="selectedCategoryPath" @created="onCategoryCreated" @close="creationModalVisible = false" />
   </UModal>
+
+  <!-- Category edit form -->
+  <div v-if="categoryBeingEdited">
+    <AdminContentCategoryEditModal v-model="editCategoryModalOpen" :category="categoryBeingEdited" @edit="onCategoryEdited" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -63,7 +68,17 @@ function onCategoryCreateChildRequested(id: categoryID) {
   creationModalVisible.value = true
 }
 
+function onCategoryEditRequested(id: categoryID) {
+  const category = getCategoryByID(id)
+  // Open editing modal
+  categoryBeingEdited.value = category
+  editCategoryModalOpen.value = true
+}
+
 // Refetch categories after management operations
+function onCategoryEdited(category: Category) {
+  refetchContentTree()
+}
 function onCategoryCreated(category: Category) {
   refetchContentTree()
 }
