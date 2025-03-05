@@ -11,7 +11,6 @@
 
       <hr />
 
-      <!-- TODO search bar -->
       <div class="flex py-3">
         <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
 

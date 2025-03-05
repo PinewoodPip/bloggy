@@ -1,13 +1,18 @@
 <!-- A button with an UIcon prefix. -->
 <template>
-    <button class="icon-button btn btn-sm"><UIcon :name="icon" /> <slot/></button>
+    <button class="btn btn-sm" :class="btnClass"><UIcon :name="icon" /> <slot/></button>
 </template>
 
 <script setup lang="ts">
 
 const props = defineProps<{
   "icon": string,
+  overrideHeight?: boolean,
 }>()
+
+const btnClass = computed(() => {
+  return {'icon-button': !props.overrideHeight}
+})
 
 </script>
 
