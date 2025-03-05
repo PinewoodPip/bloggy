@@ -64,12 +64,10 @@ function rebind() {
   if (pendingRebindActionID.value) {
     emit('rebind', pendingRebindActionID.value, pendingRebindKeybind.value)
     rebindingModalVisible.value = false
-    resetBindingModal()
   }
 }
 
 function closeBindingModal() {
-  resetBindingModal()
   rebindingModalVisible.value = false
 }
 
