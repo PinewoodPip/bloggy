@@ -12,7 +12,7 @@ export class FormatBold extends Action {
 
   constructor() {
     super({
-      id: 'FormatBold',
+      id: FormatBold.ID,
       name: 'Toggle Bold',
       icon: 'i-heroicons-bold',
     })
@@ -37,7 +37,7 @@ export class FormatItalic extends Action {
 
   constructor() {
     super({
-      id: 'FormatItalic',
+      id: FormatItalic.ID,
       name: 'Toggle Italics',
       icon: 'i-heroicons-italic',
     })
@@ -62,7 +62,7 @@ export class FormatUnderline extends Action {
 
   constructor() {
     super({
-      id: 'FormatUnderline',
+      id: FormatUnderline.ID,
       name: 'Toggle Underline',
       icon: 'i-heroicons-underline',
     })

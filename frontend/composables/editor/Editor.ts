@@ -47,8 +47,7 @@ export class Editor {
   customBindingToAction: {[combo: keyCombo]: actionID} = {}
 
   registerAction(action: Action) {
-    var actionClass = <typeof Action>action.constructor; 
-    this.actions[actionClass.ID] = action
+    this.actions[action.def.id] = action
   }
 
   registerActionGroup(group: ActionGroup) {
