@@ -51,11 +51,35 @@ div[role=status] div {
   color: oklch(var(--nc));
 }
 
-/* Recolor tooltips and enable multi-line ones */
+/* Apply theming to tooltips and enable multi-line ones */
 div[data-popper-placement] > div > div {
   color: oklch(var(--nc));
   height: unset !important;
   @apply bg-neutral
+}
+
+div[data-popper-placement] > div > div[role=menu] {
+  color: oklch(var(--nc));
+  height: unset !important;
+  @apply bg-base-300
+}
+
+/* Apply theming to UDropdown elements */
+div[aria-haspopup=menu] > button > span {
+  color: oklch(var(--pc));
+}
+div[aria-haspopup=menu] > button {
+  box-shadow: none !important;
+}
+
+/* Place floating menus and tooltips in front of all other elements */
+div[data-popper-placement] {
+  z-index: 999;
+}
+
+/* Apply theming to menu elements */
+button[role=menuitem] > span {
+  color: oklch(var(--pc));
 }
 
 /* Readd selection color */

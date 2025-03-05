@@ -14,8 +14,19 @@
 
         <!-- Menu button links -->
         <ul class="menu menu-horizontal flex-row bg-base-200">
-          <li><a @click="openFileMenu">File</a></li>
-          <li><a @click="openViewMenu">View</a></li>
+          <!-- File menu -->
+          <li>
+            <Dropdown :items="fileDropdownItems">
+              <UButton label="File" />
+            </Dropdown>
+          </li>
+          <!-- View menu -->
+          <li>
+            <Dropdown :items="viewDropdownItems">
+              <UButton label="View" />
+            </Dropdown>
+          </li>
+          <!-- Settings menu; opens a modal instead -->
           <li><a @click="openSettingsMenu">Settings</a></li>
         </ul>
       </div>
@@ -36,7 +47,7 @@
     <!-- Content area -->
     <div class="flex gap-x-2">
       <!-- Sidebar -->
-      <div class="large-content-block">
+      <div v-if="sidebarVisible" class="large-content-block">
         TODO
       </div>
 
@@ -59,7 +70,7 @@
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
-import * as Editor from '../../composables/editor/Editor'
+import * as Editor from '~/composables/editor/Editor'
 import { useEditor } from '~/composables/editor/Toolbar'
 
 const editorRef = useTemplateRef('documentRef')
@@ -67,6 +78,52 @@ const editorRef = useTemplateRef('documentRef')
 const editor = ref(useEditor())
 
 const settingsMenuVisible = ref(false)
+const sidebarVisible = ref(true)
+
+const fileDropdownItems = [
+  [
+    {
+      label: 'Save & publish',
+      icon: 'i-heroicons-book-open-16-solid',
+      click: () => {
+        saveDocument()
+      }
+    },
+    {
+      // TODO only show this option if unpublished
+      label: 'Save as draft',
+      icon: 'i-heroicons-pencil-square',
+      click: () => {
+        saveDraft()
+      }
+    },
+    {
+      label: 'Document properties',
+      icon: 'i-heroicons-document-text',
+      click: () => {
+        editDocumentProperties()
+      }
+    },
+  ]
+]
+const viewDropdownItems = [
+  [
+    {
+      label: 'Markdown mode',
+      icon: 'i-material-symbols-markdown-outline',
+      click: () => {
+        toggleMarkdownView()
+      }
+    },
+    {
+      label: 'Table of contents',
+      icon: 'i-material-symbols-data-table-outline',
+      click: () => {
+        toggleTableOfContents()
+      }
+    },
+  ]
+]
 
 /** Execute action commands */
 function onActionUsed(action: Editor.IAction) {
@@ -100,6 +157,18 @@ function saveDocument() {
 }
 
 function saveDraft() {
+  // TODO
+}
+
+function toggleMarkdownView() {
+  // TODO
+}
+
+function toggleTableOfContents() {
+  sidebarVisible.value = !sidebarVisible.value
+}
+
+function editDocumentProperties() {
   // TODO
 }
 
