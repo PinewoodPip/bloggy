@@ -79,6 +79,14 @@ def test_create_invalid_categories(article_scenario):
         "parent_category_path": article_scenario.article.category_path,
     })
     assert is_bad_request(response, "article already exists at this path")
+
+    # Attempt to create a category whose url conflicts with an existing one
+    response = client.post("/categories", headers=article_scenario.editor_token_header, json={
+        "name": "conflicting category",
+        "directory_name": article_scenario.category.directory_name,
+        "parent_category_path": "/", # Assumes article_scenario creates it at root
+    })
+    assert is_bad_request(response, "category already exists at this path")
     
     # Try invalid path formats
     response = client.post("/categories", headers=article_scenario.editor_token_header, json={

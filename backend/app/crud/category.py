@@ -62,6 +62,9 @@ def create_category(db: Session, category_input: CategoryInput) -> Category:
     """
     parent_path = category_input.parent_category_path
 
+    # Check if the URL would conflict with another category or article
+    if category_exists(db, CrudUtils.concatenate_path(parent_path, category_input.directory_name)):
+        raise ValueError("A category already exists at this path")
     if ArticleCrud.article_exists(db, parent_path, category_input.directory_name):
         raise ValueError("An article already exists at this path")
 
