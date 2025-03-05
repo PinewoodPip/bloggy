@@ -3,7 +3,7 @@
   Highlighted based on current page.
 -->
 <template>
-  <RouterLink to="/admin/content">
+  <RouterLink :to="'/admin/' + page">
     <IconButton :icon="icon" :class="buttonHighlightClass(page)" class="min-w-full justify-start"><slot/></IconButton>
   </RouterLink>
 </template>
