@@ -2,6 +2,8 @@
 export { }
 
 declare global {
+  type integer = number
+
   /** Schema for GET /users/{username} */
   type User = {
     username: string,
@@ -29,5 +31,48 @@ declare global {
     display_name?: string,
     biography?: string,
     contact_email?: string|null,
+  }
+
+  type categoryID = integer
+  type categorySortingMode = "chronological"|"manual"
+  type categoryViewMode = "vertical"|"grid"
+
+  type Category = {
+    id: categoryID,
+    name: string,
+    directory_name: string,
+    view_type: categoryViewMode,
+    sorting_type: categorySortingMode,
+    path: string,
+    articles: ArticleMetadata[],
+    subcategories: Category[],
+  }
+
+  type CategoryCreationRequest = {
+    name: string,
+    directory_name: string,
+    parent_category_path: string,
+  }
+
+  type ArticleUpdateRequest = {
+    filename?: string,
+    title?: string,
+    content?: string, // Raw document text
+    publish_time?: integer, // TODO type
+    is_visible?: boolean,
+    view_type?: "single_page"|"by_sections",
+    can_comment?: boolean,
+    show_authors?: boolean,
+    category_sorting_index?: integer,
+    authors?: string[],
+    category_path?: string,
+  }
+
+  type CategoryUpdateRequest = {
+    name?: string,
+    directory_name?: string,
+    view_type?: categoryViewMode,
+    sorting_type?: categorySortingMode,
+    parent_category_path?: string,
   }
 }
