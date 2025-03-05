@@ -109,4 +109,15 @@ const { mutate: requestPatch, status: patchingStatus } = useMutation({
   }
 })
 
+defineShortcuts({
+  // Enter key submits the form
+  enter: {
+    usingInput: true,
+    whenever: [canConfirm],
+    handler: () => {
+      confirm()
+    },
+  }
+})
+
 </script>
