@@ -16,7 +16,7 @@
       </UTooltip>
 
       <!-- Rebind button -->
-      <button class="btn btn-sm btn-neutral" @click="rebind">
+      <button class="btn btn-sm btn-secondary" @click="rebind">
         <UKbd v-if="props.keybind">{{ keybindStr }}</UKbd>
         <span v-else>Unbound</span>
       </button>
