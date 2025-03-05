@@ -169,7 +169,7 @@ def create_category_output(db: Session, category: Category, articles_amount: int
     """
     
     articles = [ArticleCrud.create_article_preview(db, article) for article in get_category_articles(db, category, articles_amount, articles_skip)]
-    subcategories = [create_category_output(db, subcategory) for subcategory in category.subcategories]
+    subcategories = [create_category_output(db, subcategory) for subcategory in category.subcategories] # Sorting is handled at SQLAlchemy level
 
     return CategoryOutput(
         id=category.id,

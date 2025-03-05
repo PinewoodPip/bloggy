@@ -29,5 +29,5 @@ class Category(Base):
     view_type = Column(Enum(CategoryViewEnum), default=CategoryViewEnum.vertical)
     sorting_type = Column(Enum(CategorySortingModeEnum), default=CategorySortingModeEnum.chronological)
     
-    subcategories: Mapped[list["Category"]] = relationship("Category") # Child categories.
+    subcategories: Mapped[list["Category"]] = relationship("Category", order_by=name) # Child categories.
     articles: Mapped[list["Article"]] = relationship("Article", back_populates="category", cascade="all")
