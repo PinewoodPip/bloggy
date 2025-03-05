@@ -8,8 +8,9 @@
         <UIcon class="size-6" :name="collapsed ? 'i-material-symbols-folder' : 'i-material-symbols-folder-open'" />
 
         <!-- Path and title -->
-        <p>{{ category.path }}</p>
-        <p>{{ category.name !== '/' ? category.name : 'Root' }}</p>
+        <UTooltip :text="category.path">
+          <p>{{ category.name !== '/' ? category.name : 'Root' }}</p>
+        </UTooltip>
 
         <!-- TODO show editor icons -->
         <div class="avatar-group -space-x-2">
