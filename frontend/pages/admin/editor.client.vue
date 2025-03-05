@@ -103,11 +103,10 @@ function saveDraft() {
   // TODO
 }
 
-function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keyCombo | null) {
+function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keybind | null) {
   // Clear keybind of the previous action bound to it
   if (keybind) {
     const previousAction = editor.value.getActionForKeybind(keybind)
-    console.log("unbinding", previousAction)
     if (previousAction) {
       editor.value.setActionKeybind(previousAction.def.id, null)
     }
@@ -156,7 +155,6 @@ function isKeyComboBound(keyCombo: Editor.actionID) {
 const shortcutEntries = useArbitraryKeyshortcuts(
   (keys) => {
     const action = getKeyComboAction(keys)
-    console.log('combo:', keys, 'action:', action?.def.name)
     if (action) {
       onActionUsed(action)
     }

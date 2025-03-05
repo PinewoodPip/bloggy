@@ -3,7 +3,7 @@
  */
 import { redo as redoCommand, undo as undoCommand } from 'prosemirror-history'
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { ActionGroup, keyCombo } from '../Editor'
+import type { ActionGroup, keybind } from '../Editor'
 import { Action } from './Action'
 
 export class Undo extends Action {
@@ -21,7 +21,7 @@ export class Undo extends Action {
     return this.getTransaction(undoCommand, state)
   }
   
-  override getDefaultKeyCombo(): keyCombo | null {
+  override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_z' // Ctrl + Z
   }
 }
@@ -41,7 +41,7 @@ export class Redo extends Action {
     return this.getTransaction(redoCommand, state)
   }
 
-  override getDefaultKeyCombo(): keyCombo | null {
+  override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_y' // Ctrl + Y
   }
 }

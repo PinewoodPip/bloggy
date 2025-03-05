@@ -48,7 +48,7 @@ const keybindStringifier = useKeybindStringifier()
 
 const rebindingModalVisible = ref(false)
 const pendingRebindActionID: Ref<Editor.actionID | null> = ref(null)
-const pendingRebindKeybind: Ref<Editor.keyCombo | null> = ref(null)
+const pendingRebindKeybind: Ref<Editor.keybind | null> = ref(null)
 const conflictingAction: Ref<Editor.actionID | null> = ref(null)
 
 const props = defineProps<{
@@ -57,7 +57,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   close: [],
-  rebind: [Editor.actionID, Editor.keyCombo | null]
+  rebind: [Editor.actionID, Editor.keybind | null]
 }>()
 
 function rebind() {

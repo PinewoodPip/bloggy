@@ -3,7 +3,7 @@
  */
 import type { EditorState, Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
-import type { ActionGroup, keyCombo } from '../Editor'
+import type { ActionGroup, keybind } from '../Editor'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -27,7 +27,7 @@ export class FormatBold extends Action {
     return this.isMarkActive(state, state.schema.marks.strong)
   }
 
-  override getDefaultKeyCombo(): keyCombo | null {
+  override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_b' // Ctrl + B
   }
 }
@@ -52,7 +52,7 @@ export class FormatItalic extends Action {
     return this.isMarkActive(state, state.schema.marks.em)
   }
 
-  override getDefaultKeyCombo(): keyCombo | null {
+  override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_i' // Ctrl + I
   }
 }
@@ -77,7 +77,7 @@ export class FormatUnderline extends Action {
     return this.isMarkActive(state, state.schema.marks.underline)
   }
 
-  override getDefaultKeyCombo(): keyCombo | null {
+  override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_u' // Ctrl + U
   }
 }

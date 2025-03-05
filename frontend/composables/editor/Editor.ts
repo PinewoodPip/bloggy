@@ -5,11 +5,12 @@ import { EditorState, Transaction } from 'prosemirror-state'
 import { Action } from './action/Action'
 
 export type actionID = string
-export type keyCombo = string
+/** In the format "{modifier}_{key}" */
+export type keybind = string
 
 /** Action descriptor. */
 export interface ActionDef {
-  id: string,
+  readonly id: string,
   name: string,
   icon: string,
 }
@@ -28,7 +29,7 @@ export interface IAction {
   isActive(state: EditorState): boolean,
 
   /** Returns the recommended default keybind for this action. */
-  getDefaultKeyCombo(): keyCombo | null,
+  getDefaultKeyCombo(): keybind | null,
 }
 
 /** Groups multiple related actions. */
@@ -43,21 +44,25 @@ export class Editor {
   actionGroups: ActionGroup[] = []
 
   // Action keybind mappings
-  customActionBindings: {[id: actionID]: keyCombo} = {}
-  customBindingToAction: {[combo: keyCombo]: actionID} = {}
+  private customActionBindings: {[id: actionID]: keybind} = {}
+  private customBindingToAction: {[combo: keybind]: actionID} = {}
 
+  /** Registers an editor action. */
   registerAction(action: Action) {
     this.actions[action.def.id] = action
   }
 
+  /** Registers an action group. Will be the last in the list. */
   registerActionGroup(group: ActionGroup) {
     this.actionGroups.push(group)
   }
 
+  /** Returns all action groups in order of registration. */
   getActionGroups(): ActionGroup[] {
     return this.actionGroups
   }
 
+  /** Returns a registered action by its ID. */
   getAction(id: actionID): IAction {
     if (!this.actions[id]) {
       throw 'Action not registered: ' + id
@@ -65,13 +70,14 @@ export class Editor {
     return this.actions[id]
   }
 
-  getActionKeybind(id: actionID): keyCombo | null {
+  /** Returns the keybind for an action. */
+  getActionKeybind(id: actionID): keybind | null {
     const customKeybind = this.customActionBindings[id]
     return customKeybind
   }
 
   /** Sets the custom keybind for an action. Use null to clear a binding. */
-  setActionKeybind(actionID: actionID, combo: keyCombo | null | undefined) {
+  setActionKeybind(actionID: actionID, combo: keybind | null | undefined) {
     // Clear previous binding
     const previousBinding = this.customActionBindings[actionID]
     if (previousBinding) {
@@ -90,7 +96,7 @@ export class Editor {
   }
 
   /** Returns the action associated to a keybind. */
-  getActionForKeybind(keyCombo: keyCombo): IAction | null {
+  getActionForKeybind(keyCombo: keybind): IAction | null {
     const customBindingAction = this.customBindingToAction[keyCombo]
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }

@@ -32,7 +32,7 @@ const keybindStringifier = useKeybindStringifier()
 const props = defineProps<{
   action: Editor.IAction,
   canReset?: boolean,
-  keybind: Editor.keyCombo | null,
+  keybind: Editor.keybind | null,
 }>()
 
 const emit = defineEmits<{

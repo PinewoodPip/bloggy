@@ -3,7 +3,7 @@
  */
 import type { MarkType } from 'prosemirror-model'
 import type { Command, EditorState, NodeSelection, Transaction } from 'prosemirror-state'
-import type { ActionDef, IAction, actionID, keyCombo } from '../Editor'
+import type { ActionDef, IAction, actionID, keybind } from '../Editor'
 
 export abstract class Action implements IAction {
   static ID: actionID
@@ -19,7 +19,7 @@ export abstract class Action implements IAction {
     return false
   }
 
-  getDefaultKeyCombo(): keyCombo | null {
+  getDefaultKeyCombo(): keybind | null {
     return null
   }
 
