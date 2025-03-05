@@ -51,6 +51,13 @@ div[role=status] div {
   color: oklch(var(--nc));
 }
 
+/* Recolor tooltips and enable multi-line ones */
+div[data-popper-placement] > div > div {
+  color: oklch(var(--nc));
+  height: unset !important;
+  @apply bg-neutral
+}
+
 /* Readd selection color */
 ::selection {
   @apply bg-accent !important
