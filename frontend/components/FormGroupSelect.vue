@@ -2,7 +2,7 @@
 <template>
   <!-- Extra attribute is used for CSS overrides to apply daisyUI theming. Must be at the parent due to how the element is translated to HTML -->
   <UFormGroup data-nuxtui-selectmenu>
-    <USelectMenu v-model="model" :options="options" :value-attribute="valueAttribute || 'id'" />
+    <USelectMenu v-model="model" :options="options" :value-attribute="valueAttribute || 'id'" :leading-icon="icon" />
   </UFormGroup>
 </template>
 
@@ -10,6 +10,7 @@
 import type { ModelRef } from 'vue';
 
 const props = defineProps<{
+  icon: string,
   options: object[],
   valueAttribute?: string,
 }>()
