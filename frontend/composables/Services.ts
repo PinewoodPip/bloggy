@@ -1,10 +1,12 @@
-import UserService from "../services/user"
-import CategoryService from "../services/category"
+import UserService from "~/services/user"
+import CategoryService from "~/services/category"
+import ArticleService from "~/services/article"
 
 // Cached service instances;
 // each composable only ever creates one of each service.
 var userService: UserService|null = null
 var categoryService: CategoryService|null = null
+var articleService: ArticleService|null = null
 
 export const useUserService = () => {
   if (!userService) {
@@ -20,4 +22,12 @@ export const useCategoryService = () => {
     categoryService = new CategoryService(config.public.API_URL as string)
   }
   return categoryService
+}
+
+export const useArticleService = () => {
+  if (!articleService) {
+    const config = useRuntimeConfig()
+    articleService = new ArticleService(config.public.API_URL as string)
+  }
+  return articleService
 }

@@ -60,7 +60,8 @@ declare global {
 
   type Article = ArticlePreview & {
     category: CategoryPreview,
-    content: string, // Raw document text
+    /** Raw document text */
+    content: string,
     view_type: ArticleViewMode,
     can_comment: boolean,
     show_authors: boolean,
@@ -83,10 +84,18 @@ declare global {
     parent_category_path: string,
   }
 
+  type ArticleCreationRequest = {
+    filename: string,
+    title: string,
+    /** Raw document text */
+    content: string,
+  }
+
   type ArticleUpdateRequest = {
     filename?: string,
     title?: string,
-    content?: string, // Raw document text
+    /** Raw document text */
+    content?: string,
     publish_time?: integer, // TODO type
     is_visible?: boolean,
     view_type?: "single_page"|"by_sections",
