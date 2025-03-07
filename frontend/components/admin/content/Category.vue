@@ -30,7 +30,7 @@
         </UTooltip>
         <!-- Create child category button -->
         <UTooltip text="Create category">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-add-2" :override-height="true" @click.stop="emit('createChild', category.id)" />
+          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-create-new-folder" :override-height="true" @click.stop="emit('createChild', category.id)" />
         </UTooltip>
         <!-- Edit button -->
         <UTooltip v-if="canEdit" text="Edit category">
@@ -42,10 +42,10 @@
     <!-- Padding creates a nested tree appearance -->
     <div v-if="!collapsed" class="pl-2">
       <!-- Subcategories; events must be propagated to root -->
-      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit="e => {emit('edit', e)}" />
+      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit-article="(categoryID, article) => {emit('editArticle', categoryID, article)}" @edit="e => {emit('edit', e)}" />
       
       <!-- Articles -->
-      <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', e)}" />
+      <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', category.id, e)}" />
     </div>
   </div>
 </template>
@@ -61,7 +61,7 @@ const emit = defineEmits<{
   createChild: [categoryID],
   createArticle: [categoryID],
   edit: [categoryID],
-  editArticle: [articleID],
+  editArticle: [categoryID, ArticlePreview],
 }>()
 
 const collapsed = ref(true)

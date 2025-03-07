@@ -24,7 +24,7 @@
     <div class="invisible group-hover:visible flex gap-x-2">
       <!-- Edit button -->
       <UTooltip v-if="canEdit" text="Edit article">
-        <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click="emit('edit', article.id)" />
+        <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click="emit('edit', article)" />
       </UTooltip>
     </div>
   </div>
@@ -37,7 +37,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  edit: [articleID],
+  edit: [ArticlePreview],
 }>()
 
 const collapsed = ref(true)

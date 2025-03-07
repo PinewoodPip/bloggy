@@ -39,32 +39,39 @@
 
   <!-- Category creation form -->
   <UModal v-model="creationModalVisible" :overlay="true">
-    <AdminContentCategoryCreationModal :parentCategoryPath="selectedCategoryPath" @created="onCategoryCreated" @close="creationModalVisible = false" />
+    <AdminContentCategoryCreationModal :parentCategoryPath="selectedCategoryPath" @created="onContentChanged" @close="creationModalVisible = false" />
   </UModal>
 
   <!-- Category edit form -->
   <div v-if="categoryBeingEdited">
-    <AdminContentCategoryEditModal v-model="editCategoryModalOpen" :category="categoryBeingEdited" @edit="onCategoryEdited" />
+    <AdminContentCategoryEditModal v-model="editCategoryModalOpen" :category="categoryBeingEdited" @edit="onContentChanged" />
   </div>
 
   <!-- Article creation form -->
-  <ArticleCreationModal v-model="articleCreationModalVisible" :category-path="selectedCategoryPath" @create="onArticleCreated" />
+  <AdminContentArticleCreationModal v-model="articleCreationModalVisible" :category-path="selectedCategoryPath" @create="onContentChanged" />
+
+  <!-- Article edit form -->
+  <div v-if="articleBeingEdited && articleToEdit">
+    <AdminContentArticleEditModal v-model="articleEditModalVisible" :category-path="selectedCategoryPath" :article="articleToEdit" @create="onContentChanged" />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
-import ArticleCreationModal from '~/components/admin/content/ArticleCreationModal.vue'
 
 const categoryService = useCategoryService()
+const articleService = useArticleService()
+const responseToast = useResponseToast()
 
 const searchTerm = ref("")
 const creationModalVisible = ref(false)
 const editCategoryModalOpen = ref(false)
 const articleCreationModalVisible = ref(false)
+const articleEditModalVisible = ref(false)
 const selectedCategoryPath: Ref<string> = ref('/')
 const categoryBeingEdited: Ref<Category | null> = ref(null)
-
-let idToCategory: {[key: categoryID]: Category} = {} // ID map since API gives a tree structure instead
+const articleBeingEdited: Ref<ArticlePreview | null> = ref(null)
+const idToCategory: Ref<{[key: categoryID]: Category}> = ref({}) // ID map since API gives a tree structure instead
 
 function onCategoryCreateChildRequested(id: categoryID) {
   const category = getCategoryByID(id)
@@ -86,28 +93,27 @@ function onCategoryEditRequested(id: categoryID) {
   editCategoryModalOpen.value = true
 }
 
-function onArticleEditRequested(id: articleID) {
-  // TODO
+function onArticleEditRequested(categoryID: categoryID, article: ArticlePreview) {
+  const category = getCategoryByID(categoryID)
+  // Open editing modal
+  selectedCategoryPath.value = category.path
+  articleBeingEdited.value = article
+  refetchArticleToEdit()
 }
 
-// Refetch categories after management operations
-function onCategoryEdited(category: Category) {
+// Refetch categories and articles after management operations
+function onContentChanged() {
   refetchContentTree()
-}
-function onCategoryCreated(category: Category) {
-  refetchContentTree()
-}
-function onArticleCreated(article: Article) {
-  refetchContentTree()
+  articleBeingEdited.value = null
 }
 
 function getCategoryByID(id: categoryID): Category {
-  return idToCategory[id]
+  return idToCategory.value[id]
 }
 
 /** Recursively maps category IDs to their object, for faster by-ID lookups. */
 function mapCategory(category: Category) {
-  idToCategory[category.id] = category
+  idToCategory.value[category.id] = category
   for (const subcategory of category.subcategories) {
     mapCategory(subcategory)
   }
@@ -169,10 +175,27 @@ function isArticleRelevantToSearch(article: ArticlePreview): boolean {
 const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useQuery({
   queryKey: ["contentCategories"],
   queryFn: async () => {
-    idToCategory = {} // Clear ID map; should be done before the fetch in case it fails - we don't want the map to contain stale data in that case
+    idToCategory.value = {} // Clear ID map; should be done before the fetch in case it fails - we don't want the map to contain stale data in that case
     const tree = await categoryService.getCategory('/')
     mapCategory(tree) // Create ID-to-object map
     return tree
+  },
+})
+
+/** Query for fetching full data of the article to edit */
+const { data: articleToEdit, status: articleToEditStatus, refetch: refetchArticleToEdit } = useQuery({
+  queryKey: ["articleToEdit"],
+  queryFn: async () => {
+    if (articleBeingEdited.value) {
+      try {
+        const article = await articleService.getArticle(selectedCategoryPath.value + '/' + articleBeingEdited.value?.filename)
+        articleEditModalVisible.value = true // Show modal
+        return article
+      } catch (err) {
+        responseToast.showError('Failed to load article to edit', err as object)
+      }
+    }
+    return null
   },
 })
 
