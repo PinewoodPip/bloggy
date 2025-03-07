@@ -13,7 +13,7 @@
       </UFormGroup>
     </div>
 
-    <IconButton icon="i-heroicons-arrow-left-on-rectangle" :disabled="!areFieldsFilledIn" class="btn-primary mt-3" @click="login">Log-in</IconButton>
+    <IconButton icon="i-heroicons-arrow-left-on-rectangle" :disabled="!areFieldsFilledIn" class="btn-smp btn-primary mt-3" @click="login">Log-in</IconButton>
   </UContainer>
 </template>
 

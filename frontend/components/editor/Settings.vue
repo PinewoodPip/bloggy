@@ -34,8 +34,8 @@
         <p v-if="conflictingAction">The keybind is already in use by {{ conflictingAction }}; rebinding will clear the keybind for that action.</p>
       </template>
         <template #footer>
-          <IconButton class="btn-primary" icon="i-heroicons-check-16-solid" @click="rebind">Rebind</IconButton>
-          <IconButton class="btn-secondary" icon="i-heroicons-arrow-uturn-left" @click="closeBindingModal">Cancel</IconButton>
+          <IconButton class="btn-smp btn-primary" icon="i-heroicons-check-16-solid" @click="rebind">Rebind</IconButton>
+          <IconButton class="btn-smp btn-secondary" icon="i-heroicons-arrow-uturn-left" @click="closeBindingModal">Cancel</IconButton>
         </template>
     </Modal>
   </UModal>

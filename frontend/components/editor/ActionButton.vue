@@ -1,7 +1,7 @@
 <!-- Button for displaying and executing editor actions. -->
 <template>
   <UTooltip>
-    <IconButton :icon="action.def.icon" :class="btnClass" class="rounded-sm" @pointerdown.prevent @click="useTool" />
+    <IconButton :icon="action.def.icon" :class="btnClass" class="btn-smp rounded-sm" @pointerdown.prevent @click="useTool" />
 
     <template #text>
       <span class="flexcol items-center">

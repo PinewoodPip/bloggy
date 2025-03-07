@@ -4,7 +4,7 @@
 -->
 <template>
   <RouterLink :to="'/admin/' + page">
-    <IconButton :icon="icon" :class="buttonHighlightClass(page)" class="min-w-full justify-start"><slot/></IconButton>
+    <IconButton :icon="icon" :class="buttonHighlightClass(page)" class="btn-smp min-w-full justify-start"><slot/></IconButton>
   </RouterLink>
 </template>
 

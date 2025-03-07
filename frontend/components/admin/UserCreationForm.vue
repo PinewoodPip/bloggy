@@ -29,7 +29,7 @@
     </template>
 
     <template #footer>
-      <IconButton icon="i-heroicons-user-plus" class="btn-primary" @click="confirm" :disabled="!canSubmit || createUserIsPending">
+      <IconButton icon="i-heroicons-user-plus" class="btn-smp btn-primary" @click="confirm" :disabled="!canSubmit || createUserIsPending">
         <span>
           <!-- Show loading spinner while posting -->
           <span v-if="createUserIsPending || updateUserIsPending" class="loading loading-spinner"/>

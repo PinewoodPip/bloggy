@@ -12,6 +12,18 @@
   @apply flexcol bg-base-100 rounded-box p-4
 }
 
+.large-line-height {
+  height: 2.5rem !important;
+}
+
+/* A button slightly larger than btn-sm */
+.btn-smp {
+  @apply btn-sm
+}
+.btn-smp {
+  height: 2.5rem !important;
+}
+
 /* Global element styles */
 h1 {
   @apply font-bold

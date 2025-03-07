@@ -35,9 +35,9 @@
 
       <!-- Session management buttons -->
       <div class="flex gap-x-2 my-auto">
-        <IconButton icon="i-material-symbols-save-outline" class="btn-primary" @click="saveDocument">Publish</IconButton>
-        <IconButton icon="i-heroicons-archive-box-arrow-down" class="btn-primary" @click="saveDraft">Save draft</IconButton>
-        <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-error" @click="saveDraft">Exit</IconButton>
+        <IconButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" @click="saveDocument">Publish</IconButton>
+        <IconButton icon="i-heroicons-archive-box-arrow-down" class="btn-smp btn-primary" @click="saveDraft">Save draft</IconButton>
+        <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-smp btn-error" @click="saveDraft">Exit</IconButton>
       </div>
     </div>
 
