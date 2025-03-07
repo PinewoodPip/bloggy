@@ -30,7 +30,7 @@
       <div class="flex-grow overflow-x-auto">
         <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
           <!-- Render root category; subcategories will be rendered recursively -->
-          <AdminContentCategory :category="contentTree" @create-child="onCategoryCreateChildRequested" @edit="onCategoryEditRequested" />
+          <AdminContentCategory :category="contentTree" :relevant-categories="relevantCategories" @create-child="onCategoryCreateChildRequested" @edit="onCategoryEditRequested" />
         </div>
         <div v-else class="loading loading-spinner" />
       </div>
@@ -92,6 +92,41 @@ function mapCategory(category: Category) {
   idToCategory[category.id] = category
   for (const subcategory of category.subcategories) {
     mapCategory(subcategory)
+  }
+}
+
+function isRelevantToSearch(category: Category): boolean {
+  const name = category.name.toLocaleLowerCase()
+  const directory = category.directory_name.toLocaleLowerCase()
+  let relevant = name.includes(searchTerm.value) || directory.includes(searchTerm.value)
+  if (!relevant) {
+    // Search in subcategories; the category will also be considered relevant if any child is, so the tree can be displayed properly
+    for (const subcategory of category.subcategories) {
+      relevant = isRelevantToSearch(subcategory)
+      if (relevant) break;
+    }
+  }
+  return relevant
+}
+
+/** Set of IDs of categories relevant to the search term. */
+const relevantCategories = computed(() => {
+  const set: Set<categoryID> = new Set()
+  if (contentTree.value) {
+    addFilteredCategories(set, contentTree.value)
+    set.add(contentTree.value.id) // Always include the root category
+  }
+  return set
+})
+
+/** Recursively marks categories as relevant to the search term. */
+function addFilteredCategories(set: Set<categoryID>, category: Category) {
+  const relevant = isRelevantToSearch(category)
+  if (relevant) {
+    set.add(category.id)
+  }
+  for (const subcategory of category.subcategories) {
+    addFilteredCategories(set, subcategory)
   }
 }
 

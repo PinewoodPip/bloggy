@@ -38,7 +38,7 @@
     <!-- Subcategories -->
     <!-- Padding creates a nested tree appearance -->
     <div v-if="!collapsed" class="pl-2">
-      <Category v-for="subcategory in category.subcategories" :category="subcategory" @create-child="e => {emit('createChild', e)}" @edit="e => {emit('edit', e)}" />
+      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevant-categories="relevantCategories" @create-child="e => {emit('createChild', e)}" @edit="e => {emit('edit', e)}" />
     </div>
   </div>
 </template>
@@ -47,6 +47,7 @@
 
 const props = defineProps<{
   category: Category,
+  relevantCategories: Set<categoryID>,
 }>()
 
 const emit = defineEmits<{
@@ -58,6 +59,16 @@ const collapsed = ref(true)
 
 const canEdit = computed(() => {
   return props.category.path !== '/' // Cannot edit root
+})
+
+const filteredSubcategories = computed(() => {
+  const categories = []
+  for (const subcategory of props.category.subcategories) {
+    if (props.relevantCategories.has(subcategory.id)) {
+      categories.push(subcategory)
+    }
+  }
+  return categories
 })
 
 /** Whether the category has no subcategories nor articles. */
