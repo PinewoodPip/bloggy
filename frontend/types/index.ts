@@ -33,18 +33,47 @@ declare global {
     contact_email?: string|null,
   }
 
-  type categoryID = integer
-  type categorySortingMode = "chronological"|"manual"
-  type categoryViewMode = "vertical"|"grid"
-
-  type Category = {
+  type CategoryPreview = {
     id: categoryID,
     name: string,
     directory_name: string,
     view_type: categoryViewMode,
     sorting_type: categorySortingMode,
+  }
+
+  type ArticleViewMode = "single_page"|"by_sections"
+
+  type articleID = integer
+
+  type ArticlePreview = {
+    id: integer,
+    filename: string,
+    title: string,
+    creation_time: Date, // TODO
+    publish_time?: Date, // TODO
+    is_visible: boolean,
+    category_path: string,
+    /** Full path to article */
     path: string,
-    articles: ArticleMetadata[],
+    category_sorting_index: integer,
+  }
+
+  type Article = ArticlePreview & {
+    category: CategoryPreview,
+    content: string, // Raw document text
+    view_type: ArticleViewMode,
+    can_comment: boolean,
+    show_authors: boolean,
+    authors: User[],
+  }
+
+  type categoryID = integer
+  type categorySortingMode = "chronological"|"manual"
+  type categoryViewMode = "vertical"|"grid"
+
+  type Category = CategoryPreview & {
+    path: string,
+    articles: ArticlePreview[],
     subcategories: Category[],
   }
 
@@ -74,5 +103,10 @@ declare global {
     view_type?: categoryViewMode,
     sorting_type?: categorySortingMode,
     parent_category_path?: string,
+  }
+
+  interface ContentPanelRelevantSearchItems {
+    CategoryIDs: Set<categoryID>,
+    ArticleIDs: Set<articleID>,
   }
 }

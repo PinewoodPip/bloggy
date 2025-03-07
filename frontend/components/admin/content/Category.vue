@@ -30,15 +30,18 @@
         </UTooltip>
         <!-- Edit button -->
         <UTooltip v-if="canEdit" text="Edit category">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" tooltip="Edit category" :override-height="true" @click.stop="emit('edit', category.id)" />
+          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click.stop="emit('edit', category.id)" />
         </UTooltip>
       </div>
     </div>
 
-    <!-- Subcategories -->
     <!-- Padding creates a nested tree appearance -->
     <div v-if="!collapsed" class="pl-2">
-      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevant-categories="relevantCategories" @create-child="e => {emit('createChild', e)}" @edit="e => {emit('edit', e)}" />
+      <!-- Subcategories -->
+      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @edit="e => {emit('edit', e)}" />
+      
+      <!-- Articles -->
+      <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', e)}" />
     </div>
   </div>
 </template>
@@ -47,12 +50,13 @@
 
 const props = defineProps<{
   category: Category,
-  relevantCategories: Set<categoryID>,
+  relevantItems: ContentPanelRelevantSearchItems,
 }>()
 
 const emit = defineEmits<{
   createChild: [categoryID],
   edit: [categoryID],
+  editArticle: [articleID],
 }>()
 
 const collapsed = ref(true)
@@ -64,11 +68,17 @@ const canEdit = computed(() => {
 const filteredSubcategories = computed(() => {
   const categories = []
   for (const subcategory of props.category.subcategories) {
-    if (props.relevantCategories.has(subcategory.id)) {
+    if (props.relevantItems.CategoryIDs.has(subcategory.id)) {
       categories.push(subcategory)
     }
   }
   return categories
+})
+
+const filteredArticles = computed(() => {
+  return props.category.articles.filter((article) => {
+    return props.relevantItems.ArticleIDs.has(article.id)
+  })
 })
 
 /** Whether the category has no subcategories nor articles. */
