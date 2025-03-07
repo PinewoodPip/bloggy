@@ -10,7 +10,7 @@
       
       <!-- Filename -->
       <!-- TODO preview path in help -->
-      <FormGroupInputField v-model="articleData.filename" label="Directory name" help="Determines the URL of the article" icon="i-material-symbols-link" :required="true" />
+      <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article" icon="i-material-symbols-link" :required="true" />
     </template>
 
     <template #footer>
@@ -64,7 +64,7 @@ watchEffect(() => {
 /** Query for creating the article */
 const { mutate: requestCreation, status: creationStatus } = useMutation({
   mutationFn: (request: ArticleCreationRequest) => {
-    return articleService.createArticle(props.categoryPath + '/' + request.filename, request)
+    return articleService.createArticle((props.categoryPath === '/' ? '' : props.categoryPath) + '/' + request.filename, request)
   },
   onSuccess: (article) => {
     emit('create', article)
