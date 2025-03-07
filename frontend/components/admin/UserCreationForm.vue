@@ -9,23 +9,20 @@
       <AvatarIcon class="size-24 mx-auto"/>
 
       <!-- Form fields -->
-      <UFormGroup label="Username" help="Should be 8+ characters long">
-        <InputField v-model="username" placeholder="username" icon="i-heroicons-user" required />
-      </UFormGroup>
-      <UFormGroup :label="isEditing ? 'New password' : 'Password'" help="Should be 8+ characters, with at least 1 digit and special character" :error="passwordError">
-        <InputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" data-nuxtui-input />
-      </UFormGroup>
-      <UFormGroup label="Repeat password" :error="passwordConfirmationError">
-        <InputField v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" :required="!isEditing" />
-      </UFormGroup>
+      <!-- Username -->
+      <FormGroupInputField v-model="username" placeholder="username" icon="i-heroicons-user" label="Username" help="Should be 8+ characters long" />
+      <!-- Password -->
+      <FormGroupInputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" :label="isEditing ? 'New password' : 'Password'" help="Should be 8+ characters, with at least 1 digit and special character" :error="passwordError" :required="!isEditing" />
+
+      <!-- Password confirmation -->
+      <FormGroupInputField v-model="passwordConfirmation" type="password" placeholder="" icon="i-heroicons-hashtag" label="Repeat password" :error="passwordConfirmationError" :required="!isEditing" />
 
       <!-- Following fields are valid for editor accounts only -->
-      <UFormGroup v-if="!isEditingAdmin" label="Display name">
-        <InputField v-model="displayName" placeholder="Mr. User" icon="i-heroicons-user" required />
-      </UFormGroup>
-      <UFormGroup v-if="!isEditingAdmin" label="Contact e-mail" :error="emailError">
-        <InputField v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" />
-      </UFormGroup>
+      <!-- Display name -->
+      <FormGroupInputField v-if="!isEditingAdmin" v-model="displayName" label="Display name" placeholder="Mr. User" icon="i-heroicons-user" required />
+      <!-- Contact email -->
+      <FormGroupInputField v-if="!isEditingAdmin" v-model="contactEmail" type="email" placeholder="example@example.com" icon="i-heroicons-envelope" label="Contact e-mail" :error="emailError" />
+      <!-- Biography -->
       <UFormGroup v-if="!isEditingAdmin" label="Biography">
         <TextArea v-model="biography" />
       </UFormGroup>

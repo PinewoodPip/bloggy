@@ -6,11 +6,11 @@
 
     <template #form>
       <!-- Title -->
-      <FormGroupInputField v-model="patchData.name" label="Name" help="User-friendly title" icon="i-material-symbols-title" :required="true" />
+      <FormGroupInputField v-model="patchData.name" label="Name" help="User-friendly title" icon="i-material-symbols-title" />
       
       <!-- Directory name -->
       <!-- TODO preview path in help -->
-      <FormGroupInputField v-model="patchData.directory_name" label="Directory name" help="Determines the URL of the category" icon="i-material-symbols-link" :required="true" />
+      <FormGroupInputField v-model="patchData.directory_name" label="Directory name" help="Determines the URL of the category" icon="i-material-symbols-link" />
       
       <!-- Sorting mode -->
       <FormGroupSelect v-model="patchData.sorting_type" :options="sortingOptions" label="Article sorting" help="Determines how articles are sorted when browsing the category." icon="i-material-symbols-sort" />

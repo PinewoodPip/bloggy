@@ -1,7 +1,7 @@
 <!-- Wrapper for UFormGroup and InputField -->
 <template>
-  <UFormGroup>
-    <InputField v-model="model" :placeholder="placeholder" :icon="icon" :required="required" />
+  <UFormGroup :required="required">
+    <InputField v-model="model" :placeholder="placeholder" :icon="icon" />
   </UFormGroup>
 </template>
 

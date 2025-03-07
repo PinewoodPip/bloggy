@@ -6,12 +6,10 @@
     </template>
 
     <template #form>
-      <UFormGroup label="Name" help="User-friendly name">
-        <InputField v-model="categoryName" placeholder="New category" icon="i-heroicons-user" required />
-      </UFormGroup>
-      <UFormGroup label="Directory name" :help="directoryNameHelp">
-        <InputField v-model="categoryDirectoryName" placeholder="new_category" icon="i-heroicons-user" required />
-      </UFormGroup>
+      <!-- Title -->
+      <FormGroupInputField v-model="categoryName" placeholder="New category" icon="i-heroicons-user" label="Name" help="User-friendly name" required />
+      <!-- Directory name -->
+      <FormGroupInputField v-model="categoryDirectoryName" placeholder="new_category" icon="i-heroicons-user" label="Directory name" :help="directoryNameHelp" required />
     </template>
 
     <template #footer>
