@@ -1,0 +1,90 @@
+<template>
+  <FullscreenModal v-model="model">
+    <template #headerTitle>
+      <h2>Create article</h2>
+    </template>
+
+    <template #form>
+      <!-- Title -->
+      <FormGroupInputField v-model="articleData.title" label="Title" icon="i-material-symbols-title" :required="true" />
+      
+      <!-- Filename -->
+      <!-- TODO preview path in help -->
+      <FormGroupInputField v-model="articleData.filename" label="Directory name" help="Determines the URL of the article" icon="i-material-symbols-link" :required="true" />
+    </template>
+
+    <template #footer>
+      <MutationButton class="btn-primary" :status="creationStatus" :disabled="!canConfirm" @click="confirm">Create</MutationButton>
+    </template>
+  </FullscreenModal>
+</template>
+
+<script setup lang="ts">
+import { useMutation } from '@tanstack/vue-query';
+import type { ModelRef, Reactive } from 'vue';
+
+const articleService = useArticleService()
+const responseToast = useResponseToast()
+
+const props = defineProps<{
+  categoryPath: string,
+}>()
+
+const emit = defineEmits<{
+  create: [Article],
+}>()
+
+const model: ModelRef<boolean> = defineModel({
+  default: false,
+})
+
+const articleData: Reactive<ArticleCreationRequest> = reactive({
+  filename: '',
+  title: '',
+  content: '',
+})
+
+function confirm() {
+  requestCreation(articleData)
+}
+
+const canConfirm = computed(() => {
+  return true // TODO validate fields
+})
+
+// Reset field values when the category prop is set
+watchEffect(() => {
+  if (props.categoryPath) {
+    articleData.filename = ''
+    articleData.title = ''
+    articleData.content = ''
+  }
+})
+
+/** Query for creating the article */
+const { mutate: requestCreation, status: creationStatus } = useMutation({
+  mutationFn: (request: ArticleCreationRequest) => {
+    return articleService.createArticle(props.categoryPath + '/' + request.filename, request)
+  },
+  onSuccess: (article) => {
+    emit('create', article)
+    responseToast.showSuccess('Article created')
+    model.value = false // Close the modal
+  },
+  onError: (err) => {
+    responseToast.showError('Failed to create article', err)
+  }
+})
+
+defineShortcuts({
+  // Enter key submits the form
+  enter: {
+    usingInput: true,
+    whenever: [canConfirm],
+    handler: () => {
+      confirm()
+    },
+  }
+})
+
+</script>

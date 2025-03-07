@@ -24,6 +24,10 @@
 
       <!-- Management buttons; stop modifier prevents clicks from also toggling children -->
       <div class="invisible group-hover:visible flex gap-x-2">
+        <!-- Create article button -->
+        <UTooltip text="Create article">
+          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-add-notes" :override-height="true" @click.stop="emit('createArticle', category.id)" />
+        </UTooltip>
         <!-- Create child category button -->
         <UTooltip text="Create category">
           <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-add-2" :override-height="true" @click.stop="emit('createChild', category.id)" />
@@ -37,8 +41,8 @@
 
     <!-- Padding creates a nested tree appearance -->
     <div v-if="!collapsed" class="pl-2">
-      <!-- Subcategories -->
-      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @edit="e => {emit('edit', e)}" />
+      <!-- Subcategories; events must be propagated to root -->
+      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit="e => {emit('edit', e)}" />
       
       <!-- Articles -->
       <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', e)}" />
@@ -55,6 +59,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   createChild: [categoryID],
+  createArticle: [categoryID],
   edit: [categoryID],
   editArticle: [articleID],
 }>()

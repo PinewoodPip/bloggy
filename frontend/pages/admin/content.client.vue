@@ -30,7 +30,7 @@
       <div class="flex-grow overflow-x-auto">
         <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
           <!-- Render root category; subcategories will be rendered recursively -->
-          <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" />
+          <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" />
         </div>
         <div v-else class="loading loading-spinner" />
       </div>
@@ -46,16 +46,21 @@
   <div v-if="categoryBeingEdited">
     <AdminContentCategoryEditModal v-model="editCategoryModalOpen" :category="categoryBeingEdited" @edit="onCategoryEdited" />
   </div>
+
+  <!-- Article creation form -->
+  <ArticleCreationModal v-model="articleCreationModalVisible" :category-path="selectedCategoryPath" @create="onArticleCreated" />
 </template>
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
+import ArticleCreationModal from '~/components/admin/content/ArticleCreationModal.vue'
 
 const categoryService = useCategoryService()
 
 const searchTerm = ref("")
 const creationModalVisible = ref(false)
 const editCategoryModalOpen = ref(false)
+const articleCreationModalVisible = ref(false)
 const selectedCategoryPath: Ref<string> = ref('/')
 const categoryBeingEdited: Ref<Category | null> = ref(null)
 
@@ -66,6 +71,12 @@ function onCategoryCreateChildRequested(id: categoryID) {
   // Open creation modal
   selectedCategoryPath.value = category.path
   creationModalVisible.value = true
+}
+
+function onArticleCreateRequested(id: categoryID) {
+  const category = getCategoryByID(id)
+  selectedCategoryPath.value = category.path
+  articleCreationModalVisible.value = true
 }
 
 function onCategoryEditRequested(id: categoryID) {
@@ -84,6 +95,9 @@ function onCategoryEdited(category: Category) {
   refetchContentTree()
 }
 function onCategoryCreated(category: Category) {
+  refetchContentTree()
+}
+function onArticleCreated(article: Article) {
   refetchContentTree()
 }
 
