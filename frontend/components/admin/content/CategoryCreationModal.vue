@@ -27,8 +27,7 @@ import { useMutation } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios';
 
 const categoryService = useCategoryService()
-const errorStringifier = useResponseStringifier()
-const toast = useToast()
+const responseToast = useResponseToast()
 
 const categoryName = ref('')
 const categoryDirectoryName = ref('')
@@ -65,10 +64,11 @@ const { mutate: requestCreation, status: creationStatus } = useMutation({
   },
   onSuccess: (category) => {
     emit('created', category)
+    responseToast.showSuccess('Category created')
     emit('close')
   },
   onError: (err) => {
-    toast.add({title: "Failed to create category", description: errorStringifier.stringify(err as AxiosError), color: "red"})
+    responseToast.showError('Failed to create category', err)
   }
 })
 

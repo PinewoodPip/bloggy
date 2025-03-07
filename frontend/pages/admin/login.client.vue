@@ -21,10 +21,9 @@
 import UserService from "../../services/user"
 
 const config = useRuntimeConfig()
-const errorStringifier = useResponseStringifier()
 const userService = new UserService(config.public.API_URL as string)
 const router = useRouter()
-const toast = useToast()
+const responseToast = useResponseToast()
 
 const username = ref("")
 const password = ref("")
@@ -35,10 +34,10 @@ const areFieldsFilledIn = computed(() => {
 
 function login() {
   userService.login(username.value, password.value).then(() => {
-    toast.add({title: "Logged in", description: `Welcome back ${userService.getCurrentUsername()}`, color: "green"})
+    responseToast.showSuccess('Logged in', `Welcome back ${userService.getCurrentUsername()}`)
     router.push("/admin/users") // Redirect to control panel
-  }).catch((e) => {
-    toast.add({title: "Failed to login", description: errorStringifier.stringify(e), color: "red"})
+  }).catch((err) => {
+    responseToast.showError('Failed to login', err)
   })
 }
 

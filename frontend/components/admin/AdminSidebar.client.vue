@@ -45,11 +45,12 @@
 <script setup lang="ts">
 import { _themes as daisyThemes } from '#tailwind-config/daisyui'
 
-const toast = useToast()
 const router = useRouter()
 const colorMode = useColorMode();
 const userService = useUserService()
 const { data: user, refetch: refetchUser } = useLoggedInUser()
+const responseToast = useResponseToast()
+const toast = useToast()
 
 const themes = [
   "system", ...new Set(daisyThemes)
@@ -71,11 +72,11 @@ function logout() {
 
 function onUserEdited(user: User) {
   accountEditFormVisible.value = false // Close modal
-  toast.add({title: "User updated", description: `Your account information was updated.`, color: "green"})
+  responseToast.showSuccess('User updated', 'Your account information was updated.')
 
   // If the username changed, the token is no longer valid and the user must log back in
   if (user.username !== userService.getCurrentUsername()) {
-    toast.add({title: "Username updated", description: `Your username was updated; please log back in.`, color: "yellow"})
+    responseToast.showWarning('Username updated', 'Your username was updated; please log back in.')
     userService.clearAuth()
     router.push('/admin/login')
   } else {

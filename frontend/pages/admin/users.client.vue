@@ -44,7 +44,7 @@
 import { useQuery } from '@tanstack/vue-query'
 
 const userService = useUserService()
-const toast = useToast()
+const responseToast = useResponseToast()
 
 const searchTerm = ref("")
 const userCreationFormVisible = ref(false)
@@ -66,14 +66,14 @@ function onUserCreated(user: User) {
   userCreationFormVisible.value = false // Close modal
   refetchUsers() // Update user list
 
-  toast.add({title: "User created", description: `Account for ${user.display_name} was created.`, color: "green"})
+  responseToast.showSuccess('User created', `Account for ${user.display_name} was created.`)
 }
 
 function onUserEdited(user: User) {
   userEditFormVisible.value = false // Close modal
   refetchUsers() // Update user list
 
-  toast.add({title: "User update", description: `${user.display_name ? user.display_name : user.username}'s account information was updated.`, color: "green"})
+  responseToast.showSuccess('User updated', `${user.display_name ? user.display_name : user.username}'s account information was updated.`)
 }
 
 /** Displayed users, after search filters */
@@ -92,7 +92,7 @@ const filteredUsers = computed(() => {
 
 /** Query for user list */
 // TODO display fetch errors
-const { isPending: usersArePending, isError: usersHasError, data: users, error: usersError, refetch: refetchUsers } = useQuery({
+const { data: users, refetch: refetchUsers } = useQuery({
   queryKey: ["allUsers"],
   queryFn: async () => {
     return await userService.getAll()

@@ -11,6 +11,12 @@ export const useResponseToast = () => {
     showSuccess(title: string, description?: string) {
       toast.add({title: title, description: description, color: 'green'})
     },
+
+    /** Displays a toast for a warning. */
+    showWarning(title: string, description?: string) {
+      toast.add({title: title, description: description, color: "yellow"})
+    },
+
     /** Displays a toast for a failed operation. */
     showError(title: string, err: object) {
       toast.add({title: title, description: stringifier.stringify(err as AxiosError), color: 'red'})

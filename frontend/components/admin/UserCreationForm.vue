@@ -42,11 +42,9 @@
 
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query'
-import type { AxiosError } from 'axios'
 
-const errorStringifier = useResponseStringifier()
 const userService = useUserService()
-const toast = useToast()
+const responseToast = useResponseToast()
 
 const MINIMUM_PASSWORD_LENGTH = 8 // Should be same as in backend
 
@@ -175,7 +173,7 @@ const { isPending: createUserIsPending, mutate: requestCreateAccount } = useMuta
     emit("create", user)
   },
   onError: (err) => {
-    toast.add({title: "Failed to create user", description: errorStringifier.stringify(err as AxiosError), color: "red"})
+    responseToast.showError('Failed to create user', err)
   }
 })
 
@@ -191,7 +189,7 @@ const { isPending: updateUserIsPending, mutate: requestUpdateAccount } = useMuta
     emit("update", user)
   },
   onError: (err) => {
-    toast.add({title: "Failed to update user", description: errorStringifier.stringify(err as AxiosError), color: "red"})
+    responseToast.showError('Failed to update user', err)
   }
 })
 

@@ -26,12 +26,10 @@
 
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query';
-import type { AxiosError } from 'axios';
 import type { ModelRef } from 'vue';
 
 const categoryService = useCategoryService()
-const errorStringifier = useResponseStringifier()
-const toast = useToast()
+const responseToast = useResponseToast()
 
 const props = defineProps<{
   category: Category,
@@ -105,7 +103,7 @@ const { mutate: requestPatch, status: patchingStatus } = useMutation({
     model.value = false // Close the modal
   },
   onError: (err) => {
-    toast.add({title: "Failed to edit category", description: errorStringifier.stringify(err as AxiosError), color: "red"})
+    responseToast.showError('Failed to edit category', err)
   }
 })
 
