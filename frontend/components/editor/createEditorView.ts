@@ -24,13 +24,17 @@ export function createEditorView(element: HTMLElement, nodeViews: Record<string,
       doc: DOMParser.fromSchema(schema).parse(content),
       schema, // Starting document
       plugins: [
-        ...exampleSetup({ schema: schema, mapKeys: {
-          // Disable default keybinds from the example setup module
-          ['Mod-z']: false,
-          ['Mod-y']: false,
-          ['Mod-b']: false,
-          ['Mod-i']: false,
-        } }),
+        ...exampleSetup({
+          schema: schema,
+          mapKeys: {
+            // Disable default keybinds from the example setup module
+            ['Mod-z']: false,
+            ['Mod-y']: false,
+            ['Mod-b']: false,
+            ['Mod-i']: false,
+          },
+          menuBar: false,
+        }),
         keymap({
           // Ctrl + [ increases indent
           'Mod-[': (state, dispatch) => {
