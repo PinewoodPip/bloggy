@@ -3,7 +3,7 @@
  */
 import type { EditorState, Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
-import type { ActionGroup, keybind } from '../Editor'
+import type { ToolbarGroup, ToolbarGroupAction, keybind } from '../Editor'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -107,12 +107,12 @@ export class FormatInlineCode extends Action {
   }
 }
 
-export const actionGroup: ActionGroup = {
+export const actionGroup: ToolbarGroup = {
   name: 'Formatting',
-  actions: [
-    FormatBold.ID,
-    FormatItalic.ID,
-    FormatUnderline.ID,
-    FormatInlineCode.ID,
+  items: [
+    {type: 'action', actionID: FormatBold.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: FormatItalic.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: FormatUnderline.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: FormatInlineCode.ID} as ToolbarGroupAction,
   ]
 }

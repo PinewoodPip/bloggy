@@ -4,6 +4,9 @@
 import * as Editor from './Editor'
 import * as HistoryActions from './action/History'
 import * as FormattingActions from './action/Formatting'
+import * as SectioningActions from './action/Sectioning'
+import type { Action } from './action/Action'
+import type { ToolbarGroupActionMenu, actionID } from './Editor'
 
 export const useEditor = () => {
   // Create editor
@@ -13,21 +16,41 @@ export const useEditor = () => {
   // History actions
   editor.registerAction(new HistoryActions.Undo())
   editor.registerAction(new HistoryActions.Redo())
-  editor.registerActionGroup(HistoryActions.actionGroup)
+  editor.registerToolbarGroup(HistoryActions.actionGroup)
 
   // Formatting actions
   editor.registerAction(new FormattingActions.FormatBold())
   editor.registerAction(new FormattingActions.FormatItalic())
   editor.registerAction(new FormattingActions.FormatUnderline())
   editor.registerAction(new FormattingActions.FormatInlineCode())
-  editor.registerActionGroup(FormattingActions.actionGroup)
+  editor.registerToolbarGroup(FormattingActions.actionGroup)
+
+  // Sectioning blocks
+  const headingActions: Action[] = []
+  const headingActionIDs: actionID[] = []
+  for (let i = 1; i <= 6; ++i) {
+    const action = new SectioningActions.SetHeading(i)
+    editor.registerAction(action)
+    headingActions.push(action)
+    headingActionIDs.push(action.def.id)
+  }
+  editor.registerToolbarGroup({
+    name: 'Sectioning',
+    items: [
+      {
+        type: 'actionMenu',
+        icon: 'i-material-symbols-h-mobiledata-badge-outline',
+        name: 'Set Heading',
+        actionIDs: headingActionIDs,
+      } as ToolbarGroupActionMenu
+    ],
+  })
 
   // Set default keybinds
-  for (const group of editor.actionGroups) {
-    for (const actionID of group.actions) {
-      const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
-      editor.setActionKeybind(actionID, defaultKeybind)
-    }
+  for (const action of Object.values(editor.actions)) {
+    const actionID = action.def.id
+    const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
+    editor.setActionKeybind(actionID, defaultKeybind)
   }
 
   return editor

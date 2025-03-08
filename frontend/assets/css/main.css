@@ -26,7 +26,24 @@
 
 /* Global element styles */
 h1 {
-  @apply font-bold
+  font-size: larger;
+  font-weight: 700;
+}
+h2 {
+  font-size: large;
+  font-weight: 600;
+}
+h3 {
+  font-weight: 500;
+}
+h4 {
+  font-weight: 400;
+}
+h5 {
+  font-weight: 300;
+}
+h6 {
+  font-weight: 200;
 }
 
 /* 

@@ -32,16 +32,35 @@ export interface IAction {
   getDefaultKeyCombo(): keybind | null,
 }
 
-/** Groups multiple related actions. */
-export interface ActionGroup {
+export type actionGroupItemType = 'action'|'actionMenu'
+
+export interface ToolbarGroupItem {
+  type: actionGroupItemType,
+}
+
+export interface ToolbarGroupAction extends ToolbarGroupItem {
+  type: 'action',
+  actionID: string,
+}
+
+/** Groups up actions into a single toolbar item that opens a menu containing each action. */
+export interface ToolbarGroupActionMenu extends ToolbarGroupItem {
+  type: 'actionMenu',
   name: string,
-  actions: string[]
+  icon: string,
+  actionIDs: string[],
+}
+
+/** Groups multiple related toolbar items. */
+export interface ToolbarGroup {
+  name: string,
+  items: ToolbarGroupItem[],
 }
 
 /** Main editor model class. Holds registered actions. */
 export class Editor {
   actions: {[id: actionID]: IAction} = {}
-  actionGroups: ActionGroup[] = []
+  toolbarGroups: ToolbarGroup[] = []
 
   // Action keybind mappings
   private customActionBindings: {[id: actionID]: keybind} = {}
@@ -53,13 +72,13 @@ export class Editor {
   }
 
   /** Registers an action group. Will be the last in the list. */
-  registerActionGroup(group: ActionGroup) {
-    this.actionGroups.push(group)
+  registerToolbarGroup(group: ToolbarGroup) {
+    this.toolbarGroups.push(group)
   }
 
   /** Returns all action groups in order of registration. */
-  getActionGroups(): ActionGroup[] {
-    return this.actionGroups
+  getToolbarGroups(): ToolbarGroup[] {
+    return this.toolbarGroups
   }
 
   /** Returns a registered action by its ID. */

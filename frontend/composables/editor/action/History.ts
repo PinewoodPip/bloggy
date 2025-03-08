@@ -3,7 +3,7 @@
  */
 import { redo as redoCommand, undo as undoCommand } from 'prosemirror-history'
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { ActionGroup, keybind } from '../Editor'
+import type { ToolbarGroup, ToolbarGroupAction, keybind } from '../Editor'
 import { Action } from './Action'
 
 export class Undo extends Action {
@@ -46,10 +46,10 @@ export class Redo extends Action {
   }
 }
 
-export const actionGroup: ActionGroup = {
+export const actionGroup: ToolbarGroup = {
   name: 'History',
-  actions: [
-    Undo.ID,
-    Redo.ID,
+  items: [
+    {type: 'action', actionID: Undo.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: Redo.ID} as ToolbarGroupAction,
   ]
 }

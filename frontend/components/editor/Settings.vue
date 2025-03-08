@@ -8,11 +8,11 @@
       <!-- Keybinds -->
       <h3>Keybinds</h3>
       <!-- Groups -->
-      <div v-for="group in editor.actionGroups">
+      <div v-for="group in editor.toolbarGroups">
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsKeybind v-for="actionID in group.actions" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind"/>
+          <EditorSettingsKeybind v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind"/>
         </div>
       </div>
     </template>
@@ -26,7 +26,7 @@
       </template>
       <template #form>
         <span class="flex gap-x-2">
-          <span>Press the new keybind for {{ pendingRebindActionID }}:</span>
+          <span>Press the new keybind for {{ pendingRebindActionName }}:</span>
           <span v-if="pendingRebindKeybind"><UKbd class="badge badge-neutral">{{ keybindStringifier.stringify(pendingRebindKeybind) }}</UKbd></span>
           <span v-else>Unbound</span>
         </span>
@@ -77,6 +77,20 @@ function resetBindingModal() {
   conflictingAction.value = null
 }
 
+function getGroupActions(group: Editor.ToolbarGroup): Editor.actionID[] {
+  const actions: Editor.actionID[] = []
+  for (const item of group.items) {
+    if (item.type === 'action') {
+      actions.push((item as Editor.ToolbarGroupAction).actionID)
+    } else if (item.type === 'actionMenu') {
+      for (const actionID of (item as Editor.ToolbarGroupActionMenu).actionIDs) {
+        actions.push(actionID)
+      }
+    }
+  }
+  return actions
+}
+
 /** Returns whether an action's keybind is the default one. */
 function isKeybindDefault(actionID: string) {
   const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
@@ -94,6 +108,10 @@ function onResetKeybind(actionID: string) {
   const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
   emit('rebind', actionID, defaultKeybind)
 }
+
+const pendingRebindActionName = computed(() => {
+  return pendingRebindActionID.value ? props.editor.getAction(pendingRebindActionID.value).def.name : ''
+})
 
 // @ts-ignore
 defineShortcuts(useArbitraryKeyshortcuts(
