@@ -14,7 +14,7 @@
     </template>
 
     <template #footer>
-      <MutationButton class="btn-primary" :status="creationStatus" :disabled="!canConfirm" @click="confirm">Create</MutationButton>
+      <MutationButton class="btn-primary" icon="i-material-symbols-article-rounded" :status="creationStatus" :disabled="!canConfirm" @click="confirm">Create</MutationButton>
     </template>
   </FullscreenModal>
 </template>

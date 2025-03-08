@@ -14,7 +14,7 @@
 
     <template #footer>
       <!-- Confirm button -->
-      <IconButton class="btn-smp btn-primary" icon="i-heroicons-user-plus" :disabled="creationStatus === 'pending' || !canCreate" @click="create">
+      <IconButton class="btn-smp btn-primary" icon="i-material-symbols-create-new-folder" :disabled="creationStatus === 'pending' || !canCreate" @click="create">
         <span v-if="creationStatus === 'pending'" class="loading loading-spinner" />
         <span v-else>Create</span>
       </IconButton>

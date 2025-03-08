@@ -26,7 +26,7 @@
     </template>
 
     <template #footer>
-      <MutationButton class="btn-primary" :status="patchStatus" :disabled="!canConfirm" @click="confirm">Save</MutationButton>
+      <MutationButton class="btn-primary" icon="i-material-symbols-edit-document" :status="patchStatus" :disabled="!canConfirm" @click="confirm">Save</MutationButton>
     </template>
   </FullscreenModal>
 </template>

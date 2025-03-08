@@ -19,7 +19,7 @@
     </template>
 
     <template #footer>
-      <MutationButton class="btn-primary" :status="patchingStatus" :disabled="!canConfirm" @click="confirm">Save</MutationButton>
+      <MutationButton class="btn-primary" icon="i-material-symbols-folder-check-2-rounded" :status="patchingStatus" :disabled="!canConfirm" @click="confirm">Save</MutationButton>
     </template>
   </FullscreenModal>
 </template>
