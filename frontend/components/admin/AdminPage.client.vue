@@ -6,12 +6,30 @@
       <!-- Sidebar -->
       <AdminSidebar class="h-100" />
 
-      <!-- Content -->
-      <slot/>
+      <div class="large-content-block flexcol flex-grow h-full">
+        <!-- Header -->
+        <div class="flex justify-between">
+          <h2>
+            <UIcon :name="icon" /> {{ header }}
+          </h2>
+          <p>{{ hint }}</p>
+        </div>
+
+        <hr />
+
+        <!-- Content -->
+        <slot />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+
+const props = defineProps<{
+  icon: string,
+  header: string,
+  hint: string,
+}>()
 
 </script>

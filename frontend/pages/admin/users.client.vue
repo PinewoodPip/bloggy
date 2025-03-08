@@ -1,32 +1,20 @@
 <template>
-  <AdminPage>
-    <div class="large-content-block flexcol flex-grow h-full">
-      <!-- Header -->
-      <div class="flex justify-between">
-        <h2>
-          <UIcon name="i-heroicons-user" /> Users
-        </h2>
-        <p>Manage editor accounts.</p>
-      </div>
+  <AdminPage header="Users" icon="i-heroicons-user" hint="Manage editor accounts.">
+    <div class="flex py-3">
+      <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
 
-      <hr />
+      <HorizontalFill/>
 
-      <div class="flex py-3">
-        <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
+      <!-- Only admins can create accounts -->
+      <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
+    </div>
 
-        <HorizontalFill/>
+    <hr/>
 
-        <!-- Only admins can create accounts -->
-        <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
-      </div>
-
-      <hr/>
-
-      <!-- Users list -->
-      <div class="flex-grow overflow-x-auto">
-        <div class="flexcol gap-y-2">
-          <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin'" @edit="editUser"/>
-        </div>
+    <!-- Users list -->
+    <div class="flex-grow overflow-x-auto">
+      <div class="flexcol gap-y-2">
+        <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin'" @edit="editUser"/>
       </div>
     </div>
   </AdminPage>

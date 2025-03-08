@@ -1,39 +1,26 @@
 <template>
-  <AdminPage>
-    <div class="large-content-block flexcol flex-grow h-full">
-      <!-- Header -->
-      <div class="flex justify-between">
-        <h2>
-          <UIcon name="i-material-symbols-book-2-outline" /> Content
-        </h2>
-        <p>Manage articles and categories.</p>
+  <AdminPage header="Content" icon="i-material-symbols-book-2-outline" hint="Manage articles and categories.">
+    <div class="flex py-3">
+      <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
+
+      <HorizontalFill/>
+
+      <!-- Management buttons; redundant? It's more intuitive to create these by selecting the target category first. -->
+      <!-- <div class="flex gap-x-2">
+        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addCategory">New category</IconButton>
+        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addArticle">New article</IconButton>
+      </div> -->
+    </div>
+
+    <hr/>
+
+    <!-- Content tree -->
+    <div class="flex-grow overflow-x-auto">
+      <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
+        <!-- Render root category; subcategories will be rendered recursively -->
+        <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" />
       </div>
-
-      <hr />
-
-      <div class="flex py-3">
-        <!-- TODO search -->
-        <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
-
-        <HorizontalFill/>
-
-        <!-- Management buttons; redundant? It's more intuitive to create these by selecting the target category first. -->
-        <!-- <div class="flex gap-x-2">
-          <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addCategory">New category</IconButton>
-          <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addArticle">New article</IconButton>
-        </div> -->
-      </div>
-
-      <hr/>
-
-      <!-- Content tree -->
-      <div class="flex-grow overflow-x-auto">
-        <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
-          <!-- Render root category; subcategories will be rendered recursively -->
-          <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" />
-        </div>
-        <div v-else class="loading loading-spinner" />
-      </div>
+      <div v-else class="loading loading-spinner" />
     </div>
   </AdminPage>
 
