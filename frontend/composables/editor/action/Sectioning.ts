@@ -2,7 +2,7 @@
  * Implements actions for inserting section-delimiting document elements,
  * such as headings.
  */
-import { setBlockType } from 'prosemirror-commands'
+import { setBlockType, wrapIn } from 'prosemirror-commands'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { keybind } from '../Editor'
 import { Action } from './Action'
@@ -49,6 +49,28 @@ export class InsertHorizontalRule extends Action {
     const hr = schema.nodes['horizontal_rule']
     const transaction = state.tr.replaceSelectionWith(hr.create()) // Will simply insert the node if the selection is empty
     return transaction
+  }
+  
+  override getDefaultKeyCombo(): keybind | null {
+    return null
+  }
+}
+
+export class MakeQuote extends Action {
+  static override ID: string = 'MakeQuote'
+
+  constructor() {
+    super({
+      id: MakeQuote.ID,
+      name: 'Insert Quote',
+      icon: 'i-material-symbols-format-quote',
+    })
+  }
+
+  execute(state: EditorState): Transaction | null {
+    const quote = schema.nodes['blockquote']
+    const command = wrapIn(quote) // Transform selected nodes into children of a new quote node
+    return this.getTransaction(command, state)
   }
   
   override getDefaultKeyCombo(): keybind | null {

@@ -27,6 +27,7 @@ export const useEditor = () => {
 
   // Sectioning blocks
   editor.registerAction(new SectioningActions.InsertHorizontalRule())
+  editor.registerAction(new SectioningActions.MakeQuote())
   // Creating heading actions
   const headingActions: Action[] = []
   const headingActionIDs: actionID[] = []
@@ -48,7 +49,11 @@ export const useEditor = () => {
       {
         type: 'action',
         actionID: SectioningActions.InsertHorizontalRule.ID,
-      } as Editor.ToolbarGroupAction
+      } as Editor.ToolbarGroupAction,
+      {
+        type: 'action',
+        actionID: SectioningActions.MakeQuote.ID,
+      } as Editor.ToolbarGroupAction,
     ],
   })
 
