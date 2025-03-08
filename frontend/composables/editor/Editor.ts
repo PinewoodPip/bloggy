@@ -73,7 +73,7 @@ export class Editor {
   /** Returns the keybind for an action. */
   getActionKeybind(id: actionID): keybind | null {
     const customKeybind = this.customActionBindings[id]
-    return customKeybind
+    return customKeybind ? customKeybind : null
   }
 
   /** Sets the custom keybind for an action. Use null to clear a binding. */

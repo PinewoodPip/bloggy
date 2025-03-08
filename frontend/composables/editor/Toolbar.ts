@@ -19,6 +19,7 @@ export const useEditor = () => {
   editor.registerAction(new FormattingActions.FormatBold())
   editor.registerAction(new FormattingActions.FormatItalic())
   editor.registerAction(new FormattingActions.FormatUnderline())
+  editor.registerAction(new FormattingActions.FormatInlineCode())
   editor.registerActionGroup(FormattingActions.actionGroup)
 
   // Set default keybinds

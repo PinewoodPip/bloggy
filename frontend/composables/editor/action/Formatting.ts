@@ -82,11 +82,37 @@ export class FormatUnderline extends Action {
   }
 }
 
+export class FormatInlineCode extends Action {
+  static override ID = 'FormatInlineCode'
+
+  constructor() {
+    super({
+      id: FormatInlineCode.ID,
+      name: 'Toggle Inline Code',
+      icon: 'i-material-symbols-code-rounded',
+    })
+  }
+
+  execute(state: EditorState): Transaction | null {
+    const toggleInlineCode = toggleMark(schema.marks.code, null, {}) // TODO extract this helper
+    return this.getTransaction(toggleInlineCode, state)
+  }
+
+  override isActive(state: EditorState): boolean {
+    return this.isMarkActive(state, state.schema.marks.code)
+  }
+
+  override getDefaultKeyCombo(): keybind | null {
+    return null
+  }
+}
+
 export const actionGroup: ActionGroup = {
   name: 'Formatting',
   actions: [
     FormatBold.ID,
     FormatItalic.ID,
     FormatUnderline.ID,
+    FormatInlineCode.ID,
   ]
 }
