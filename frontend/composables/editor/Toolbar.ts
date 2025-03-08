@@ -26,6 +26,8 @@ export const useEditor = () => {
   editor.registerToolbarGroup(FormattingActions.actionGroup)
 
   // Sectioning blocks
+  editor.registerAction(new SectioningActions.InsertHorizontalRule())
+  // Creating heading actions
   const headingActions: Action[] = []
   const headingActionIDs: actionID[] = []
   for (let i = 1; i <= 6; ++i) {
@@ -42,7 +44,11 @@ export const useEditor = () => {
         icon: 'i-material-symbols-h-mobiledata-badge-outline',
         name: 'Set Heading',
         actionIDs: headingActionIDs,
-      } as ToolbarGroupActionMenu
+      } as ToolbarGroupActionMenu,
+      {
+        type: 'action',
+        actionID: SectioningActions.InsertHorizontalRule.ID,
+      } as Editor.ToolbarGroupAction
     ],
   })
 

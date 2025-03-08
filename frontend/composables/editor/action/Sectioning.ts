@@ -33,3 +33,25 @@ export class SetHeading extends Action {
     return null
   }
 }
+
+export class InsertHorizontalRule extends Action {
+  static override ID: string = 'InsertHorizontalRule'
+
+  constructor() {
+    super({
+      id: InsertHorizontalRule.ID,
+      name: 'Insert Horizontal Rule',
+      icon: 'i-material-symbols-horizontal-rule',
+    })
+  }
+
+  execute(state: EditorState): Transaction | null {
+    const hr = schema.nodes['horizontal_rule']
+    const transaction = state.tr.replaceSelectionWith(hr.create()) // Will simply insert the node if the selection is empty
+    return transaction
+  }
+  
+  override getDefaultKeyCombo(): keybind | null {
+    return null
+  }
+}
