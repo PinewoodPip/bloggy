@@ -22,7 +22,7 @@
   <UModal v-model="rebindingModalVisible" :overlay="true">
     <Modal @close="closeBindingModal">
       <template #headerTitle>
-        <h3>Rebind {{ pendingRebindActionID }}</h3>
+        <h3>Rebind {{ pendingRebindActionName }}</h3>
       </template>
       <template #form>
         <span class="flex gap-x-2">
