@@ -104,6 +104,13 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
         "path": f"{category_path}/{article.filename}",
     })
 
+def get_article_path(db: Session, article: Article) -> str:
+    """
+    Returns the URL path to an article.
+    """
+    category_path = CategoryCrud.get_category_path(db, article.category)
+    return f"{category_path}/{article.filename}" if category_path != "/" else f"/{article.filename}" # Avoid extra leading slash
+
 def create_article_output(db: Session, article: Article) -> ArticleOutput:
     """
     Creates an output schema for an article.
@@ -131,5 +138,5 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
         category_path=category_path,
-        path=f"{category_path}/{article.filename}",
+        path=get_article_path(db, article),
     )
