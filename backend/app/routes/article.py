@@ -96,7 +96,7 @@ async def patch_article(category_path: str, article_url: str, article_update: Ar
     return _patch_article(db, "/" + category_path, article_url, article_update)
 
 @router.patch("/{article_url}", response_model=ArticleSchemas.ArticleOutput)
-async def get_article_at_root(article_url: str, article_update: ArticleSchemas.ArticleUpdate, db: Session=Depends(get_db)):
+async def patch_article_at_root(article_url: str, article_update: ArticleSchemas.ArticleUpdate, db: Session=Depends(get_db)):
     """
     Patches an article at the root category.
     It's necessary for this to be a separate endpoint,
