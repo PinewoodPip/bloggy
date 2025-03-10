@@ -45,7 +45,7 @@
       <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit-article="(categoryID, article) => {emit('editArticle', categoryID, article)}" @edit="e => {emit('edit', e)}" />
       
       <!-- Articles -->
-      <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', category.id, e)}" />
+      <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', category.id, e)}" @click="e => {emit('articleClick', category.id, e)}" />
     </div>
   </div>
 </template>
@@ -62,6 +62,7 @@ const emit = defineEmits<{
   createArticle: [categoryID],
   edit: [categoryID],
   editArticle: [categoryID, ArticlePreview],
+  articleClick: [categoryID, ArticlePreview],
 }>()
 
 const collapsed = ref(true)

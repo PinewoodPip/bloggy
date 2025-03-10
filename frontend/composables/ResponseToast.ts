@@ -18,8 +18,8 @@ export const useResponseToast = () => {
     },
 
     /** Displays a toast for a failed operation. */
-    showError(title: string, err: object) {
-      toast.add({title: title, description: stringifier.stringify(err as AxiosError), color: 'red'})
+    showError(title: string, err?: object) {
+      toast.add({title: title, description: err ? stringifier.stringify(err as AxiosError) : undefined, color: 'red'})
     },
   }
 }

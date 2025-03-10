@@ -18,7 +18,7 @@
     <div class="flex-grow overflow-x-auto">
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root category; subcategories will be rendered recursively -->
-        <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" />
+        <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" @article-click="onArticleClick" />
       </div>
       <div v-else class="loading loading-spinner" />
     </div>
@@ -49,6 +49,7 @@ import { useQuery } from '@tanstack/vue-query'
 const categoryService = useCategoryService()
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const router = useRouter()
 
 const searchTerm = ref("")
 const creationModalVisible = ref(false)
@@ -86,6 +87,11 @@ function onArticleEditRequested(categoryID: categoryID, article: ArticlePreview)
   selectedCategoryPath.value = category.path
   articleBeingEdited.value = article
   refetchArticleToEdit()
+}
+
+function onArticleClick(categoryID: categoryID, article: ArticlePreview) {
+  // Open editor for the article
+  router.push('/admin/editor/?article=' + article.path)
 }
 
 // Refetch categories and articles after management operations

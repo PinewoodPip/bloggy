@@ -53,9 +53,10 @@
 
       <!-- Document -->
       <div class="large-content-block flex-grow">
-        <ProsemirrorAdapterProvider>
-          <EditorDocument ref="documentRef"/>
+        <ProsemirrorAdapterProvider v-if="articleData">
+          <EditorDocument ref="documentRef" :initial-content="articleData.content" />
         </ProsemirrorAdapterProvider>
+        <LoadingSpinner v-else />
       </div>
     </div>
   </UContainer>
@@ -72,8 +73,14 @@ import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/composables/editor/Editor'
 import { useEditor } from '~/composables/editor/Toolbar'
+import { useQuery } from '@tanstack/vue-query'
+import type { AxiosError } from 'axios'
 
 const editorRef = useTemplateRef('documentRef')
+const articleService = useArticleService()
+const responseToast = useResponseToast()
+const router = useRouter()
+const route = useRoute()
 
 const editor = ref(useEditor())
 
@@ -219,6 +226,28 @@ function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
 function isKeyComboBound(keyCombo: Editor.actionID) {
   return getKeyComboAction(keyCombo) !== null
 }
+
+/** Query for fetching article metadata and initial content */
+const { data: articleData, status: articleDataStatus } = useQuery({
+  queryKey: ['articleContent'],
+  queryFn: async () => {
+    if (route.query['article']) {
+      return await articleService.getArticle(route.query['article'] as string)
+    } else {
+      return null
+    }
+  },
+  retry: (count, err) => {
+    if ((err as AxiosError).status === 404) {
+      // Redirect back to admin panel if the article URL is invalid
+      responseToast.showError('Article not found')
+      router.push('/admin/content') 
+    } else if (count == 1) { // Show error on first failed fetch
+      responseToast.showError('Failed to load article content', err)
+    }
+    return true
+  }
+})
 
 // TODO would be clearer to reader if this used an object
 const shortcutEntries = useArbitraryKeyshortcuts(
