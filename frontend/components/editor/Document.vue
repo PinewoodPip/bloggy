@@ -13,7 +13,6 @@ import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import Underline from './mark/Underline.vue'
-import Size from './Size.vue'
 import { DocumentParser } from '~/src/editor/markdown/Parser'
 
 const nodeViewFactory = useNodeViewFactory()
@@ -55,13 +54,8 @@ watchEffect((onCleanup) => {
     heading: nodeViewFactory({
       component: Heading,
     }),
-  }, [
-    // Document size display
-    new Plugin({
-      view: pluginViewFactory({
-        component: Size,
-      }),
-    }),
+  },
+  [
     // Hash display for headings
     new Plugin({
       props: {

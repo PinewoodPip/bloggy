@@ -1,6 +1,5 @@
 import { exampleSetup } from 'prosemirror-example-setup'
 import { keymap } from 'prosemirror-keymap'
-import { DOMParser } from 'prosemirror-model'
 import type { Node } from 'prosemirror-model'
 import type { Plugin } from 'prosemirror-state'
 import { EditorState } from 'prosemirror-state'
