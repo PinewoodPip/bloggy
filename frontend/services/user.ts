@@ -4,6 +4,12 @@
 import Service from "./service"
 import Cookies from "js-cookie"
 
+interface AuthTokenPayload {
+  /** The username of the token bearer. */
+  sub: string,
+  expires: integer,
+}
+
 class UserService extends Service {
   constructor(api_url: string) {
     super(api_url)
@@ -25,7 +31,6 @@ class UserService extends Service {
 
       // Set auth cookies
       Cookies.set("auth_token", token, { expires: 3 });
-      Cookies.set("username", username, { expires: 3 });
 
       return response;
     } catch (error) {
@@ -49,7 +54,6 @@ class UserService extends Service {
   /** Removes auth cookies */
   clearAuth() {
     Cookies.remove("auth_token");
-    Cookies.remove("username");
   }
 
   /** Fetches a user account */
@@ -94,12 +98,29 @@ class UserService extends Service {
 
   /** Returns whether auth cookies are present. Does not validate them. */
   isLoggedIn() {
-    return (Cookies.get("auth_token") !== undefined) && (Cookies.get("username") !== undefined) // Checks both cookies for coherency.
+    return Cookies.get("auth_token") !== undefined // Checking for expiration is not necessary, as the cookie is set to expire after the same timeframe as the token.
   }
 
   /** Returns the username of the current session, or null if the client is not logged in. */
   getCurrentUsername(): string|null {
-    return this.isLoggedIn() ? Cookies.get("username") as string : null // isLoggedIn() tests for both cookies as sanity check.
+    const cookie = Cookies.get("auth_token")
+    if (!cookie) return null;
+    const payload = this.parseJwt(cookie)
+    console.log(payload)
+    return (payload as AuthTokenPayload).sub
+  }
+
+  /**
+   * Extracts the payload from a JWT token.
+   * Source: https://stackoverflow.com/a/38552302
+   * */
+  private parseJwt(token: string): object {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+    return JSON.parse(jsonPayload);
   }
 }
 
