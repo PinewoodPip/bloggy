@@ -35,9 +35,9 @@
 
       <!-- Session management buttons -->
       <div class="flex gap-x-2 my-auto">
-        <IconButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" @click="saveDocument">Publish</IconButton>
+        <MutationButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" :status="patchArticleStatus" @click="saveDocument">Publish</MutationButton>
         <IconButton icon="i-heroicons-archive-box-arrow-down" class="btn-smp btn-primary" @click="saveDraft">Save draft</IconButton>
-        <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-smp btn-error" @click="saveDraft">Exit</IconButton>
+        <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-smp btn-error" @click="exit">Exit</IconButton>
       </div>
     </div>
 
@@ -73,8 +73,9 @@ import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/composables/editor/Editor'
 import { useEditor } from '~/composables/editor/Toolbar'
-import { useQuery } from '@tanstack/vue-query'
+import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
+import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
@@ -159,12 +160,23 @@ function openSettingsMenu() {
   settingsMenuVisible.value = true
 }
 
+/** Serializes the editor document and requests to patch the article. */
 function saveDocument() {
-  // TODO
+  const markdownStr = DocumentSerializer.serialize(editorRef.value!.editorState!.doc)
+  console.log(markdownStr)
+  requestPatchArticle({
+    content: markdownStr
+  })
 }
 
 function saveDraft() {
   // TODO
+}
+
+/** Saves the document as a draft and returns to the admin panel. */
+function exit() {
+  saveDraft()
+  router.push('/admin/content')
 }
 
 function toggleMarkdownView() {
@@ -246,6 +258,19 @@ const { data: articleData, status: articleDataStatus } = useQuery({
       responseToast.showError('Failed to load article content', err)
     }
     return true
+  }
+})
+
+/** Mutation for saving the article */
+const { mutate: requestPatchArticle, status: patchArticleStatus } = useMutation({
+  mutationFn: (patchData: ArticleUpdateRequest) => {
+    return articleService.updateArticle((articleData.value as Article).path, patchData)
+  },
+  onSuccess: (article) => {
+    responseToast.showSuccess('Article saved')
+  },
+  onError: (err) => {
+    responseToast.showError('Failed to save article', err)
   }
 })
 

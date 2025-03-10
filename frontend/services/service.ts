@@ -19,22 +19,22 @@ class Service {
   }
   
   /** Sends a GET request. */
-  get(route: string): Promise<AxiosResponse<any, any>> {
+  protected get(route: string): Promise<AxiosResponse<any, any>> {
     return this.axios.get(route, this.getConfig())
   }
 
   /** Sends a POST request. */
-  post(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
+  protected post(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
     return this.axios.post(route, payload, this.getConfig())
   }
 
   /** Sends an PATCH request. */
-  patch(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
+  protected patch(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
     return this.axios.patch(route, payload, this.getConfig())
   }
 
   /** Returns the headers to use for requests */
-  getConfig() {
+  protected getConfig() {
     if (!Cookies.get("auth_token")) {
       return {};
     }

@@ -14,6 +14,7 @@ import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import Underline from './mark/Underline.vue'
 import Size from './Size.vue'
+import { DocumentParser } from '~/src/editor/markdown/Parser'
 
 const nodeViewFactory = useNodeViewFactory()
 const markViewFactory = useMarkViewFactory()
@@ -43,8 +44,9 @@ watchEffect((onCleanup) => {
   if (!el) {
     return 
   }
-
-  const view = createEditorView(el, {
+  
+  const deserializedContent = DocumentParser.parse(props.initialContent)
+  const view = createEditorView(el, deserializedContent, {
     paragraph: nodeViewFactory({
       component: Paragraph,
       as: 'div',

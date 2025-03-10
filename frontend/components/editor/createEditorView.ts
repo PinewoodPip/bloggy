@@ -1,6 +1,7 @@
 import { exampleSetup } from 'prosemirror-example-setup'
 import { keymap } from 'prosemirror-keymap'
 import { DOMParser } from 'prosemirror-model'
+import type { Node } from 'prosemirror-model'
 import type { Plugin } from 'prosemirror-state'
 import { EditorState } from 'prosemirror-state'
 import type { NodeViewConstructor } from 'prosemirror-view'
@@ -14,14 +15,13 @@ import 'prosemirror-example-setup/style/style.css'
  * Creates a ProseMirror EditorView.
  * Adapted from https://github.com/prosekit/prosemirror-adapter
  */
-export function createEditorView(element: HTMLElement, nodeViews: Record<string, NodeViewConstructor>, plugins: Plugin[], stateUpdateCallback: (newState: EditorState) => void) {
-  const content = document.querySelector('#content')
+export function createEditorView(element: HTMLElement, content: Node, nodeViews: Record<string, NodeViewConstructor>, plugins: Plugin[], stateUpdateCallback: (newState: EditorState) => void) {
   if (!content)
-    throw new Error('Content element not found')
+    throw new Error('Content not provided')
 
   const editorView = new EditorView(element, {
     state: EditorState.create({
-      doc: DOMParser.fromSchema(schema).parse(content),
+      doc: content,
       schema, // Starting document
       plugins: [
         ...exampleSetup({
