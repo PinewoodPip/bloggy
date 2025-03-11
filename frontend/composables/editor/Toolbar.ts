@@ -5,6 +5,7 @@ import * as Editor from './Editor'
 import * as HistoryActions from './action/History'
 import * as FormattingActions from './action/Formatting'
 import * as SectioningActions from './action/Sectioning'
+import * as ClipboardActions from './action/Clipboard'
 import type { Action } from './action/Action'
 import type { ToolbarGroupActionMenu, actionID } from './Editor'
 
@@ -56,6 +57,11 @@ export const useEditor = () => {
       } as Editor.ToolbarGroupAction,
     ],
   })
+
+  // Clipboard actions
+  editor.registerAction(new ClipboardActions.Copy())
+  editor.registerAction(new ClipboardActions.Paste())
+  editor.registerToolbarGroup(ClipboardActions.actionGroup)
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {

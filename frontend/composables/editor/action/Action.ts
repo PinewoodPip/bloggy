@@ -13,7 +13,7 @@ export abstract class Action implements IAction {
     this.def = def
   }
 
-  abstract execute(state: EditorState): Transaction | null
+  abstract execute(state: EditorState): Promise<Transaction | null>
 
   isActive(state: EditorState): boolean {
     return false

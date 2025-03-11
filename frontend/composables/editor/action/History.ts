@@ -17,7 +17,7 @@ export class Undo extends Action {
     })
   }
 
-  execute(state: EditorState): Transaction | null {
+  async execute(state: EditorState): Promise<Transaction | null> {
     return this.getTransaction(undoCommand, state)
   }
   
@@ -32,12 +32,12 @@ export class Redo extends Action {
   constructor() {
     super({
       id: Redo.ID,
-      name: 'Right',
+      name: 'Redo',
       icon: 'i-heroicons-arrow-uturn-right-solid',
     })
   }
 
-  execute(state: EditorState): Transaction | null {
+  async execute(state: EditorState): Promise<Transaction | null> {
     return this.getTransaction(redoCommand, state)
   }
 

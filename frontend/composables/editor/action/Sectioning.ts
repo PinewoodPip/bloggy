@@ -23,7 +23,7 @@ export class SetHeading extends Action {
     this.level = level
   }
 
-  execute(state: EditorState): Transaction | null {
+  async execute(state: EditorState): Promise<Transaction | null> {
     const nodeType = schema.nodes['heading']
     const command = setBlockType(nodeType, {level: this.level})
     return this.getTransaction(command, state)
@@ -45,7 +45,7 @@ export class InsertHorizontalRule extends Action {
     })
   }
 
-  execute(state: EditorState): Transaction | null {
+  async execute(state: EditorState): Promise<Transaction | null> {
     const hr = schema.nodes['horizontal_rule']
     const transaction = state.tr.replaceSelectionWith(hr.create()) // Will simply insert the node if the selection is empty
     return transaction
@@ -67,7 +67,7 @@ export class MakeQuote extends Action {
     })
   }
 
-  execute(state: EditorState): Transaction | null {
+  async execute(state: EditorState): Promise<Transaction | null> {
     const quote = schema.nodes['blockquote']
     const command = wrapIn(quote) // Transform selected nodes into children of a new quote node
     return this.getTransaction(command, state)
