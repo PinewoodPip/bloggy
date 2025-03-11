@@ -14,7 +14,7 @@ import 'prosemirror-example-setup/style/style.css'
  * Creates a ProseMirror EditorView.
  * Adapted from https://github.com/prosekit/prosemirror-adapter
  */
-export function createEditorView(element: HTMLElement, content: Node, nodeViews: Record<string, NodeViewConstructor>, plugins: Plugin[], stateUpdateCallback: (newState: EditorState) => void) {
+export function createEditorView(element: HTMLElement | null, content: Node, nodeViews: Record<string, NodeViewConstructor>, plugins: Plugin[], stateUpdateCallback: (newState: EditorState) => void, editableCallback?: (view: EditorView, state: EditorState) => boolean) {
   if (!content)
     throw new Error('Content not provided')
 
@@ -66,6 +66,9 @@ export function createEditorView(element: HTMLElement, content: Node, nodeViews:
       let newState = editorView.state.apply(transaction)
       editorView.updateState(newState)
       stateUpdateCallback(editorView.state)
+    },
+    editable(state) {
+      return editableCallback ? editableCallback(this, state) : true;
     },
     nodeViews,
   })
