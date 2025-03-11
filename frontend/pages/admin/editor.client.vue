@@ -52,7 +52,7 @@
       </div>
 
       <!-- Document -->
-      <div class="large-content-block flex-grow">
+      <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
         <ProsemirrorAdapterProvider v-if="articleData">
           <EditorDocument ref="documentRef" :initial-content="articleData.content" />
         </ProsemirrorAdapterProvider>
@@ -60,6 +60,9 @@
       </div>
     </div>
   </UContainer>
+
+  <!-- Context menu -->
+  <ContextMenu v-model="contextMenuOpen" :items="contextMenuItems" />
 
   <!-- Settings menu modal -->
   <UModal v-model="settingsMenuVisible" :overlay="true">
@@ -72,6 +75,7 @@ import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/composables/editor/Editor'
+import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useEditor } from '~/composables/editor/Toolbar'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
@@ -87,6 +91,7 @@ const editor = ref(useEditor())
 
 const settingsMenuVisible = ref(false)
 const sidebarVisible = ref(true)
+const contextMenuOpen = ref(false)
 
 const fileDropdownItems = [
   [
@@ -134,16 +139,13 @@ const viewDropdownItems = [
 ]
 
 /** Execute action commands */
-function onActionUsed(action: Editor.IAction) {
+async function onActionUsed(action: Editor.IAction) {
   if (editorRef.value) {
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
     if (state) {
-      const transaction: Transaction | null = action.execute(state)
-      if (transaction) {
-        view?.dispatch(transaction)
-      }
+      executeAction(action.def.id)
     }
   }
 }
@@ -206,6 +208,10 @@ function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keybind | n
   editor.value.savePreferences("ArticleEditor")
 }
 
+function onContextMenu() {
+  contextMenuOpen.value = true
+}
+
 /** Load the user's editor preferences when editor initializes */
 watchEffect(() => {
   editor.value.loadPreferences("ArticleEditor")
@@ -238,6 +244,43 @@ function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
 function isKeyComboBound(keyCombo: Editor.actionID) {
   return getKeyComboAction(keyCombo) !== null
 }
+
+/** Executes an action over the current selection. */
+async function executeAction(actionID: string) {
+  const action = editor.value.getAction(actionID)
+  const editorRaw = toRaw(editorRef.value)
+  const view = toRaw(editorRaw!.editorView)
+  const state = view?.state!
+
+  // Run action and apply transaction
+  action.execute(toRaw(editorRef.value!).editorState!)
+  const transaction: Transaction | null = await action.execute(state)
+  if (transaction) {
+    view?.dispatch(transaction)
+  }
+}
+
+function getActionContextMenuEntry(actionID: Editor.actionID): object {
+  const action = editor.value.getAction(actionID)
+  return {
+    label: action.def.name,
+    icon: action.def.icon,
+    click: () => {executeAction(action.def.id)},
+  }
+}
+
+/** Options shown in the context menu. */
+const contextMenuItems = computed(() => {
+  const items: object[][] = []
+  // Add clipboard actions
+  items.push(
+    [
+      getActionContextMenuEntry('ClipboardCopy'),
+      getActionContextMenuEntry('ClipboardPaste'),
+    ],
+  )
+  return items
+})
 
 /** Query for fetching article metadata and initial content */
 const { data: articleData, status: articleDataStatus } = useQuery({

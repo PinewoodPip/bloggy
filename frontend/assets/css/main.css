@@ -93,6 +93,10 @@ div[data-popper-placement] > div > div[role=menu] {
   @apply bg-base-300
 }
 
+div[data-nuxtui-contextmenu-dropdown] > div:nth-child(2) {
+  transform: unset !important;
+}
+
 /* Apply theming to UDropdown elements */
 div[aria-haspopup=menu] > button > span {
   color: oklch(var(--pc));
