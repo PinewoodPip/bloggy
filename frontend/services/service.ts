@@ -1,7 +1,7 @@
 /**
  * Base service class, with wrappers for Axios methods.
  */
-import axios, { Axios, type AxiosResponse } from 'axios'
+import axios, { Axios, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import Cookies from "js-cookie"
 
 class Service {
@@ -19,8 +19,10 @@ class Service {
   }
   
   /** Sends a GET request. */
-  protected get(route: string): Promise<AxiosResponse<any, any>> {
-    return this.axios.get(route, this.getConfig())
+  protected get(route: string, params?: object): Promise<AxiosResponse<any, any>> {
+    const options = this.getConfig()
+    options.params = params
+    return this.axios.get(route, options)
   }
 
   /** Sends a POST request. */
@@ -34,9 +36,11 @@ class Service {
   }
 
   /** Returns the headers to use for requests */
-  protected getConfig() {
+  protected getConfig(): AxiosRequestConfig {
     if (!Cookies.get("auth_token")) {
-      return {};
+      return {
+        headers: {},
+      };
     }
     return {
       headers: {

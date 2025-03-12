@@ -19,9 +19,12 @@ class CategoryService extends Service {
   }
 
   /** Fetches a category by its path; expects a leading slash. */
-  async getCategory(path: string): Promise<Category> {
+  async getCategory(path: string, limit?: integer, skip?: integer): Promise<Category> {
     try {
-      const response = await this.get('/categories' + path) // Path is expected to have leading slash.
+      const response = await this.get('/categories' + path, {
+        articles_amount: limit,
+        articles_skip: skip,
+      })
       return response.data
     } catch (error) {
       throw error

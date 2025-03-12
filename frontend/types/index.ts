@@ -56,6 +56,7 @@ declare global {
     /** Full path to article */
     path: string,
     category_sorting_index: integer,
+    authors: User[],
   }
 
   type Article = ArticlePreview & {
@@ -65,7 +66,6 @@ declare global {
     view_type: ArticleViewMode,
     can_comment: boolean,
     show_authors: boolean,
-    authors: User[],
   }
 
   type categoryID = integer
@@ -75,6 +75,8 @@ declare global {
   type Category = CategoryPreview & {
     path: string,
     articles: ArticlePreview[],
+    /** Total amount of articles regardless of pagination limits applied to the articles field. */
+    total_articles: integer,
     subcategories: Category[],
   }
 
