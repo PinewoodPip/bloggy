@@ -44,9 +44,10 @@ onMounted(() => {
 
 /** Query for fetching the article */
 const { data: article, status: articleStatus, suspense: articleSuspense } = useQuery({
-  queryKey: ['article'],
+  queryKey: ['article_' + (route.params.article_path as string[]).join("/")],
   queryFn: async () => {
-    return await articleService.getArticle('/' + route.params.article_path)
+    const articlePath = '/' + (route.params.article_path as string[]).join("/")
+    return await articleService.getArticle(articlePath)
   },
   retry: (count, err) => {
     if ((err as AxiosError).status === 404) {

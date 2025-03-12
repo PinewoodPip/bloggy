@@ -51,7 +51,7 @@ const currentPage = ref(1)
 
 // Pagination getters
 const totalPages = computed(() => {
-  return category.value ? Math.ceil(category.value.total_articles / ARTICLES_PER_PAGE) : 1
+  return (category.value && category.value.total_articles > 0) ? Math.ceil(category.value.total_articles / ARTICLES_PER_PAGE) : 1 // Avoid division by 0 for empty categories
 })
 const previousPageIndices = computed(() => {
   return Math.min(currentPage.value - 1, MAX_NEIGHBOUR_PAGE_BUTTONS) // Limit amount of buttons for going to previous pages
@@ -68,9 +68,10 @@ watch(currentPage, () => {
 
 /** Query for fetching category articles */
 const { data: category, status: categoryStatus, suspense: categorySuspense, refetch: refetchCategory } = useQuery({
-  queryKey: ['category_' + route.params.category_path],
+  queryKey: ['category_' + (route.params.category_path as string[]).join('/')],
   queryFn: async () => {
-    return await categoryService.getCategory('/' + route.params.category_path, ARTICLES_PER_PAGE, (currentPage.value - 1) * ARTICLES_PER_PAGE)
+    const categoryPath = '/' + (route.params.category_path as string[]).join('/')
+    return await categoryService.getCategory(categoryPath, ARTICLES_PER_PAGE, (currentPage.value - 1) * ARTICLES_PER_PAGE)
   },
   retry: (count, err) => {
     if ((err as AxiosError).status === 404) {
