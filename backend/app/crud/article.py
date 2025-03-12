@@ -102,6 +102,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     return CrudUtils.create_schema(article, ArticlePreview, {
         "category_path": category_path,
         "path": f"{category_path}/{article.filename}",
+        "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
     })
 
 def get_article_path(db: Session, article: Article) -> str:

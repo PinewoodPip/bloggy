@@ -48,6 +48,7 @@ class ArticlePreview(ArticleBase):
     category_path: str
     path: str # Full path to article
     category_sorting_index: int
+    authors: list[UserSchema.UserOutput]
 
 class ArticleOutput(ArticlePreview):
     """Complete article schema that includes metadata and content."""
@@ -56,4 +57,3 @@ class ArticleOutput(ArticlePreview):
     view_type: ArticleViewEnum
     can_comment: bool
     show_authors: bool
-    authors: list[UserSchema.UserOutput]
