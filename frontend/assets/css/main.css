@@ -16,6 +16,10 @@
   height: 2.5rem !important;
 }
 
+.faint-hr {
+  @apply border-black/40
+}
+
 /* A button slightly larger than btn-sm */
 .btn-smp {
   @apply btn-sm
