@@ -179,6 +179,7 @@ def create_category_output(db: Session, category: Category, articles_amount: int
         sorting_type=CategorySortingModeEnum[category.sorting_type.name],
         path=get_category_path(db, category),
         articles=articles,
+        total_articles=len(category.articles),
         subcategories=subcategories,
     )
 
