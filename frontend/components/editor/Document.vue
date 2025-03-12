@@ -1,6 +1,6 @@
 <template>
   <JSDOMProvider />
-  <div ref="editorRef" class="editor" v-html="placeholderHTML" />
+  <div ref="editorRef" class="editor" />
   <div style="display: none" id="content">
   </div>
 </template>

@@ -62,9 +62,7 @@
           <ProsemirrorAdapterProvider v-if="mounted">
             <EditorDocument :initial-content="article?.content" :readonly="true" />
           </ProsemirrorAdapterProvider>
-          <ProsemirrorAdapterProvider v-else>
-            <EditorDocument :initial-content="article?.content" :readonly="true" />
-          </ProsemirrorAdapterProvider>
+          <MarkdownDocument v-else :content="article.content" />
         </div>
       </div>
 

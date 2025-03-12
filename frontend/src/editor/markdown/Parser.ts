@@ -10,6 +10,7 @@ import { plugin as UnderlinePlugin } from './plugins/underline'
 // Extend CommonMark parser
 const md = MarkdownIt('commonmark', {html: false})
 md.use(UnderlinePlugin)
+export const Markdown = md
 
 const _DocumentParser = new MarkdownParser(schema, md, {
   // Nodes
