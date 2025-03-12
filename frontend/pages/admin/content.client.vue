@@ -35,7 +35,7 @@
   </div>
 
   <!-- Article creation form -->
-  <AdminContentArticleCreationModal v-model="articleCreationModalVisible" :category-path="selectedCategoryPath" @create="onContentChanged" />
+  <AdminContentArticleCreationModal v-model="articleCreationModalVisible" :category-path="selectedCategoryPath" @create="onArticleCreated" />
 
   <!-- Article edit form -->
   <div v-if="articleBeingEdited && articleToEdit">
@@ -92,6 +92,11 @@ function onArticleEditRequested(categoryID: categoryID, article: ArticlePreview)
 function onArticleClick(categoryID: categoryID, article: ArticlePreview) {
   // Open editor for the article
   router.push('/admin/editor/?article=' + article.path)
+}
+
+/** Redirect to article editor upon creating a new article. */
+function onArticleCreated(article: Article) {
+  router.push('/admin/editor?article=' + article.path)
 }
 
 // Refetch categories and articles after management operations
