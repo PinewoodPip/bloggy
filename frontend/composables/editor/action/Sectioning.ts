@@ -24,8 +24,25 @@ export class SetHeading extends Action {
   }
 
   async execute(state: EditorState): Promise<Transaction | null> {
-    const nodeType = schema.nodes['heading']
-    const command = setBlockType(nodeType, {level: this.level})
+    const headingNodeType = schema.nodes['heading']
+
+    // Check if any node within the selection already is a heading
+    let hasSameHeading = false
+    const attrs = {level: this.level}
+    for (let i = 0; i < state.selection.ranges.length && !hasSameHeading; i++) {
+      let {$from: {pos: from}, $to: {pos: to}} = state.selection.ranges[i]
+      state.doc.nodesBetween(from, to, (node, pos) => {
+        if (hasSameHeading) return
+        if (node.hasMarkup(headingNodeType, attrs)) {
+          hasSameHeading = true
+        }
+      })
+    }
+
+    // Change to paragraph if the nodes already had this heading,
+    // otherwise change it to the heading type
+    const command = hasSameHeading ? setBlockType(schema.nodes['paragraph']) : setBlockType(headingNodeType, {level: this.level})
+
     return this.getTransaction(command, state)
   }
   
