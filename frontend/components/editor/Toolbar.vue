@@ -3,10 +3,10 @@
   <div class="small-content-block flex">
     <div class="flex p-2">
       <!-- Action groups -->
-      <div v-for="group in editor.getToolbarGroups()" class="flex">
+      <div v-for="group in visibleGroups" class="flex">
         <!-- Actions of the group -->
         <div class="flex gap-x-2">
-          <component v-for="item in group.items" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" v-on="getGroupItemComponentEvents(item)" />
+          <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" v-on="getGroupItemComponentEvents(item)" />
         </div>
         <!-- Should be outside the actions container to avoid applying gap to it -->
         <div class="divider divider-horizontal mx-1"/>
@@ -34,6 +34,41 @@ const emit = defineEmits<{
 
 function useAction(action: Editor.IAction) {
   emit('actionUse', action)
+}
+
+/** Toolbar groups to show, based on user preferences. */
+const visibleGroups = computed(() => {
+  const groups: Editor.ToolbarGroup[] = []
+  for (const group of props.editor.getToolbarGroups()) {
+    // Check if any action in the group is visible
+    const visible = getVisibleGroupItems(group).length > 0
+    if (visible) {
+      groups.push(group)
+    }
+  }
+  return groups
+})
+
+/** Returns the visible items of a toolbar group. */
+function getVisibleGroupItems(group: Editor.ToolbarGroup) {
+  const items: Editor.ToolbarGroupItem[] = []
+  for (const item of group.items) {
+    let visible = false
+    if (item.type === 'action') {
+      visible = props.editor.isActionVisibleInToolbar((item as Editor.ToolbarGroupAction).actionID)
+    } else if (item.type === 'actionMenu') {
+      const menuActions = (item as Editor.ToolbarGroupActionMenu).actionIDs
+      visible = ArrayUtils.anyInArray(menuActions, (actionID) => {
+        return props.editor.isActionVisibleInToolbar(actionID)
+      })
+    } else {
+      throw 'Unsupported item type ' + item.type
+    }
+    if (visible) {
+      items.push(item)
+    }
+  }
+  return items
 }
 
 // Component, props and event getters for the dynamic toolbar item component

@@ -66,6 +66,9 @@ export class Editor {
   private customActionBindings: {[id: actionID]: keybind} = {}
   private customBindingToAction: {[combo: keybind]: actionID} = {}
 
+  /** Actions that should not be shown in the toolbar. */
+  private hiddenActions: Set<actionID> = new Set()
+
   /** Registers an editor action. */
   registerAction(action: Action) {
     this.actions[action.def.id] = action
@@ -120,6 +123,20 @@ export class Editor {
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }
 
+  /** Returns whether an action should appear in the toolbar. */
+  isActionVisibleInToolbar(actionID: actionID) {
+    return !this.hiddenActions.has(actionID)
+  }
+
+  /** Sets whether an action should appear in the toolbar. */
+  setActionVisibleInToolbar(actionID: actionID, visible: boolean) {
+    if (!visible) {
+      this.hiddenActions.add(actionID)
+    } else {
+      this.hiddenActions.delete(actionID)
+    }
+  }
+
   /** 
    * Saves the user's editor settings to localstorage.
    * Different storage keys may be used to distinguish
@@ -128,6 +145,7 @@ export class Editor {
   savePreferences(storageKey: string) {
     const saveData = {
       keybinds: this.customActionBindings,
+      hiddenActions: [...this.hiddenActions.values()],
     }
     window.localStorage.setItem(storageKey, JSON.stringify(saveData))
   }
@@ -146,6 +164,11 @@ export class Editor {
       for (const actionID in parsedSaveData.keybinds) {
         const keybind = parsedSaveData.keybinds[actionID]
         this.setActionKeybind(actionID, keybind)
+      }
+
+      // Apply toolbar preferences
+      for (const actionID of parsedSaveData.hiddenActions || []) {
+        this.setActionVisibleInToolbar(actionID, false)
       }
     }
   }

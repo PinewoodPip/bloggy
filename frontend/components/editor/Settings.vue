@@ -12,7 +12,7 @@
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsKeybind v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind"/>
+          <EditorSettingsAction v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" :is-visible-in-toolbar="editor.isActionVisibleInToolbar(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
         </div>
       </div>
     </template>
@@ -104,9 +104,15 @@ function onRebindRequested(actionID: string) {
   pendingRebindActionID.value = actionID
 }
 
-function onResetKeybind(actionID: string) {
+function onResetKeybind(actionID: Editor.actionID) {
   const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
   emit('rebind', actionID, defaultKeybind)
+}
+
+/** Sets visibility and saves preferences. */
+function onToggleActionVisibility(actionID: Editor.actionID, visible: boolean) {
+  props.editor.setActionVisibleInToolbar(actionID, visible)
+  props.editor.savePreferences("ArticleEditor")
 }
 
 const pendingRebindActionName = computed(() => {
