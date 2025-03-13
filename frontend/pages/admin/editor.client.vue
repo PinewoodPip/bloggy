@@ -8,7 +8,19 @@
 
       <!-- File path and menu -->
       <div class="flexcol">
-        <h1>{{ fullPath }}</h1>
+        <!-- Title and path -->
+        <div class="pt-3 pl-3">
+          <span class="flex items-center">
+            <!-- Title field -->
+            <input class="field-autosize bg-transparent font-bold text-lg min-w-16 px-2 mr-3" type="text" minlength="1" required v-model="articleMetadata.title" @focusout="onTitleFieldFocusOut" />
+
+            <!-- Path -->
+            <span class="flex items-center">
+              <UIcon name="i-material-symbols-link" class="mr-2" />
+              <code class="text-base-content/80">{{ articleData?.path }}</code>
+            </span>
+          </span>
+        </div>
 
         <VerticalFill/>
 
@@ -92,6 +104,9 @@ const editor = ref(useEditor())
 const settingsMenuVisible = ref(false)
 const sidebarVisible = ref(true)
 const contextMenuOpen = ref(false)
+const articleMetadata = reactive({
+  title: '',
+})
 
 const fileDropdownItems = [
   [
@@ -164,10 +179,14 @@ function openSettingsMenu() {
 
 /** Serializes the editor document and requests to patch the article. */
 function saveDocument() {
+  // Ensure fields are set to valid values first
+  validateMetadata()
+
+  // Serialize the document and PATCH the article
   const markdownStr = DocumentSerializer.serialize(editorRef.value!.editorState!.doc)
-  console.log(markdownStr)
   requestPatchArticle({
-    content: markdownStr
+    title: articleMetadata.title,
+    content: markdownStr,
   })
 }
 
@@ -215,10 +234,6 @@ function onContextMenu() {
 /** Load the user's editor preferences when editor initializes */
 watchEffect(() => {
   editor.value.loadPreferences("ArticleEditor")
-})
-
-const fullPath = computed(() => {
-  return 'TODO'
 })
 
 /** ProseMirror EditorView. */
@@ -269,6 +284,20 @@ function getActionContextMenuEntry(actionID: Editor.actionID): object {
   }
 }
 
+/** 
+ * Validates the metadata values and resets them if they're not valid.
+ */
+function validateMetadata() {
+  // Reset the title field to the original fetched data if the user attempts to clear it.
+  if (articleMetadata.title === '') {
+    articleMetadata.title = articleData.value!.title
+  }
+}
+
+function onTitleFieldFocusOut() {
+  validateMetadata()
+}
+
 /** Options shown in the context menu. */
 const contextMenuItems = computed(() => {
   const items: object[][] = []
@@ -287,7 +316,10 @@ const { data: articleData, status: articleDataStatus } = useQuery({
   queryKey: ['articleContent'],
   queryFn: async () => {
     if (route.query['article']) {
-      return await articleService.getArticle(route.query['article'] as string)
+      const article = await articleService.getArticle(route.query['article'] as string)
+      // Update metadata reactive
+      articleMetadata.title = article.title
+      return article
     } else {
       return null
     }
@@ -333,3 +365,12 @@ const shortcutEntries = useArbitraryKeyshortcuts(
 defineShortcuts(shortcutEntries)
 
 </script>
+
+<style lang="css" scoped>
+
+.field-autosize {
+  /* Auto-sizes input elements based on content */
+  field-sizing: content;
+}
+
+</style>
