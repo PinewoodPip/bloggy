@@ -48,7 +48,7 @@ def test_create_category(user_scenario):
     # Root category
     response = client.get("/categories/")
     category_output = CategoryOutput.model_validate(response.json())
-    assert category_output.name == ""
+    assert category_output.name == "/"
     assert category_output.directory_name == ""
     assert category_output.path == "/"
     assert len(category_output.subcategories) == 1

@@ -123,6 +123,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         category=CategoryPreview(
             id=category.id,
             name=category.name,
+            description=category.description,
             directory_name=category.directory_name,
             view_type=CategoryViewEnum[category.view_type.name],
             sorting_type=CategorySortingModeEnum[category.sorting_type.name],

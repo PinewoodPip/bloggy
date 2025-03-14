@@ -13,6 +13,7 @@ INVALID_URL_PATTERN = re.compile(r"[^\w]", re.A) # Catches non-alphanumeric char
 class CategoryInput(BaseModel):
     """Schema for creation requests."""
     name: str # User-friendly title
+    description: Optional[str] = ""
     directory_name: str # The last URL component of the path
     parent_category_path: str # Path to parent category
     
@@ -33,6 +34,7 @@ class CategoryInput(BaseModel):
 class CategoryUpdate(BaseModel):
     """Schema for patching requests."""
     name: Optional[str] = None
+    description: Optional[str] = None
     directory_name: Optional[str] = None
     view_type: Optional[CategoryViewEnum] = None
     sorting_type: Optional[CategorySortingModeEnum] = None

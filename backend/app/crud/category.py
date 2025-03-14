@@ -79,6 +79,8 @@ def create_category(db: Session, category_input: CategoryInput) -> Category:
         directory_name=category_input.directory_name,
         parent_id=parent_id
     )
+    if category_input.description:
+        category.description = category_input.description
     db.flush(category)
     update_cached_url(db, category)
 
@@ -174,6 +176,7 @@ def create_category_output(db: Session, category: Category, articles_amount: int
     return CategoryOutput(
         id=category.id,
         name=category.name,
+        description=category.description,
         directory_name=category.directory_name,
         view_type=CategoryViewEnum[category.view_type.name],
         sorting_type=CategorySortingModeEnum[category.sorting_type.name],
