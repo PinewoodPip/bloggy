@@ -5,7 +5,7 @@
     <div class="group flex items-center hover:bg-secondary/50 rounded-btn cursor-pointer p-1" @click="collapsed = !collapsed">
       <div class="flex gap-x-2">
         <!-- Folder icon indicates open/collapsed state. Empty categories always show as open -->
-        <UIcon class="size-6" :name="(collapsed && categoryIsEmpty) ? 'i-material-symbols-folder' : 'i-material-symbols-folder-open'" />
+        <Icon class="size-6" :icon="(collapsed && categoryIsEmpty) ? 'folder' : 'folder-open'" />
 
         <!-- Path and title -->
         <UTooltip :text="category.path">
@@ -26,15 +26,15 @@
       <div class="invisible group-hover:visible flex gap-x-2">
         <!-- Create article button -->
         <UTooltip text="Create article">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-add-notes" :override-height="true" @click.stop="emit('createArticle', category.id)" />
+          <IconButton class="btn-sm btn-secondary" icon="add-notes" :override-height="true" @click.stop="emit('createArticle', category.id)" />
         </UTooltip>
         <!-- Create child category button -->
         <UTooltip text="Create category">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-create-new-folder" :override-height="true" @click.stop="emit('createChild', category.id)" />
+          <IconButton class="btn-sm btn-secondary" icon="create-new-folder" :override-height="true" @click.stop="emit('createChild', category.id)" />
         </UTooltip>
         <!-- Edit button -->
         <UTooltip v-if="canEdit" text="Edit category">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click.stop="emit('edit', category.id)" />
+          <IconButton class="btn-sm btn-secondary" icon="edit-outline" :override-height="true" @click.stop="emit('edit', category.id)" />
         </UTooltip>
       </div>
     </div>

@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="large-content-block flex">
       <!-- Document icon -->
-      <UIcon name="i-material-symbols-article-outline" class="w-20 h-20"/>
+      <Icon icon="article-outline" class="w-20 h-20"/>
 
       <!-- File path and menu -->
       <div class="flexcol">
@@ -16,7 +16,7 @@
 
             <!-- Path -->
             <span class="flex items-center">
-              <UIcon name="i-material-symbols-link" class="mr-2" />
+              <Icon icon="link" class="mr-2" />
               <code class="text-base-content/80">{{ articleData?.path }}</code>
             </span>
           </span>

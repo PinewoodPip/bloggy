@@ -11,8 +11,8 @@
 
     <!-- Management buttons -->
     <div class="flex gap-x-2">
-      <IconButton icon="i-heroicons-book-open" class="btn-smp btn-secondary" @click="showArticles">View articles</IconButton>
-      <IconButton v-if="editable" icon="i-heroicons-pencil" class="btn-smp btn-secondary" @click="editAccount">Edit account</IconButton>
+      <IconButton icon-source="heroicons" icon="book-open" class="btn-smp btn-secondary" @click="showArticles">View articles</IconButton>
+      <IconButton v-if="editable" source="heroicons" icon="pencil" class="btn-smp btn-secondary" @click="editAccount">Edit account</IconButton>
     </div>
   </div>
 </template>
