@@ -3,7 +3,7 @@
   <div class="group flex items-center hover:bg-secondary/50 rounded-btn cursor-pointer select-none p-1" @click="emit('click', article)">
     <div class="flex gap-x-2">
       <!-- Icon -->
-      <Icon class="size-6" icon="article" />
+      <UIcon class="size-6" name="i-material-symbols-article" />
 
       <!-- Path and title -->
       <UTooltip :text="article.path">
@@ -24,7 +24,7 @@
     <div class="invisible group-hover:visible flex gap-x-2">
       <!-- Edit button -->
       <UTooltip v-if="canEdit" text="Edit article">
-        <IconButton class="btn-sm btn-secondary" icon="edit-outline" :override-height="true" @click.stop="emit('edit', article)" />
+        <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click.stop="emit('edit', article)" />
       </UTooltip>
     </div>
   </div>

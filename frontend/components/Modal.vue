@@ -8,7 +8,7 @@
       <HorizontalFill/>
       
       <!-- TODO confirm to close -->
-      <button class="btn btn-sm btn-error aspect-square" @click="emit('close')"><Icon source="heroicons" icon="x-mark"/></button>
+      <button class="btn btn-sm btn-error aspect-square" @click="emit('close')"><UIcon name="i-heroicons-x-mark"/></button>
     </div>
 
     <!-- Form -->

@@ -22,7 +22,7 @@
         <!-- Comments counter -->
         <div>
           <RouterLink :to="articleURL" class="no-underline">
-            <Icon icon="comment" class="mr-2" />
+            <UIcon name="i-material-symbols-comment" class="mr-2" />
             <!-- Only underline the text, so the space between the icon is not underlined -->
             <span class="link">TODO comments
             </span>

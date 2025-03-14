@@ -12,7 +12,7 @@
       <!-- Reset keybind button -->
       <UTooltip v-if="canReset" text="Reset keybind to default">
         <button class="flex items-center" @click="resetToDefault">
-          <Icon class="text-error" source="heroicons" icon="arrow-path-rounded-square"/>
+          <UIcon class="text-error" name="i-heroicons-arrow-path-rounded-square"/>
         </button>
       </UTooltip>
 
@@ -23,7 +23,7 @@
       </button>
 
       <UTooltip :text="visibilityTooltip">
-        <IconButton class="btn-sm btn-secondary" :icon="isVisibleInToolbar ? 'visibility' : 'visibility-off'" @click="toggleVisibility" />
+        <IconButton class="btn-sm btn-secondary" :icon="isVisibleInToolbar ? 'i-material-symbols-visibility' : 'i-material-symbols-visibility-off'" @click="toggleVisibility" />
       </UTooltip>
     </div>
   </div>
