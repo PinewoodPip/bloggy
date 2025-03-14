@@ -10,6 +10,9 @@
       <FormGroupInputField v-model="categoryName" placeholder="New category" icon="i-heroicons-user" label="Name" help="User-friendly name" required />
       <!-- Directory name -->
       <FormGroupInputField v-model="categoryDirectoryName" placeholder="new_category" icon="i-heroicons-user" label="Directory name" :help="directoryNameHelp" required />
+
+      <!-- Description -->
+      <FormGroupTextArea v-model="categoryDescription" label="Description" icon="description" help="Displayed when browsing articles of the category." />
     </template>
 
     <template #footer>
@@ -31,6 +34,7 @@ const responseToast = useResponseToast()
 
 const categoryName = ref('')
 const categoryDirectoryName = ref('')
+const categoryDescription = ref('')
 
 const props = defineProps<{
   parentCategoryPath: string,
@@ -44,6 +48,7 @@ const emit = defineEmits<{
 function create() {
   requestCreation({
     name: categoryName.value,
+    description: categoryDescription.value,
     directory_name: categoryDirectoryName.value,
     parent_category_path: props.parentCategoryPath,
   })

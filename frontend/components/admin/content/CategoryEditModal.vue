@@ -11,6 +11,9 @@
       <!-- Directory name -->
       <!-- TODO preview path in help -->
       <FormGroupInputField v-model="patchData.directory_name" label="Directory name" help="Determines the URL of the category" icon="i-material-symbols-link" />
+
+      <!-- Description -->
+      <FormGroupTextArea v-model="patchData.description" label="Description" icon="description" help="Displayed when browsing articles of the category." />
       
       <!-- Sorting mode -->
       <FormGroupSelect v-model="patchData.sorting_type" :options="sortingOptions" label="Article sorting" help="Determines how articles are sorted when browsing the category." icon="i-material-symbols-sort" />
@@ -45,6 +48,7 @@ const model: ModelRef<boolean> = defineModel({
 
 const patchData = reactive({
   name: '',
+  description: '',
   directory_name: '',
   view_type: 'vertical',
   sorting_type: 'chronological',
@@ -86,6 +90,7 @@ watchEffect(() => {
   if (props.category) {
     const category = props.category
     patchData.name = category.name
+    patchData.description = category.description
     patchData.directory_name = category.directory_name
     patchData.view_type = category.view_type
     patchData.sorting_type = category.sorting_type

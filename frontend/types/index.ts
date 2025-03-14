@@ -36,6 +36,7 @@ declare global {
   type CategoryPreview = {
     id: categoryID,
     name: string,
+    description: string,
     directory_name: string,
     view_type: categoryViewMode,
     sorting_type: categorySortingMode,
@@ -82,6 +83,7 @@ declare global {
 
   type CategoryCreationRequest = {
     name: string,
+    description: string,
     directory_name: string,
     parent_category_path: string,
   }
@@ -110,6 +112,7 @@ declare global {
 
   type CategoryUpdateRequest = {
     name?: string,
+    description?: string,
     directory_name?: string,
     view_type?: categoryViewMode,
     sorting_type?: categorySortingMode,

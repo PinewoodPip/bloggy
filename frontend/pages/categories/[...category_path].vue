@@ -4,8 +4,8 @@
       <div v-if="category" ref="contentTop" class="large-content-block flexcol">
         <SiteBreadcrumbs />
 
-        <!-- Category description TODO -->
-        <p class="p-3">TODO category description. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas aliquet odio non eros porttitor vehicula. Donec eu placerat diam. Sed consequat mi in volutpat tristique. Sed bibendum velit orci, at porta libero volutpat congue. Pellentesque volutpat libero a diam blandit, nec dignissim metus sollicitudin. Interdum et malesuada fames ac ante ipsum primis in faucibus.</p>
+        <!-- Category description -->
+        <p v-if="category.description !== ''" class="p-3">{{ category.description }}</p>
         <hr class="faint-hr pb-3 px-3" />
 
         <!-- Articles -->
