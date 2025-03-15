@@ -21,7 +21,7 @@
           </ProsemirrorAdapterProvider>
           <MarkdownDocument v-else :content="article.content" />
 
-          <hr class="faint-hr mb-4" />
+          <hr class="faint-hr mb-2" />
 
           <!-- Article footer -->
           <div class="flexcol gap-y-2">
@@ -50,7 +50,17 @@
               </div>
             </div>
 
+            <hr class="faint-hr" />
+
             <!-- TODO share buttons -->
+            <p>Share this article</p>
+            <div class="flex gap-2 flex-wrap">
+              <share-network v-for="network in socialNetworks" :network="network.name.toLowerCase()" :url="socialMediaSharingURL" v-slot="{ share }">
+                <UTooltip :text="`Share on ${network.name}`">
+                  <IconButton class="btn-secondary btn-sm" :icon="network.icon" @click="share">{{ network.name }}</IconButton>
+                </UTooltip>
+              </share-network>
+            </div>
           </div>
         </div>
       </div>
@@ -76,6 +86,27 @@ const author = computed(() => {
 
 const tags = computed(() => {
   return ['test-tag', 'test-tag-2', 'test-tag-3'] // TODO
+})
+
+const socialMediaSharingURL = computed(() => {
+  return window.location.href // TODO remove anchor
+})
+
+const socialNetworks = computed(() => {
+  // TODO fetch from site settings
+  const networks: {name: string, icon: string}[] = [
+    {name: "Facebook", icon: "i-la-facebook"},
+    {name: "X", icon: "i-la-twitter"}, // TODO new icon
+    {name: "Tumblr", icon: "i-la-tumblr"},
+    {name: "Reddit", icon: "i-la-reddit"},
+    {name: "Pinterest", icon: "i-la-pinterest"},
+    {name: "VK", icon: "i-la-vk"},
+    {name: "Weibo", icon: "i-la-weibo"},
+    {name: "Wordpress", icon: "i-la-wordpress"},
+    {name: "Baidu", icon: "i-la-baidu"}, // TODO icon
+    {name: "LinkedIn", icon: "i-la-linkedin"},
+  ]
+  return networks
 })
 
 onMounted(() => {
