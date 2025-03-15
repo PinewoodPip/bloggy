@@ -7,8 +7,8 @@
     </div>
 
     <!-- TODO Navbar -->
-    <nav class="navbar bg-base-100 shadow-sm">
-      <ul class="menu menu-horizontal px-1">
+    <nav class="navbar small-content-block place-content-center bg-base-200">
+      <ul class="menu menu-horizontal place-content-center px-1 flex-grow">
         <li><RouterLink :to="'/'">Home</RouterLink></li>
         <li>
           <details>
@@ -21,10 +21,10 @@
         </li>
         <li><a>Some other category</a></li>
         <li><a>About</a></li>
-
-        <!-- TODO search -->
-        <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..." />
       </ul>
+
+      <!-- TODO search -->
+      <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..." />
     </nav>
 
     <!-- Main -->
