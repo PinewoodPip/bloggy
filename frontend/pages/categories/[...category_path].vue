@@ -1,15 +1,20 @@
 <template>
   <SitePage>
     <template #content>
-      <div v-if="category" ref="contentTop" class="large-content-block flexcol">
-        <SiteBreadcrumbs />
-
-        <!-- Category description -->
-        <p v-if="category.description !== ''" class="p-3">{{ category.description }}</p>
-        <hr class="faint-hr pb-3 px-3" />
-
-        <!-- Articles -->
+      <div v-if="category" ref="contentTop" class="flexcol">
         <div class="flexcol gap-y-3">
+          <div class="large-content-block">
+            <!-- Breadcrumb navigation -->
+            <SiteBreadcrumbs />
+
+            <!-- Category header and description -->
+            <h1>{{ category.name }}</h1>
+            <p v-if="category.description !== ''">{{ category.description }}</p>
+
+            <!-- TODO show most-used tags and authors of the articles -->
+          </div>
+
+          <!-- Articles -->
           <SiteArticlePreview v-for="article in category.articles" :article="article" />
         </div>
 

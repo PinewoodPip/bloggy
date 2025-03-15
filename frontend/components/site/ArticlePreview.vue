@@ -1,6 +1,6 @@
 <!-- Article summary view used in pagination. -->
 <template>
-  <div class="card card-border bg-base-300 shadow-sm flex-grow">
+  <div class="card card-border bg-base-300 shadow-md flex-grow">
     <div class="card-body p-4"> <!-- Default card padding is 2x larger, way too large -->
       <h2 class="card-title link">
         <RouterLink :to="articleURL">{{ article.title }}</RouterLink>
