@@ -42,7 +42,7 @@
     <!-- Padding creates a nested tree appearance -->
     <div v-if="!collapsed" class="pl-2">
       <!-- Subcategories; events must be propagated to root -->
-      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit-article="(categoryID, article) => {emit('editArticle', categoryID, article)}" @edit="e => {emit('edit', e)}" />
+      <Category v-for="subcategory in filteredSubcategories" :category="subcategory" :relevantItems="relevantItems" @create-child="e => {emit('createChild', e)}" @create-article="e => {emit('createArticle', e)}" @edit-article="(categoryID, article) => {emit('editArticle', categoryID, article)}" @edit="e => {emit('edit', e)}" @article-click="(category, article) => {emit('articleClick', category, article)}" />
       
       <!-- Articles -->
       <AdminContentArticleItem v-for="article in filteredArticles" :article="article" @edit="e => {emit('editArticle', category.id, e)}" @click="e => {emit('articleClick', category.id, e)}" />
