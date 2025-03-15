@@ -2,7 +2,7 @@
 """
     Category-related tables.
 """
-from sqlalchemy import Column, String, ForeignKey, Integer, Enum
+from sqlalchemy import Column, Index, String, ForeignKey, Integer, Enum
 from sqlalchemy.orm import relationship, Mapped
 from core.config import Base
 import typing
@@ -26,9 +26,11 @@ class Category(Base):
     name = Column(String)
     description = Column(String, default="")
     directory_name = Column(String)
-    cached_url = Column(String, nullable=True) # Cached full path to the category
+    cached_url = Column(String, nullable=True, index=Index("category_url_index", postgresql_using="hash")) # Cached full path to the category
     view_type = Column(Enum(CategoryViewEnum), default=CategoryViewEnum.vertical)
     sorting_type = Column(Enum(CategorySortingModeEnum), default=CategorySortingModeEnum.chronological)
     
     subcategories: Mapped[list["Category"]] = relationship("Category", order_by=name) # Child categories.
     articles: Mapped[list["Article"]] = relationship("Article", back_populates="category", cascade="all")
+
+# Create hash index for category URL to speed up fetching by path
