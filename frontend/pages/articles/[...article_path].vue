@@ -20,6 +20,38 @@
             <EditorDocument :initial-content="article?.content" :readonly="true" />
           </ProsemirrorAdapterProvider>
           <MarkdownDocument v-else :content="article.content" />
+
+          <hr class="faint-hr mb-4" />
+
+          <!-- Article footer -->
+          <div class="flexcol gap-y-2">
+            <p>Posted in <RouterLink class="link link-neutral" :to="'/categories' + article.category_path">{{ article.category.name }}</RouterLink></p>
+
+            <!-- Tags -->
+            <div class="flex flex-grow gap-x-2 flex-wrap">
+              <SiteArticleTag v-for="tag in tags" :tag="tag" />
+            </div>
+
+            <!-- Author cards -->
+            <!-- TODO show all authors -->
+            <div v-if="author" class="card bg-base-100 w-fit shadow-sm p-3">
+              <div class="flex items-center gap-x-2">
+                <!-- Avatar -->
+                <AvatarIcon class="size-24" />
+
+                <!-- Name, bio and call to action -->
+                <div class="flexcol gap-y-1">
+                  <p class="text-lg">{{ author.display_name }}</p>
+                  <p>{{ author.biography }}</p>
+                  <div class="card-actions">
+                    <button class="btn btn-sm btn-primary">View articles</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TODO share buttons -->
+          </div>
         </div>
       </div>
     </template>
@@ -37,6 +69,14 @@ const router = useRouter()
 const route = useRoute()
 
 const mounted = ref(false) // Used to switch from the server-rendered article to the fully-riched client-rendered one
+
+const author = computed(() => {
+  return article.value?.authors[0]
+})
+
+const tags = computed(() => {
+  return ['test-tag', 'test-tag-2', 'test-tag-3'] // TODO
+})
 
 onMounted(() => {
   mounted.value = true
