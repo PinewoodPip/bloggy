@@ -1,3 +1,4 @@
 .pytest_cache
 .venv
 .test.env
+mock_data
