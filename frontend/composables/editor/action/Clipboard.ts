@@ -60,9 +60,11 @@ export class Paste extends Action {
               nodes.push(node)
             }
   
-            // Create transaction
+            // Create transaction by inserting nodes
+            // Should be inserted in reverse order as we're not moving the cursor inbetween them (and nodes are inserted after it)
             let tr = state.tr
-            for (const node of nodes) {
+            for (let i = nodes.length - 1; i >= 0; --i) {
+              const node = nodes[i]
               tr = tr.insert(state.selection.anchor, node) // TODO insert within current node if possible
             }
             return tr
