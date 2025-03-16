@@ -3,11 +3,12 @@ export { }
 
 declare global {
   type integer = number
+  type userRole = "admin"|"editor"
 
   /** Schema for GET /users/{username} */
   type User = {
     username: string,
-    role: "admin"|"editor",
+    role: userRole,
 
     // Following fields only present for editor accounts
     display_name?: string, 

@@ -67,9 +67,11 @@ class UserService extends Service {
   }
 
   /** Fetches all user accounts. Requires auth. */
-  async getAll(): Promise<User[]> {
+  async getAll(role?: userRole): Promise<User[]> {
     try {
-      const response = await this.get("/users/");
+      const response = await this.get("/users/", {
+        role: role,
+      });
       return response.data;
     } catch (error) {
       throw error;
