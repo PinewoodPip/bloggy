@@ -4,6 +4,8 @@ export { }
 declare global {
   type integer = number
   type userRole = "admin"|"editor"
+  /** ISO 8601 date */
+  type dateISOString = string
 
   /** Schema for GET /users/{username} */
   type User = {
@@ -51,8 +53,8 @@ declare global {
     id: integer,
     filename: string,
     title: string,
-    creation_time: Date, // TODO
-    publish_time?: Date, // TODO
+    creation_time: dateISOString,
+    publish_time?: dateISOString,
     is_visible: boolean,
     category_path: string,
     /** Full path to article */
@@ -101,7 +103,7 @@ declare global {
     title?: string,
     /** Raw document text */
     content?: string,
-    publish_time?: integer, // TODO type
+    publish_time?: dateISOString,
     is_visible?: boolean,
     view_type?: "single_page"|"by_sections",
     can_comment?: boolean,

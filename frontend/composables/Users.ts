@@ -1,3 +1,6 @@
+/**
+ * User-related queries.
+ */
 import { useQuery, type UseQueryReturnType } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 
@@ -25,6 +28,17 @@ export const useLoggedInUser = () => {
       }
       return false
     }
+  })
+  return query
+}
+
+/** A query that fetches all editor accounts. */
+export const useEditors = () => {
+  const query = useQuery({
+    queryKey: ['editor'],
+    queryFn: async () => {
+      return await userService.getAll('editor')
+    },
   })
   return query
 }

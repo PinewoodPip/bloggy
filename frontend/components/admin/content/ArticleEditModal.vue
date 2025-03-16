@@ -13,16 +13,21 @@
       <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article." icon="i-material-symbols-link" :required="true" />
 
       <!-- Visibility -->
-      <FormGroupCheckbox v-model="articleData.is_visible" label="Published" help="Determines whether the article is visible in the published site." icon="i-material-symbols-visibility-rounded" />
+      <FormGroupCheckbox v-model="articleData.is_visible" label="Visible" help="Determines whether the article is visible in the published site." icon="i-material-symbols-visibility-rounded" />
+
+      <FormGroupInputField v-model="publishDate" type="datetime-local" label="Publish date" help="The article will be hidden from the site until this date." icon="i-material-symbols-calendar-today" />
 
       <!-- View mode -->
       <FormGroupSelect v-model="articleData.view_type" :options="viewOptions" label="Article display" help="Determines how the published article is displayed." icon="i-material-symbols-screenshot-monitor-outline" />
 
       <!-- Comments -->
-      <FormGroupCheckbox v-model="articleData.can_comment" label="Allow comments" icon="i-material-symbols-comment" />
+      <FormGroupCheckbox v-model="articleData.can_comment" label="Allow comments" help="Whether comments can be posted on the article. Toggling this option is non-destructive." icon="i-material-symbols-comment" />
+
+      <!-- Authors -->
+      <FormGroupMultiselect v-if="editors" v-model="chosenAuthors" :options="editors" :multiple="true" track-by="username" label="Authors" help="May be displayed in the published site." option-label-key="display_name" :show-labels="true" :searchable="true" placeholder="Select authors" aria-label="select authors" :disabled="editorsStatus !== 'success'" />
 
       <!-- Show authors -->
-      <FormGroupCheckbox v-model="articleData.show_authors" label="Show authors" icon="i-material-symbols-account-box" />
+      <FormGroupCheckbox v-model="articleData.show_authors" label="Show authors" help="Whether to show author names and cards in the published article page." icon="i-material-symbols-account-box" />
     </template>
 
     <template #footer>
@@ -37,6 +42,7 @@ import type { ModelRef, Reactive } from 'vue';
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const { data: editors, status: editorsStatus } = useEditors()
 
 const props = defineProps<{
   categoryPath: string,
@@ -44,7 +50,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  create: [Article],
+  update: [Article],
 }>()
 
 /** Modal visibility */
@@ -62,6 +68,8 @@ const articleData: Reactive<ArticleUpdateRequest> = reactive({
   // TODO authors, category path, sorting index
   // category_sorting_index: 0,
 })
+const chosenAuthors: Ref<User[]> = ref([])
+const publishDate: Ref<string | undefined> = ref(undefined)
 
 const viewOptions = [
   {
@@ -75,11 +83,15 @@ const viewOptions = [
 ]
 
 function confirm() {
-  requestPatch(articleData)
+  requestPatch({
+    authors: chosenAuthors.value.map((author) => author.username),
+    publish_time: utcDateStr.value!,
+    ...articleData,
+  })
 }
 
 const canConfirm = computed(() => {
-  return true // TODO validate fields
+  return chosenAuthors.value.length >= 1
 })
 
 // Reset field values when the props change
@@ -92,6 +104,20 @@ watchEffect(() => {
     articleData.view_type = article.view_type
     articleData.can_comment = article.can_comment
     articleData.show_authors = article.show_authors
+    chosenAuthors.value = article.authors
+    publishDate.value = article.publish_time ? article.publish_time : undefined
+  }
+})
+
+/**
+ * UTC ISO date string of the publish time.
+ */
+const utcDateStr = computed(() => {
+  if (publishDate.value) {
+    let date = new Date(publishDate.value);
+    return date.toISOString()
+  } else {
+    return null
   }
 })
 
@@ -101,7 +127,7 @@ const { mutate: requestPatch, status: patchStatus } = useMutation({
     return articleService.updateArticle(props.categoryPath + '/' + props.article.filename, request)
   },
   onSuccess: (article) => {
-    emit('create', article)
+    emit('update', article)
     responseToast.showSuccess('Article updated')
     model.value = false // Close the modal
   },

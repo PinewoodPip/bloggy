@@ -80,6 +80,8 @@
   <UModal v-model="settingsMenuVisible" :overlay="true">
     <EditorSettings :editor="editor" @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
   </UModal>
+
+  <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
 </template>
 
 <script setup lang="ts">
@@ -102,6 +104,7 @@ const route = useRoute()
 const editor = ref(useEditor())
 
 const settingsMenuVisible = ref(false)
+const documentPropertiesVisible = ref(false)
 const sidebarVisible = ref(true)
 const contextMenuOpen = ref(false)
 const articleMetadata = reactive({
@@ -208,8 +211,16 @@ function toggleTableOfContents() {
   sidebarVisible.value = !sidebarVisible.value
 }
 
+/** Opens the metadata editor. */
 function editDocumentProperties() {
-  // TODO
+  documentPropertiesVisible.value = true
+}
+
+function onMetadataUpdated(article: Article) {
+  // If the filename was changed, the route needs to be updated so we don't get kicked out of the editor due to a 404 on refetch.
+  router.replace('/admin/editor?article=' + article.path).then(() => {
+    refetchArticleMetadata()
+  })
 }
 
 function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keybind | null) {
@@ -312,7 +323,7 @@ const contextMenuItems = computed(() => {
 })
 
 /** Query for fetching article metadata and initial content */
-const { data: articleData, status: articleDataStatus } = useQuery({
+const { data: articleData, status: articleDataStatus, refetch: refetchArticleMetadata } = useQuery({
   queryKey: ['articleContent'],
   queryFn: async () => {
     if (route.query['article']) {

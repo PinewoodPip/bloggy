@@ -13,3 +13,6 @@ onNuxtReady(() => {
 })
 
 </script>
+
+<!-- Global CSS imports -->
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

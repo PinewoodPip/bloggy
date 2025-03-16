@@ -39,7 +39,7 @@
 
   <!-- Article edit form -->
   <div v-if="articleBeingEdited && articleToEdit">
-    <AdminContentArticleEditModal v-model="articleEditModalVisible" :category-path="selectedCategoryPath" :article="articleToEdit" @create="onContentChanged" />
+    <AdminContentArticleEditModal v-model="articleEditModalVisible" :category-path="selectedCategoryPath" :article="articleToEdit" @update="onContentChanged" />
   </div>
 </template>
 

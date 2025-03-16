@@ -132,6 +132,27 @@ button[role=menuitem] > span {
   color: oklch(var(--pc));
 }
 
+/* Apply theming to vue-multiselect component */
+div[class=multiselect__tags] {
+  @apply bg-base-300
+}
+div[class=multiselect__select]::before {
+  color: black;
+  border-top-color: black;
+}
+ul[class=multiselect__content] {
+  @apply bg-base-100
+}
+input[class=multiselect__input] {
+  @apply bg-base-200
+}
+span[class=multiselect__tag] {
+  @apply bg-accent
+}
+span[class=multiselect__tag] > span {
+  @apply text-accent-content
+}
+
 /* Readd selection color */
 ::selection {
   @apply bg-accent !important
