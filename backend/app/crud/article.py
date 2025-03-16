@@ -8,8 +8,9 @@ from models.article import *
 import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.utils as CrudUtils
+from datetime import datetime
 
-PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path"])
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time"])
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
@@ -67,6 +68,10 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
         except Exception as e:
             db.rollback()
             raise e
+        
+    # Update publishing time
+    if article_update.publish_time != None:
+        article.publish_time = datetime.fromisoformat(article_update.publish_time)
 
     db.commit()
     db.refresh(article)

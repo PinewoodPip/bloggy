@@ -28,7 +28,7 @@ class ArticleUpdate(ArticleBase):
     filename: Optional[str] = None
     title: Optional[str] = None
     content: Optional[str] = None # Raw document text
-    publish_time: Optional[datetime] = None
+    publish_time: Optional[str] = None # As ISO 8601 date
     is_visible: Optional[bool] = None
     view_type: Optional[ArticleViewEnum] = None
     can_comment: Optional[bool] = None
