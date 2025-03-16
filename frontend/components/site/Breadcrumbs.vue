@@ -19,13 +19,15 @@ const navigationCrumbs = computed(() => {
     {name: 'Home', url: '/'}, // Always show crumb back home
   ]
   const urlComponents = url.split('/').slice(1) // Ignore first empty string
-  for (const i in urlComponents) {
+  for (let i = 0; i < urlComponents.length; ++i) {
     const comp = urlComponents[i]
-    // TODO use category / article names instead
+    let url = '/' + urlComponents.slice(0, i + 1).join('/') // Use URL up until this component
+    if (i == urlComponents.length - 1) {
+      url = url.replace(/#.+/, '') // Remove trailing queries
+    }
     crumbs.push({
-      name: comp,
-      // @ts-ignore Somehow, TS thinks i is a string here.
-      url: '/' + urlComponents.slice(0, i + 1).join('/'), // Use URL up until this component
+      name: comp, // TODO use category / article names instead
+      url: url,
     })
   }
   return crumbs
