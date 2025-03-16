@@ -62,12 +62,12 @@ async def get_user_by_username(username: str, db: Session=Depends(get_db), curre
     return UserCrud.create_user_output(user)
 
 @router.get("/", response_model=list[UserOutput])
-async def get_users(db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+async def get_users(role: UserCrud.UserRole = "editor", db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
         Returns all user accounts.
         Admin accounts are only returned for admins.
     """
-    role_filter = None
+    role_filter = [role]
     if not current_user.admin: # If the auth user is not admin, only return editor accounts
         role_filter = set([UserCrud.UserRole.editor.name])
 
