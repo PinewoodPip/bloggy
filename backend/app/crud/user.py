@@ -126,7 +126,7 @@ def get_all(db: Session, roles: set[UserRole]|None) -> list[User]:
     if roles:
         valid_users = []
         for user in users:
-            if get_role(user).name in roles:
+            if get_role(user) in roles:
                 valid_users.append(user)
 
     return valid_users
