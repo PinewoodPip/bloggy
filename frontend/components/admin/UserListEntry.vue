@@ -1,5 +1,5 @@
 <template>
-  <div class="flex content-center hover:bg-secondary/50 rounded-btn">
+  <div class="flex items-center hover:bg-secondary/50 rounded-btn pl-2">
     <!-- Avatar TODO -->
     <AvatarIcon class="size-8 mr-2"/>
 

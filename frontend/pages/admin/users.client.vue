@@ -14,7 +14,7 @@
     <!-- Users list -->
     <div class="flex-grow overflow-x-auto">
       <div class="flexcol gap-y-2">
-        <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin'" @edit="editUser"/>
+        <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin' || user.username === loggedInUser?.username" @edit="editUser"/>
       </div>
     </div>
   </AdminPage>
