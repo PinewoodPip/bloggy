@@ -1,5 +1,5 @@
 <template>
-  <FullscreenModal v-model="model">
+  <FullscreenModal v-model="model" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
       <h2>Edit article</h2>
     </template>
@@ -133,17 +133,6 @@ const { mutate: requestPatch, status: patchStatus } = useMutation({
   },
   onError: (err) => {
     responseToast.showError('Failed to update article', err)
-  }
-})
-
-defineShortcuts({
-  // Enter key submits the form
-  enter: {
-    usingInput: true,
-    whenever: [canConfirm],
-    handler: () => {
-      confirm()
-    },
   }
 })
 

@@ -1,5 +1,5 @@
 <template>
-  <FullscreenModal v-model="model">
+  <FullscreenModal v-model="model" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
       <h2>Create article</h2>
     </template>
@@ -73,17 +73,6 @@ const { mutate: requestCreation, status: creationStatus } = useMutation({
   },
   onError: (err) => {
     responseToast.showError('Failed to create article', err)
-  }
-})
-
-defineShortcuts({
-  // Enter key submits the form
-  enter: {
-    usingInput: true,
-    whenever: [canConfirm],
-    handler: () => {
-      confirm()
-    },
   }
 })
 

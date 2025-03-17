@@ -1,5 +1,5 @@
 <template>
-  <FullscreenModal v-model="model">
+  <FullscreenModal v-model="model" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
       <h2>Edit category</h2>
     </template>
@@ -109,17 +109,6 @@ const { mutate: requestPatch, status: patchingStatus } = useMutation({
   },
   onError: (err) => {
     responseToast.showError('Failed to edit category', err)
-  }
-})
-
-defineShortcuts({
-  // Enter key submits the form
-  enter: {
-    usingInput: true,
-    whenever: [canConfirm],
-    handler: () => {
-      confirm()
-    },
   }
 })
 
