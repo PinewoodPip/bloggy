@@ -90,7 +90,7 @@ import { EditorState, Transaction } from 'prosemirror-state'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/composables/editor/Editor'
 import ContextMenu from '~/components/context-menu/ContextMenu.vue'
-import { useEditor } from '~/composables/editor/Toolbar'
+import { useArticleEditor } from '~/composables/editor/Editors'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
@@ -101,7 +101,7 @@ const responseToast = useResponseToast()
 const router = useRouter()
 const route = useRoute()
 
-const editor = ref(useEditor())
+const editor = ref(useArticleEditor())
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)

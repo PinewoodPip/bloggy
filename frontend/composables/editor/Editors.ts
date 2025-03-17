@@ -1,15 +1,13 @@
 /**
- * Exposes toolbar model data.
+ * Composables for common editor configurations.
  */
 import * as Editor from './Editor'
 import * as HistoryActions from './action/History'
 import * as FormattingActions from './action/Formatting'
 import * as SectioningActions from './action/Sectioning'
 import * as ClipboardActions from './action/Clipboard'
-import type { Action } from './action/Action'
-import type { ToolbarGroupActionMenu, actionID } from './Editor'
 
-export const useEditor = () => {
+export const useArticleEditor = () => {
   // Create editor
   const editor: Editor.Editor = new Editor.Editor()
 
@@ -26,37 +24,13 @@ export const useEditor = () => {
   editor.registerAction(new FormattingActions.FormatInlineCode())
   editor.registerToolbarGroup(FormattingActions.actionGroup)
 
-  // Sectioning blocks
+  // Sectioning actions
+  for (const action of SectioningActions.headingActions) {
+    editor.registerAction(action)
+  }
   editor.registerAction(new SectioningActions.InsertHorizontalRule())
   editor.registerAction(new SectioningActions.MakeQuote())
-  // Creating heading actions
-  const headingActions: Action[] = []
-  const headingActionIDs: actionID[] = []
-  for (let i = 1; i <= 6; ++i) {
-    const action = new SectioningActions.SetHeading(i)
-    editor.registerAction(action)
-    headingActions.push(action)
-    headingActionIDs.push(action.def.id)
-  }
-  editor.registerToolbarGroup({
-    name: 'Sectioning',
-    items: [
-      {
-        type: 'actionMenu',
-        icon: 'i-material-symbols-h-mobiledata-badge-outline',
-        name: 'Set Heading',
-        actionIDs: headingActionIDs,
-      } as ToolbarGroupActionMenu,
-      {
-        type: 'action',
-        actionID: SectioningActions.InsertHorizontalRule.ID,
-      } as Editor.ToolbarGroupAction,
-      {
-        type: 'action',
-        actionID: SectioningActions.MakeQuote.ID,
-      } as Editor.ToolbarGroupAction,
-    ],
-  })
+  editor.registerToolbarGroup(SectioningActions.actionGroup)
 
   // Clipboard actions
   editor.registerAction(new ClipboardActions.Copy())
@@ -72,4 +46,3 @@ export const useEditor = () => {
 
   return editor
 }
-
