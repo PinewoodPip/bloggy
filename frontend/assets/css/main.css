@@ -94,7 +94,7 @@ div[data-popper-placement] > div > div {
 div[data-popper-placement] > div > div[role=menu] {
   color: oklch(var(--nc));
   height: unset !important;
-  @apply bg-base-300
+  @apply bg-neutral
 }
 
 div[data-nuxtui-contextmenu-dropdown] > div:nth-child(2) {
@@ -128,8 +128,14 @@ div[data-popper-placement] {
 }
 
 /* Apply theming to menu elements */
+button[role=menuitem] {
+  @apply bg-neutral
+}
+button[role=menuitem]:hover {
+  @apply bg-base-100/25
+}
 button[role=menuitem] > span {
-  color: oklch(var(--pc));
+  color: oklch(var(--nc));
 }
 
 /* Apply theming to vue-multiselect component */
