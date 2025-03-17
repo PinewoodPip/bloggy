@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import type { EditorState } from 'prosemirror-state';
-import type * as Editor from '../../composables/editor/Editor'
+import type * as Editor from '~/src/editor/Editor'
 
 const props = defineProps<{
   editor: Editor.Editor,

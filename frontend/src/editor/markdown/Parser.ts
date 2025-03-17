@@ -4,7 +4,7 @@
  */
 import { MarkdownParser } from 'prosemirror-markdown'
 import MarkdownIt from 'markdown-it'
-import { schema } from '~/composables/editor/Schema'
+import { schema } from '~/src/editor/Schema'
 import { plugin as UnderlinePlugin } from './plugins/underline'
 
 // Extend CommonMark parser

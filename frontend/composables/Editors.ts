@@ -1,11 +1,11 @@
 /**
  * Composables for common editor configurations.
  */
-import * as Editor from './Editor'
-import * as HistoryActions from './action/History'
-import * as FormattingActions from './action/Formatting'
-import * as SectioningActions from './action/Sectioning'
-import * as ClipboardActions from './action/Clipboard'
+import * as Editor from '~/src/editor/Editor'
+import * as HistoryActions from '~/src/editor/actions/History'
+import * as FormattingActions from '~/src/editor/actions/Formatting'
+import * as SectioningActions from '~/src/editor/actions/Sectioning'
+import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 
 export const useArticleEditor = () => {
   // Create editor

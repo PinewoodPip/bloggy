@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import * as Editor from '../../composables/editor/Editor'
+import * as Editor from '~/src/editor/Editor'
 
 const keybindStringifier = useKeybindStringifier()
 
