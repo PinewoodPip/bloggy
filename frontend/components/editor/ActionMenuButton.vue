@@ -32,14 +32,16 @@ function toggleMenu() {
 const menuItems = computed(() => {
   const items = []
   for (const actionID of props.menu.actionIDs) {
-    const action = props.editor.getAction(actionID)
-    items.push({
-      label: action.def.name,
-      icon: action.def.icon,
-      click: () => {
-        emit('useAction', action)
-      }
-    })
+    if (props.editor.isActionVisibleInToolbar(actionID)) {
+      const action = props.editor.getAction(actionID)
+      items.push({
+        label: action.def.name,
+        icon: action.def.icon,
+        click: () => {
+          emit('useAction', action)
+        }
+      })
+    }
   }
   return [items]
 })
