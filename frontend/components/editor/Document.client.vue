@@ -8,7 +8,7 @@
 <script setup lang="ts">
 import { useMarkViewFactory, useNodeViewFactory, usePluginViewFactory, useWidgetViewFactory } from '@prosemirror-adapter/vue'
 import { EditorState, Plugin } from 'prosemirror-state'
-import { DecorationSet, EditorView } from 'prosemirror-view'
+import { EditorView } from 'prosemirror-view'
 import { createEditorView } from './createEditorView'
 import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
@@ -124,6 +124,21 @@ watchEffect((onCleanup) => {
   padding: 5px 0;
   margin-bottom: 23px;
   position: relative;
+}
+
+/* Bullet list items */
+.editor ul > li::marker {
+  content: "•";
+  @apply text-lg
+}
+.editor ul > li {
+  @apply pl-2
+}
+
+/* Ordered list items */
+.editor ol > li {
+  list-style-type: decimal;
+  @apply pl-2
 }
 
 .ProseMirror p:first-child,

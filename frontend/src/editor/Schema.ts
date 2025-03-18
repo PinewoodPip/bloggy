@@ -3,6 +3,9 @@
  */
 import { Schema, type MarkSpec } from 'prosemirror-model'
 import { schema as BasicSchema } from 'prosemirror-schema-basic'
+import { addListNodes } from "prosemirror-schema-list"
+
+const nodes = addListNodes(BasicSchema.spec.nodes, 'paragraph block*', 'block')
 
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,
@@ -15,7 +18,7 @@ const marks: {[markType: string]: MarkSpec} = {
 }
 export const schema = new Schema(
   {
-    nodes: BasicSchema.spec.nodes,
+    nodes: nodes,
     marks: marks,
   }
 )
