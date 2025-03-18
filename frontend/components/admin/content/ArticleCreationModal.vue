@@ -10,7 +10,7 @@
       
       <!-- Filename -->
       <!-- TODO preview path in help -->
-      <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article" icon="i-material-symbols-link" :required="true" />
+      <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article." icon="i-material-symbols-link" :required="true" />
     </template>
 
     <template #footer>

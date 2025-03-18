@@ -6,11 +6,11 @@
 
     <template #form>
       <!-- Title -->
-      <FormGroupInputField v-model="patchData.name" label="Name" help="User-friendly title" icon="i-material-symbols-title" />
+      <FormGroupInputField v-model="patchData.name" label="Name" help="User-friendly title." icon="i-material-symbols-title" />
       
       <!-- Directory name -->
       <!-- TODO preview path in help -->
-      <FormGroupInputField v-model="patchData.directory_name" label="Directory name" help="Determines the URL of the category" icon="i-material-symbols-link" />
+      <FormGroupInputField v-model="patchData.directory_name" label="Directory name" help="Determines the URL of the category." icon="i-material-symbols-link" />
 
       <!-- Description -->
       <FormGroupTextArea v-model="patchData.description" label="Description" icon="description" help="Displayed when browsing articles of the category." />
