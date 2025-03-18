@@ -7,6 +7,7 @@ import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as SectioningActions from '~/src/editor/actions/Sectioning'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as ListActions from '~/src/editor/actions/Lists'
+import * as WidgetActions from '~/src/editor/actions/Widgets'
 
 export const useArticleEditor = () => {
   // Create editor
@@ -42,6 +43,10 @@ export const useArticleEditor = () => {
   editor.registerAction(new ListActions.ToggleBulletList())
   editor.registerAction(new ListActions.ToggleNumberedList())
   editor.registerToolbarGroup(ListActions.actionGroup)
+
+  // Widget actions
+  editor.registerAction(new WidgetActions.InsertCodeBlock())
+  editor.registerToolbarGroup(WidgetActions.actionGroup)
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {

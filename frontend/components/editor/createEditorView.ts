@@ -9,6 +9,15 @@ import { schema } from '~/src/editor/Schema'
 import 'prosemirror-menu/style/menu.css'
 import 'prosemirror-view/style/prosemirror.css'
 import 'prosemirror-example-setup/style/style.css'
+import 'highlight.js/styles/default.css'
+import { common, createLowlight } from 'lowlight'
+import { createHighlightPlugin } from 'prosemirror-highlight'
+import { createParser } from 'prosemirror-highlight/lowlight'
+
+// Create syntax highlighting node DOM post-processor
+const lowlight = createLowlight(common)
+const parser = createParser(lowlight)
+const lowlightPlugin = createHighlightPlugin({ parser })
 
 /**
  * Creates a ProseMirror EditorView.
@@ -59,6 +68,7 @@ export function createEditorView(element: HTMLElement | null, content: Node, nod
           },
         }),
         ...plugins,
+        lowlightPlugin,
       ],
     }),
     dispatchTransaction(transaction) {

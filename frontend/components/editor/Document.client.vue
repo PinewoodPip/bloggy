@@ -13,6 +13,7 @@ import { createEditorView } from './createEditorView'
 import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
+import CodeBlock from './node/CodeBlock.vue'
 import Underline from './mark/Underline.vue'
 import { DocumentParser } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
@@ -58,6 +59,11 @@ watchEffect((onCleanup) => {
         component: Paragraph,
         as: 'div',
         contentAs: 'p',
+      }),
+      code_block: nodeViewFactory({
+        component: CodeBlock,
+        as: 'div',
+        contentAs: 'pre',
       }),
       heading: nodeViewFactory({
         component: Heading,

@@ -6,6 +6,12 @@ import { schema as BasicSchema } from 'prosemirror-schema-basic'
 import { addListNodes } from "prosemirror-schema-list"
 
 const nodes = addListNodes(BasicSchema.spec.nodes, 'paragraph block*', 'block')
+const codeBlock = nodes.get('code_block')
+codeBlock!.attrs = {
+  'language': {
+    default: 'javascript',
+  }
+}
 
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,
