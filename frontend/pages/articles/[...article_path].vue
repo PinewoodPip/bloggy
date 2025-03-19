@@ -16,9 +16,7 @@
 
           <!-- Article content -->
           <!-- Will switch from SSR view to client one once mounted -->
-          <ProsemirrorAdapterProvider v-if="mounted">
-            <EditorDocument :initial-content="article?.content" :readonly="true" />
-          </ProsemirrorAdapterProvider>
+          <SiteArticleContent v-if="mounted" :initial-content="article?.content" />
           <MarkdownDocument v-else :content="article.content" />
 
           <hr class="faint-hr mb-2" />
@@ -69,7 +67,6 @@
 </template>
 
 <script setup lang="ts">
-import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 
