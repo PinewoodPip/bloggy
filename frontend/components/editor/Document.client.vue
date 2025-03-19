@@ -15,7 +15,7 @@ import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import CodeBlock from './node/CodeBlock.vue'
 import Underline from './mark/Underline.vue'
-import { DocumentParser } from '~/src/editor/markdown/Parser'
+import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
 import markdownit from 'markdown-it'
 
@@ -52,8 +52,13 @@ watchEffect((onCleanup) => {
   const stateCallback = (newState: EditorState) => {
     editorState.value = newState
   }
+
+  console.log("Article string:\n", props.initialContent)
+  console.log("Markdown tokens:\n", Markdown.parse(props.initialContent, {}))
   
   const deserializedContent = DocumentParser.parse(props.initialContent)
+  console.log("Parsed PM document:\n", deserializedContent)
+
   const view = createEditorView(el, deserializedContent, {
       paragraph: nodeViewFactory({
         component: Paragraph,

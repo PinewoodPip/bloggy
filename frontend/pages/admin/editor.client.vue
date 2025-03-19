@@ -186,6 +186,8 @@ function saveDocument() {
 
   // Serialize the document and PATCH the article
   const markdownStr = DocumentSerializer.serialize(editorRef.value!.editorState!.doc)
+  console.log("Serialized markdown:\n", markdownStr)
+
   requestPatchArticle({
     title: articleMetadata.title,
     content: markdownStr,
