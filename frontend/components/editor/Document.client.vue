@@ -122,6 +122,8 @@ watchEffect((onCleanup) => {
 })
 </script>
 
+
+<style src="@mdit/plugin-alert/style"></style>
 <style>
 .editor {
   color: oklch(--pc);
@@ -130,6 +132,11 @@ watchEffect((onCleanup) => {
   padding: 5px 0;
   margin-bottom: 23px;
   position: relative;
+}
+
+/* Alerts */
+.markdown-alert {
+  @apply bg-base-300 shadow-md
 }
 
 /* Bullet list items */

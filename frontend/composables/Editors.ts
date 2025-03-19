@@ -46,6 +46,9 @@ export const useArticleEditor = () => {
 
   // Widget actions
   editor.registerAction(new WidgetActions.InsertCodeBlock())
+  for (const action of WidgetActions.alertActions) {
+    editor.registerAction(action)
+  }
   editor.registerToolbarGroup(WidgetActions.actionGroup)
 
   // Set default keybinds

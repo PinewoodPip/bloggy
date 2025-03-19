@@ -6,11 +6,13 @@ import { MarkdownParser } from 'prosemirror-markdown'
 import MarkdownIt from 'markdown-it'
 import { schema } from '~/src/editor/Schema'
 import { plugin as UnderlinePlugin } from './plugins/underline'
+import { alert as AlertPlugin } from "@mdit/plugin-alert";
 import type Token from 'markdown-it/lib/token.mjs'
 
 // Extend CommonMark parser
 const md = MarkdownIt('commonmark', {html: false})
 md.use(UnderlinePlugin)
+md.use(AlertPlugin)
 export const Markdown = md
 
 /** From prosemirror-markdown */
@@ -23,6 +25,10 @@ function listIsTight(tokens: readonly Token[], i: number) {
 const _DocumentParser = new MarkdownParser(schema, md, {
   // Nodes
   blockquote: {block: "blockquote"},
+  alert: {block: "alert", getAttrs: tok => {
+    return ({type: tok.markup})
+  }},
+  alert_title: {block: "blockquote", noCloseToken: true},
   paragraph: {block: "paragraph"},
   list_item: {block: "list_item"},
   bullet_list: {block: "bullet_list", getAttrs: (_, tokens, i) => ({tight: listIsTight(tokens, i)})},

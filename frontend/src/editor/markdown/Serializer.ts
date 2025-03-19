@@ -25,4 +25,18 @@ _DocumentSerializer.nodes['code_block'] = (state, node) => {
   state.closeBlock(node)
 }
 
+// Serialize alert nodes
+_DocumentSerializer.nodes['alert'] = (state, node) => {
+  state.write(`> [!${node.attrs.type}]` + "\n") // Write header
+  // Write child nodes
+  for (const child of node.children) {
+    state.text("> ")
+    state.renderContent(child)
+    state.text("\n")
+  }
+  // Add a newline to the current content before adding closing marker
+  state.write("\n")
+  state.closeBlock(node)
+}
+
 export const DocumentSerializer = _DocumentSerializer;

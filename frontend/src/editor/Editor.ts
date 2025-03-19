@@ -2,11 +2,12 @@
  * Base types for editor model.
  */
 import { EditorState, Transaction } from 'prosemirror-state'
-import { Action } from './action/Action'
+import { Action } from './actions/Action'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
 export type keybind = string
+export type alertType = 'info' | 'tip' | 'important' | 'caution' | 'warning'
 
 /** Action descriptor. */
 export interface ActionDef {
