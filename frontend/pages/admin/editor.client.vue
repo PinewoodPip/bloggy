@@ -54,7 +54,7 @@
     </div>
 
     <!-- Toolbar; only rendered once editor is initialized -->
-    <EditorToolbar v-if="state" :editor="editor" :editor-view="editorView" :state="state" @action-use="onActionUsed"/>
+    <EditorToolbar v-if="editorState" @action-use="onActionUsed"/>
 
     <!-- Content area -->
     <div class="flex gap-x-2">
@@ -78,7 +78,7 @@
 
   <!-- Settings menu modal -->
   <UModal v-model="settingsMenuVisible" :overlay="true">
-    <EditorSettings :editor="editor" @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
+    <EditorSettings @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
   </UModal>
 
   <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
@@ -256,7 +256,7 @@ const editorView = computed(() => {
 })
 
 /** ProseMirror EditorState. */
-const state = computed(() => {
+const editorState = computed(() => {
   const editorRaw = toRaw(editorRef.value)
   const state = toRaw(editorRaw?.editorState) as EditorState
   return state
@@ -360,6 +360,12 @@ const { mutate: requestPatchArticle, status: patchArticleStatus } = useMutation(
     responseToast.showError('Failed to save article', err)
   }
 })
+
+// Expose editor state to all child components
+// @ts-ignore
+provide<Ref<Editor.Editor>>('editor', editor)
+provide('editorView', editorView)
+provide('editorState', editorState)
 
 // TODO would be clearer to reader if this used an object
 const shortcutEntries = useArbitraryKeyshortcuts(

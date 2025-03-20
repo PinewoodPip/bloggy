@@ -9,12 +9,11 @@
 </template>
 
 <script setup lang="ts">
-import type { EditorState } from 'prosemirror-state';
 import type * as Editor from '~/src/editor/Editor'
 
+const { editor, editorState } = useEditorInjects()
+
 const props = defineProps<{
-  editor: Editor.Editor,
-  state: EditorState,
   menu: Editor.ToolbarGroupActionMenu,
 }>()
 
@@ -32,8 +31,8 @@ function toggleMenu() {
 const menuItems = computed(() => {
   const items = []
   for (const actionID of props.menu.actionIDs) {
-    if (props.editor.isActionVisibleInToolbar(actionID)) {
-      const action = props.editor.getAction(actionID)
+    if (editor.value.isActionVisibleInToolbar(actionID)) {
+      const action = editor.value.getAction(actionID)
       items.push({
         label: action.def.name,
         icon: action.def.icon,
@@ -48,8 +47,8 @@ const menuItems = computed(() => {
 
 /** The button is highlighted if any action is active. */
 const btnClass = computed(() => {
-  const isActive = props.state && props.menu.actionIDs.find((actionID) => {
-    return props.editor.getAction(actionID).isActive(props.state)
+  const isActive = editorState.value && props.menu.actionIDs.find((actionID) => {
+    return editor.value.getAction(actionID).isActive(editorState.value)
   })
   return {
     'btn-secondary': !isActive,

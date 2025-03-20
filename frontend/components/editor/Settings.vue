@@ -45,15 +45,12 @@
 import * as Editor from '~/src/editor/Editor'
 
 const keybindStringifier = useKeybindStringifier()
+const { editor } = useEditorInjects()
 
 const rebindingModalVisible = ref(false)
 const pendingRebindActionID: Ref<Editor.actionID | null> = ref(null)
 const pendingRebindKeybind: Ref<Editor.keybind | null> = ref(null)
 const conflictingAction: Ref<Editor.actionID | null> = ref(null)
-
-const props = defineProps<{
-  editor: Editor.Editor,
-}>()
 
 const emit = defineEmits<{
   close: [],
@@ -93,8 +90,8 @@ function getGroupActions(group: Editor.ToolbarGroup): Editor.actionID[] {
 
 /** Returns whether an action's keybind is the default one. */
 function isKeybindDefault(actionID: string) {
-  const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
-  const currentKeybind = props.editor.getActionKeybind(actionID)
+  const defaultKeybind = editor.value.getAction(actionID).getDefaultKeyCombo()
+  const currentKeybind = editor.value.getActionKeybind(actionID)
   return defaultKeybind === currentKeybind
 }
 
@@ -105,18 +102,18 @@ function onRebindRequested(actionID: string) {
 }
 
 function onResetKeybind(actionID: Editor.actionID) {
-  const defaultKeybind = props.editor.getAction(actionID).getDefaultKeyCombo()
+  const defaultKeybind = editor.value.getAction(actionID).getDefaultKeyCombo()
   emit('rebind', actionID, defaultKeybind)
 }
 
 /** Sets visibility and saves preferences. */
 function onToggleActionVisibility(actionID: Editor.actionID, visible: boolean) {
-  props.editor.setActionVisibleInToolbar(actionID, visible)
-  props.editor.savePreferences("ArticleEditor")
+  editor.value.setActionVisibleInToolbar(actionID, visible)
+  editor.value.savePreferences("ArticleEditor")
 }
 
 const pendingRebindActionName = computed(() => {
-  return pendingRebindActionID.value ? props.editor.getAction(pendingRebindActionID.value).def.name : ''
+  return pendingRebindActionID.value ? editor.value.getAction(pendingRebindActionID.value).def.name : ''
 })
 
 // @ts-ignore
@@ -125,7 +122,7 @@ defineShortcuts(useArbitraryKeyshortcuts(
     pendingRebindKeybind.value = keys
 
     // Warn if the new keybind conflicts with an existing binding of another action
-    const previousAction = props.editor.getActionForKeybind(keys)
+    const previousAction = editor.value.getActionForKeybind(keys)
     if (previousAction != null && previousAction.def.id !== pendingRebindActionID.value) {
       conflictingAction.value = previousAction.def.id
     }

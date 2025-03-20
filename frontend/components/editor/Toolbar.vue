@@ -19,14 +19,8 @@
 import * as Editor from '~/src/editor/Editor'
 import ActionButton from './ActionButton.vue'
 import ActionMenuButton from './ActionMenuButton.vue'
-import type { EditorState } from 'prosemirror-state';
-import type { EditorView } from 'prosemirror-view';
 
-const props = defineProps<{
-  editor: Editor.Editor,
-  editorView: EditorView,
-  state: EditorState,
-}>()
+const { editor } = useEditorInjects()
 
 const emit = defineEmits<{
   actionUse: [Editor.IAction]
@@ -39,7 +33,7 @@ function useAction(action: Editor.IAction) {
 /** Toolbar groups to show, based on user preferences. */
 const visibleGroups = computed(() => {
   const groups: Editor.ToolbarGroup[] = []
-  for (const group of props.editor.getToolbarGroups()) {
+  for (const group of editor.value.getToolbarGroups()) {
     // Check if any action in the group is visible
     const visible = getVisibleGroupItems(group).length > 0
     if (visible) {
@@ -55,11 +49,11 @@ function getVisibleGroupItems(group: Editor.ToolbarGroup) {
   for (const item of group.items) {
     let visible = false
     if (item.type === 'action') {
-      visible = props.editor.isActionVisibleInToolbar((item as Editor.ToolbarGroupAction).actionID)
+      visible = editor.value.isActionVisibleInToolbar((item as Editor.ToolbarGroupAction).actionID)
     } else if (item.type === 'actionMenu') {
       const menuActions = (item as Editor.ToolbarGroupActionMenu).actionIDs
       visible = ArrayUtils.anyInArray(menuActions, (actionID) => {
-        return props.editor.isActionVisibleInToolbar(actionID)
+        return editor.value.isActionVisibleInToolbar(actionID)
       })
     } else {
       throw 'Unsupported item type ' + item.type
@@ -84,15 +78,11 @@ function getGroupItemComponent(item: Editor.ToolbarGroupItem) {
 function getGroupItemComponentProps(item: Editor.ToolbarGroupItem) {
   if (item.type === 'action') {
     return {
-      action: props.editor.getAction((item as Editor.ToolbarGroupAction).actionID),
-      editor: props.editor,
-      state: props.state,
+      action: editor.value.getAction((item as Editor.ToolbarGroupAction).actionID),
     }
   } else if (item.type === 'actionMenu') {
     return {
       menu: item as Editor.ToolbarGroupActionMenu,
-      editor: props.editor,
-      state: props.state,
     }
   } else {
     throw "Unimplemented group item: " + item.type

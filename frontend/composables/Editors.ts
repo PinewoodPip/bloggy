@@ -1,6 +1,7 @@
 /**
  * Composables for common editor configurations.
  */
+import type { EditorState } from 'prosemirror-state';
 import * as Editor from '~/src/editor/Editor'
 import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
@@ -59,4 +60,12 @@ export const useArticleEditor = () => {
   }
 
   return editor
+}
+
+/** Auxiliary composable to import editor injects. */
+export const useEditorInjects = () => {
+  const editor = inject<Ref<Editor.Editor>>('editor')!
+  const editorState = inject<Ref<EditorState>>('editorState')!
+
+  return {editor, editorState}
 }

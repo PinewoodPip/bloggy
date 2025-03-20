@@ -13,14 +13,12 @@
 </template>
 
 <script setup lang="ts">
-import type { EditorState } from 'prosemirror-state';
 import type * as Editor from '~/src/editor/Editor'
 
 const keybindStringifier = useKeybindStringifier()
+const { editor, editorState } = useEditorInjects()
 
 const props = defineProps<{
-  editor: Editor.Editor,
-  state: EditorState,
   action: Editor.IAction,
 }>()
 
@@ -33,12 +31,12 @@ function useTool() {
 }
 
 const keybindLabel = computed(() => {
-  const keybind = props.editor.getActionKeybind(props.action.def.id)
+  const keybind = editor.value.getActionKeybind(props.action.def.id)
   return keybind ? keybindStringifier.stringify(keybind) : null
 })
 
 const btnClass = computed(() => {
-  const isActive = props.state && props.action.isActive(props.state)
+  const isActive = editorState.value && props.action.isActive(editorState.value)
   return {
     'btn-secondary': !isActive,
     'btn-accent': isActive, // Highlight actions currently in use
