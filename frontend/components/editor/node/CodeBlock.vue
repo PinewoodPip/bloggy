@@ -3,7 +3,7 @@
   <div :class="{ selected }" class="flexcol bg-secondary/20 border-separate rounded-box shadow-md" role="presentation">
     <div class="bg-secondary/50 rounded-t-box p-2">
       <!-- TODO make nicely tab-selectable somehow -->
-      <VueMultiselect class="ml-auto max-w-48" v-model="language" :options="languageDropdownItems" :searchable="true" :multiple="false" :close-on-select="true" :show-labels="true" track-by="id" label="name" placeholder="Choose language..." aria-label="choose language" @update:modelValue="onLanguageChanged" tabindex="-1"></VueMultiselect>
+      <VueMultiselect class="ml-auto max-w-48" v-model="language" :options="languageDropdownItems" :searchable="true" :multiple="false" :close-on-select="true" :show-labels="true" track-by="id" label="name" placeholder="Choose language..." aria-label="choose language" @update:modelValue="onLanguageChanged" :tabindex="-1"></VueMultiselect>
     </div>
     <div :ref="contentRef" class="p-3"></div>
   </div>

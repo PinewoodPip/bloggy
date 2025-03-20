@@ -72,7 +72,7 @@ export class InsertAlert extends Action {
  */
 // Create alert actions
 let _alertActions: Action[] = [
-  new InsertAlert('info'),
+  new InsertAlert('note'),
   new InsertAlert('tip'),
   new InsertAlert('important'),
   new InsertAlert('caution'),
