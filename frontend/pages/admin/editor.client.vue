@@ -156,7 +156,7 @@ const viewDropdownItems = [
 ]
 
 /** Execute action commands */
-async function onActionUsed(action: Editor.IAction) {
+function onActionUsed(action: Editor.IAction) {
   if (editorRef.value) {
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
@@ -273,17 +273,20 @@ function isKeyComboBound(keyCombo: Editor.actionID) {
 }
 
 /** Executes an action over the current selection. */
-async function executeAction(actionID: string) {
+function executeAction(actionID: string) {
   const action = editor.value.getAction(actionID)
   const editorRaw = toRaw(editorRef.value)
   const view = toRaw(editorRaw!.editorView)
   const state = view?.state!
 
   // Run action and apply transaction
-  action.execute(toRaw(editorRef.value!).editorState!)
-  const transaction: Transaction | null = await action.execute(state)
+  let transaction = action.execute(state)
   if (transaction) {
-    view?.dispatch(transaction)
+    Promise.resolve(transaction).then((a) => {
+      toRaw(toRaw(editorRef.value)!.editorView)?.dispatch(a)
+    })
+  }
+}
   }
 }
 

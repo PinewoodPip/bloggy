@@ -43,7 +43,7 @@ export class ToggleBulletList extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     return this.getTransaction(toggleList(schema.nodes['bullet_list'], state), state)
   }
   
@@ -63,7 +63,7 @@ export class ToggleNumberedList extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     return this.getTransaction(toggleList(schema.nodes['ordered_list'], state), state)
   }
   

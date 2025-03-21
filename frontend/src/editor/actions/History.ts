@@ -17,7 +17,7 @@ export class Undo extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     return this.getTransaction(undoCommand, state)
   }
   
@@ -37,7 +37,7 @@ export class Redo extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     return this.getTransaction(redoCommand, state)
   }
 

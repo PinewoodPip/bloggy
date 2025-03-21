@@ -18,7 +18,7 @@ export class FormatBold extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const toggleBold = toggleMark(schema.marks.strong, null, {})
     return this.getTransaction(toggleBold, state)
   }
@@ -43,7 +43,7 @@ export class FormatItalic extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const toggleItalics = toggleMark(schema.marks.em, null, {})
     return this.getTransaction(toggleItalics, state)
   }
@@ -68,7 +68,7 @@ export class FormatUnderline extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const toggleUnderline = toggleMark(schema.marks.underline, null, {}) // TODO extract this helper
     return this.getTransaction(toggleUnderline, state)
   }
@@ -93,7 +93,7 @@ export class FormatInlineCode extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const toggleInlineCode = toggleMark(schema.marks.code, null, {}) // TODO extract this helper
     return this.getTransaction(toggleInlineCode, state)
   }

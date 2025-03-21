@@ -19,7 +19,7 @@ export class InsertCodeBlock extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const codeBlockNode = schema.nodes['code_block']
     const paragraphNode = schema.nodes['paragraph']
     const command = this.selectionHasNode(state, codeBlockNode) ? setBlockType(paragraphNode) : setBlockType(codeBlockNode, {language: 'javascript'})
@@ -41,7 +41,7 @@ export class InsertAlert extends Action {
     this.alertType = type
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const alertNode = schema.nodes['alert']
 
     if (this.selectionHasNode(state, alertNode, {type: this.alertType})) { // If the selection is already an alert of the same type, pop its child out (removing the alert in the process, as it cannot be a leaf)

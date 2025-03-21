@@ -24,7 +24,7 @@ export interface IAction {
   def: ActionDef,
 
   /** Runs the action's effect. */
-  execute(state: EditorState): Promise<Transaction | null>,
+  execute(state: EditorState): Transaction | Promise<Transaction> | null,
 
   /** Returns whether the action is being used. */
   isActive(state: EditorState): boolean,

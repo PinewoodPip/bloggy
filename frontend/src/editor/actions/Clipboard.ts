@@ -18,7 +18,7 @@ export class Copy extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const type = 'web application/json'
     const selection = state.selection.content().toJSON()
     const item = new ClipboardItem({[type]: JSON.stringify(selection)})
@@ -41,36 +41,39 @@ export class Paste extends Action {
     })
   }
 
-  async execute(state: EditorState): Promise<Transaction | null> {
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
     try {
       // Read clipboard
-      const items = await navigator.clipboard.read()
-      for (const clipboardItem of items) {
-        for (const type of clipboardItem.types) {
-          // Search for JSON items
-          if (type === 'web application/json') {
-            const itemBlob = await clipboardItem.getType(type)
-            const itemText = await itemBlob.text()
-            const json = JSON.parse(itemText)
-  
-            // Parse nodes
-            const nodes = []
-            for (let content of json.content) {
-              const node = Node.fromJSON(schema, content)
-              nodes.push(node)
+      return navigator.clipboard.read().then((items) => {
+        for (const clipboardItem of items) {
+          for (const type of clipboardItem.types) {
+            // Search for JSON items
+            if (type === 'web application/json') {
+              return clipboardItem.getType(type).then((itemBlob) => {
+                return itemBlob.text().then((itemText) => {
+                  const json = JSON.parse(itemText)
+      
+                  // Parse nodes
+                  const nodes = []
+                  for (let content of json.content) {
+                    const node = Node.fromJSON(schema, content)
+                    nodes.push(node)
+                  }
+        
+                  // Create transaction by inserting nodes
+                  // Should be inserted in reverse order as we're not moving the cursor inbetween them (and nodes are inserted after it)
+                  let tr = state.tr
+                  for (let i = nodes.length - 1; i >= 0; --i) {
+                    const node = nodes[i]
+                    tr = tr.insert(state.selection.anchor, node) // TODO merge with current node if possible
+                  }
+                  return tr
+                })
+              })
             }
-  
-            // Create transaction by inserting nodes
-            // Should be inserted in reverse order as we're not moving the cursor inbetween them (and nodes are inserted after it)
-            let tr = state.tr
-            for (let i = nodes.length - 1; i >= 0; --i) {
-              const node = nodes[i]
-              tr = tr.insert(state.selection.anchor, node) // TODO insert within current node if possible
-            }
-            return tr
           }
         }
-      }
+      })
     } catch (e) {
       console.warn('Could not paste content', e)
     }
