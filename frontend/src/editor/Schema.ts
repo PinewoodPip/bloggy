@@ -33,6 +33,35 @@ nodes = nodes.addBefore('blockquote', 'alert', {
   ]}
 })
 
+// Add footnote inline node
+nodes = nodes.addToEnd('footnote', {
+  inline: true,
+  attrs: {
+    index: {default: 1},
+    text: {default: 'test'}
+  },
+  defining: true,
+  draggable: true,
+  atom: true,
+  group: "inline",
+  parseDOM: [{tag: "sup[text][index]", getAttrs(dom) {
+    return {
+      test: (dom as HTMLElement).getAttribute("text"),
+      index: (dom as HTMLElement).getAttribute("index"),
+    }
+  }}],
+  toDOM(node) {
+    const sup = document.createElement('sup')
+    sup.innerHTML = `[${node.attrs.index}]`
+    sup.setAttribute('index', node.attrs.index)
+    sup.setAttribute('text', node.attrs.text)
+    return {
+      dom: sup,
+      domElement: sup,
+    }
+  }
+},)
+
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,
   em: BasicSchema.spec.marks.get('em') as MarkSpec, // Italics

@@ -50,6 +50,7 @@ export const useArticleEditor = () => {
   for (const action of WidgetActions.alertActions) {
     editor.registerAction(action)
   }
+  editor.registerAction(new WidgetActions.InsertFootnote())
   editor.registerToolbarGroup(WidgetActions.actionGroup)
 
   // Set default keybinds

@@ -82,21 +82,39 @@
   </UModal>
 
   <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
+
+  <FullscreenModal v-model="footnoteEditorVisible">
+    <template #headerTitle>
+      Edit footnote
+    </template>
+    <template #form>
+      <textarea v-model="footnoteText" class="textarea textarea-primary">
+
+      </textarea>
+    </template>
+    <template #footer>
+      <IconButton class="btn-primary" icon="i-material-symbols-edit-document" @click="onConfirmFootnote">Confirm</IconButton>
+    </template>
+  </FullscreenModal>
 </template>
 
 <script setup lang="ts">
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState, Transaction } from 'prosemirror-state'
+import { Node } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/src/editor/Editor'
 import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
+import * as WidgetActions from '~/src/editor/actions/Widgets'
+import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const emitter = useGlobalEvents()
 const router = useRouter()
 const route = useRoute()
 
@@ -106,6 +124,9 @@ const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
 const sidebarVisible = ref(true)
 const contextMenuOpen = ref(false)
+const footnoteEditorVisible = ref(false)
+const footnoteIndex = ref(0)
+const footnoteText = ref('')
 const articleMetadata = reactive({
   title: '',
 })
@@ -287,7 +308,26 @@ function executeAction(actionID: string) {
     })
   }
 }
+
+// @ts-ignore
+emitter.on('editor.footnoteSelected', (node: Node) => {
+  footnoteIndex.value = node.attrs.index
+  footnoteText.value = node.attrs.text
+  footnoteEditorVisible.value = true
+})
+
+function onConfirmFootnote() {
+  const state = toRaw(editorState.value)
+  const view = toRaw(editorView.value)
+
+  const action = editor.value.getAction('InsertFootnote') as WidgetActions.InsertFootnote
+  let tr = action.updateFootnote(state, footnoteIndex.value, footnoteText.value)
+
+  if (tr) {
+    view.dispatch(tr)
   }
+
+  footnoteEditorVisible.value = false
 }
 
 function getActionContextMenuEntry(actionID: Editor.actionID): object {

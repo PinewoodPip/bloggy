@@ -14,6 +14,7 @@ import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import CodeBlock from './node/CodeBlock.vue'
+import Footnote from './node/Footnote.vue'
 import Underline from './mark/Underline.vue'
 import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
@@ -72,6 +73,9 @@ watchEffect((onCleanup) => {
       }),
       heading: nodeViewFactory({
         component: Heading,
+      }),
+      footnote: nodeViewFactory({
+        component: Footnote,
       }),
     },
     [

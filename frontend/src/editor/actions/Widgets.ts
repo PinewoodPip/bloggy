@@ -67,6 +67,44 @@ export class InsertAlert extends Action {
   }
 }
 
+export class InsertFootnote extends Action {
+  static override ID: string = 'InsertFootnote'
+
+  constructor() {
+    super({
+      id: 'InsertFootnote',
+      name: 'Insert Footnote',
+      icon: 'material-symbols:edit-note',
+    })
+  }
+
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    const footnoteNode = schema.nodes['footnote']
+
+    // Use next available index
+    const footnotes = this.findNodes(state, footnoteNode)
+
+    const newIndex = footnotes.length + 1
+    let tr = state.tr
+    tr.replaceSelectionWith(footnoteNode.createAndFill({text: 'testing', index: newIndex})!)
+
+    return tr
+  }
+
+  updateFootnote(state: EditorState, index: integer, text:string): Transaction | null {
+    const footnoteNode = schema.nodes['footnote']
+    const footnotes = this.findNodes(state, footnoteNode, {index: index})
+    let tr: Transaction | null = null
+    if (footnotes.length > 0) {
+      const footnote = footnotes[0]
+      tr = state.tr
+      console.log(footnote)
+      tr = tr.setNodeAttribute(footnote.startPos, 'text', text)
+    }
+    return tr
+  }
+}
+
 /**
  * Action group
  */
@@ -95,6 +133,10 @@ let _actionGroup: ToolbarGroup = {
       name: 'Toggle Note',
       actionIDs: alertActionIDs,
     } as ToolbarGroupActionMenu,
+    {
+      type: 'action',
+      actionID: InsertFootnote.ID,
+    } as ToolbarGroupAction,
   ],
 }
 export const actionGroup = _actionGroup
