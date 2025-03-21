@@ -37,7 +37,7 @@ const _DocumentParser = new MarkdownParser(schema, md, {
   footnote_ref: {node: "footnote", noCloseToken: true, getAttrs: (tok, tokens, i) => {
     const label:string = tok.meta.label
     const parts = label.split('--')
-    return {index: parseInt(parts[0]), text: parts[1]}
+    return {index: parseInt(parts[0]), text: parts[1].replace(/_/g, ' ')} // Spaces are encoded differently
   }},
   footnote_block: {ignore: true,},
   footnote_reference: {ignore: true,},

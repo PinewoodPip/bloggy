@@ -150,7 +150,9 @@ export class Editor {
     console.log(footnotes)
     for (const footnote of footnotes) {
       const node = footnote.node
-      markdownStr += `\n\n[^${node.attrs.index}--${node.attrs.text}]: `
+      let text: string = node.attrs.text
+      text = text.replace(/ /g, '_') // Spaces need to be encoded differently
+      markdownStr += `\n\n[^${node.attrs.index}--${text}]: `
     }
 
     return markdownStr
