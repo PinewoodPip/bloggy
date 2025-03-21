@@ -16,6 +16,12 @@ class ArticleBase(BaseModel):
         if INVALID_URL_PATTERN.search(filename): # Cannot contain slashes or characters that are reserved or would require url-encoding
             raise ValueError("Invalid filename")
         return filename
+
+    @field_validator("content", check_fields=False)
+    def validate_content(cls, content: str):
+        if len(content) == 0:
+            raise ValueError("Content must be not empty")
+        return content
     
 class ArticleInput(ArticleBase):
     """Schema for creation requests."""
