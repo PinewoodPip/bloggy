@@ -7,12 +7,14 @@ import MarkdownIt from 'markdown-it'
 import { schema } from '~/src/editor/Schema'
 import { plugin as UnderlinePlugin } from './plugins/underline'
 import { alert as AlertPlugin } from "@mdit/plugin-alert";
+import { footnote as FootnotePlugin } from "@mdit/plugin-footnote";
 import type Token from 'markdown-it/lib/token.mjs'
 
 // Extend CommonMark parser
 const md = MarkdownIt('commonmark', {html: false})
 md.use(UnderlinePlugin)
 md.use(AlertPlugin)
+md.use(FootnotePlugin)
 export const Markdown = md
 
 /** From prosemirror-markdown */
@@ -30,6 +32,18 @@ const _DocumentParser = new MarkdownParser(schema, md, {
   }},
   alert_title: {block: "blockquote", noCloseToken: true},
   paragraph: {block: "paragraph"},
+
+  // Footnotes are split into multiple parts by the plugin; we only care about the ref as we store all required info there
+  footnote_ref: {node: "footnote", noCloseToken: true, getAttrs: (tok, tokens, i) => {
+    const label:string = tok.meta.label
+    const parts = label.split('--')
+    return {index: parseInt(parts[0]), text: parts[1]}
+  }},
+  footnote_block: {ignore: true,},
+  footnote_reference: {ignore: true,},
+  footnote_anchor: {ignore: true, noCloseToken: true,},
+  footnote: {ignore: true,},
+
   list_item: {block: "list_item"},
   bullet_list: {block: "bullet_list", getAttrs: (_, tokens, i) => ({tight: listIsTight(tokens, i)})},
   ordered_list: {block: "ordered_list", getAttrs: (tok, tokens, i) => ({

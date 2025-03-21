@@ -3,6 +3,9 @@
  */
 import { EditorState, Transaction } from 'prosemirror-state'
 import { Action } from './actions/Action'
+import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
+import { ProseMirrorUtils } from '~/utils/ProseMirror'
+import { schema } from '~/src/editor/Schema'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
@@ -136,6 +139,21 @@ export class Editor {
     } else {
       this.hiddenActions.delete(actionID)
     }
+  }
+
+  /** Serializes a document to a Markdown-like string. */
+  serializeDocument(state: EditorState): string {
+    let markdownStr = DocumentSerializer.serialize(state.doc)
+
+    // Insert footnote content required by the footnotes plugin
+    const footnotes = ProseMirrorUtils.findNodes(state, schema.nodes['footnote'])
+    console.log(footnotes)
+    for (const footnote of footnotes) {
+      const node = footnote.node
+      markdownStr += `\n\n[^${node.attrs.index}--${node.attrs.text}]: `
+    }
+
+    return markdownStr
   }
 
   /** 

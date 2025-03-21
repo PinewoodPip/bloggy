@@ -4,6 +4,7 @@
 import { setBlockType } from 'prosemirror-commands'
 import { Node } from "prosemirror-model"
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
+import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import type { actionID, alertType, ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu } from '../Editor'
 import { Action } from './Action'
 import { schema } from '../Schema'
@@ -82,7 +83,7 @@ export class InsertFootnote extends Action {
     const footnoteNode = schema.nodes['footnote']
 
     // Use next available index
-    const footnotes = this.findNodes(state, footnoteNode)
+    const footnotes = ProseMirrorUtils.findNodes(state, footnoteNode)
 
     const newIndex = footnotes.length + 1
     let tr = state.tr
@@ -93,7 +94,7 @@ export class InsertFootnote extends Action {
 
   updateFootnote(state: EditorState, index: integer, text:string): Transaction | null {
     const footnoteNode = schema.nodes['footnote']
-    const footnotes = this.findNodes(state, footnoteNode, {index: index})
+    const footnotes = ProseMirrorUtils.findNodes(state, footnoteNode, {index: index})
     let tr: Transaction | null = null
     if (footnotes.length > 0) {
       const footnote = footnotes[0]

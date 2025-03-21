@@ -100,16 +100,14 @@
 
 <script setup lang="ts">
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
-import { EditorState, Transaction } from 'prosemirror-state'
+import { EditorState } from 'prosemirror-state'
 import { Node } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
 import * as Editor from '~/src/editor/Editor'
 import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
-import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
-import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
@@ -206,9 +204,8 @@ function saveDocument() {
   validateMetadata()
 
   // Serialize the document and PATCH the article
-  const markdownStr = DocumentSerializer.serialize(editorRef.value!.editorState!.doc)
-  console.log("Serialized markdown:\n", markdownStr)
-
+  const state = toRaw(editorRef.value!.editorState!)
+  const markdownStr = editor.value.serializeDocument(state)
   requestPatchArticle({
     title: articleMetadata.title,
     content: markdownStr,

@@ -39,4 +39,9 @@ _DocumentSerializer.nodes['alert'] = (state, node) => {
   state.closeBlock(node)
 }
 
+// Serialize footnote nodes
+_DocumentSerializer.nodes['footnote'] = (state, node) => {
+  state.text(`[^${node.attrs.index}--${node.attrs.text}]`, false) // Must not closeBlock as this is an inline block
+}
+
 export const DocumentSerializer = _DocumentSerializer;
