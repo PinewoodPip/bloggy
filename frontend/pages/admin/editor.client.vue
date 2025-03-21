@@ -208,7 +208,7 @@ function saveDocument() {
   const markdownStr = editor.value.serializeDocument(state)
   requestPatchArticle({
     title: articleMetadata.title,
-    content: markdownStr,
+    content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
   })
 }
 
