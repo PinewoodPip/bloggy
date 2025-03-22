@@ -31,7 +31,7 @@ _DocumentSerializer.nodes['alert'] = (state, node) => {
   // Write child nodes
   for (const child of node.children) {
     state.text("> ")
-    state.renderContent(child)
+    state.renderInline(child)
     state.text("\n")
   }
   // Add a newline to the current content before adding closing marker
