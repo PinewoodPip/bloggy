@@ -11,6 +11,7 @@ export type actionID = string
 /** In the format "{modifier}_{key}" */
 export type keybind = string
 export type alertType = 'note' | 'tip' | 'important' | 'caution' | 'warning'
+export type alignmentType = 'left' | 'right' | 'center' | 'justify'
 
 /** Action descriptor. */
 export interface ActionDef {

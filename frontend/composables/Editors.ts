@@ -10,6 +10,7 @@ import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as ListActions from '~/src/editor/actions/Lists'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 
+/** Creates an article editor model. */
 export const useArticleEditor = () => {
   // Create editor
   const editor: Editor.Editor = new Editor.Editor()
@@ -25,6 +26,9 @@ export const useArticleEditor = () => {
   editor.registerAction(new FormattingActions.FormatItalic())
   editor.registerAction(new FormattingActions.FormatUnderline())
   editor.registerAction(new FormattingActions.FormatInlineCode())
+  for (const action of FormattingActions.alignmentActions) {
+    editor.registerAction(action)
+  }
   editor.registerToolbarGroup(FormattingActions.actionGroup)
 
   // Sectioning actions

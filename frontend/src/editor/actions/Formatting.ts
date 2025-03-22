@@ -3,7 +3,7 @@
  */
 import type { EditorState, Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
-import type { ToolbarGroup, ToolbarGroupAction, keybind } from '../Editor'
+import type { ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu, actionID, alignmentType, keybind } from '../Editor'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -107,6 +107,52 @@ export class FormatInlineCode extends Action {
   }
 }
 
+export class SetAlignment extends Action {
+  static override ID = 'SetAlignment'
+  /* Extend as necessary. */
+  static ICONS: {[key: string]: string} = {
+    'left': 'material-symbols:format-align-left',
+    'right': 'material-symbols:format-align-right',
+    'center': 'material-symbols:format-align-center',
+    'justify': 'material-symbols:format-align-justify',
+  }
+
+  private type: alignmentType
+
+  constructor(alignment: alignmentType) {
+    super({
+      id: `SetAlignment.${alignment}`,
+      name: StringUtils.capitalize(alignment),
+      icon: SetAlignment.ICONS[alignment],
+    })
+    this.type = alignment
+  }
+
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    const range = this.getNodeRange(state)
+    let tr = state.tr
+    tr.setNodeAttribute(range.start, 'align', this.type)
+    return tr
+  }
+
+  override isActive(state: EditorState): boolean {
+    // It's somewhat annoying to have the correponding button in the UI basically always highlighted due to this
+    // return this.selectionHasNode(state, schema.nodes['paragraph'], {align: this.type}) !== null
+    return false
+  }
+}
+
+/**
+ * Action group
+ */
+const _alignmentActions: Action[] = []
+const alignmentActionIDs: actionID[] = []
+for (const alignType of ['right', 'left', 'center', 'justify']) {
+  const action = new SetAlignment(alignType as alignmentType)
+  _alignmentActions.push(action)
+  alignmentActionIDs.push(action.def.id)
+}
+export const alignmentActions = _alignmentActions
 export const actionGroup: ToolbarGroup = {
   name: 'Formatting',
   items: [
@@ -114,5 +160,11 @@ export const actionGroup: ToolbarGroup = {
     {type: 'action', actionID: FormatItalic.ID} as ToolbarGroupAction,
     {type: 'action', actionID: FormatUnderline.ID} as ToolbarGroupAction,
     {type: 'action', actionID: FormatInlineCode.ID} as ToolbarGroupAction,
+    {
+      type: 'actionMenu',
+      icon: 'material-symbols:format-align-left',
+      name: 'Set Alignment',
+      actionIDs: alignmentActionIDs,
+    } as ToolbarGroupActionMenu,
   ]
 }

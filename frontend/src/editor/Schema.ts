@@ -15,6 +15,14 @@ codeBlock!.attrs = {
   }
 }
 
+// Add align attribute to paragraph
+const paragraph = nodes.get('paragraph')
+paragraph!.attrs = {
+  'align': {
+    default: 'left',
+  }
+}
+
 // Add alert/admonition block 
 nodes = nodes.addBefore('blockquote', 'alert', {
   content: "paragraph+",
@@ -60,7 +68,7 @@ nodes = nodes.addToEnd('footnote', {
       domElement: sup,
     }
   }
-},)
+})
 
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,

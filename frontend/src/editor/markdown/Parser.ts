@@ -8,6 +8,7 @@ import { schema } from '~/src/editor/Schema'
 import { plugin as UnderlinePlugin } from './plugins/underline'
 import { alert as AlertPlugin } from "@mdit/plugin-alert";
 import { footnote as FootnotePlugin } from "@mdit/plugin-footnote";
+import { attrs as AttributesPlugin } from "@mdit/plugin-attrs";
 import type Token from 'markdown-it/lib/token.mjs'
 
 // Extend CommonMark parser
@@ -15,6 +16,7 @@ const md = MarkdownIt('commonmark', {html: false})
 md.use(UnderlinePlugin)
 md.use(AlertPlugin)
 md.use(FootnotePlugin)
+md.use(AttributesPlugin)
 export const Markdown = md
 
 /** From prosemirror-markdown */
@@ -31,7 +33,17 @@ const _DocumentParser = new MarkdownParser(schema, md, {
     return ({type: tok.markup})
   }},
   alert_title: {block: "blockquote", noCloseToken: true},
-  paragraph: {block: "paragraph"},
+  paragraph: {block: "paragraph", getAttrs: (tok, tokens, i) => {
+    const attrs = tok.attrs
+    const nodeAttrs: {[key: string]: string} = {}
+    if (attrs) {
+      // Token attribute key and values are stored as pairs
+      for (const pair of attrs) {
+        nodeAttrs[pair[0]] = pair[1]
+      }
+    }
+    return nodeAttrs
+  }},
 
   // Footnotes are split into multiple parts by the plugin; we only care about the ref as we store all required info there
   footnote_ref: {node: "footnote", noCloseToken: true, getAttrs: (tok, tokens, i) => {

@@ -46,4 +46,10 @@ _DocumentSerializer.nodes['footnote'] = (state, node) => {
   state.text(`[^${node.attrs.index}--${text}]`, false) // Must not closeBlock as this is an inline block
 }
 
+// Add align attribute to paragraph
+_DocumentSerializer.nodes['paragraph'] = (state, node) => {
+  state.renderInline(node)
+  state.text(` {align=${node.attrs.align}}\n\n`)
+}
+
 export const DocumentSerializer = _DocumentSerializer;

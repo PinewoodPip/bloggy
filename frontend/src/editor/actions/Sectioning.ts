@@ -108,22 +108,22 @@ for (let i = 1; i <= 6; ++i) {
 }
 let _actionGroup: ToolbarGroup = {
   name: 'Sectioning',
-    items: [
-      {
-        type: 'actionMenu',
-        icon: 'i-material-symbols-h-mobiledata-badge-outline',
-        name: 'Set Heading',
-        actionIDs: headingActionIDs,
-      } as ToolbarGroupActionMenu,
-      {
-        type: 'action',
-        actionID: InsertHorizontalRule.ID,
-      } as ToolbarGroupAction,
-      {
-        type: 'action',
-        actionID: MakeQuote.ID,
-      } as ToolbarGroupAction,
-    ],
+  items: [
+    {
+      type: 'actionMenu',
+      icon: 'i-material-symbols-h-mobiledata-badge-outline',
+      name: 'Set Heading',
+      actionIDs: headingActionIDs,
+    } as ToolbarGroupActionMenu,
+    {
+      type: 'action',
+      actionID: InsertHorizontalRule.ID,
+    } as ToolbarGroupAction,
+    {
+      type: 'action',
+      actionID: MakeQuote.ID,
+    } as ToolbarGroupAction,
+  ],
 }
 export const headingActions = _headingActions
 export const actionGroup = _actionGroup

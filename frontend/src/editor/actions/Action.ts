@@ -1,7 +1,7 @@
 /**
  * Base class for editor actions.
  */
-import type { Attrs, MarkType, NodeType, Node } from 'prosemirror-model'
+import type { Attrs, MarkType, NodeType, Node, NodeRange } from 'prosemirror-model'
 import type { Command, EditorState, NodeSelection, Transaction } from 'prosemirror-state'
 import type { ActionDef, IAction, actionID, keybind } from '../Editor'
 
@@ -54,6 +54,13 @@ export abstract class Action implements IAction {
       })
     }
     return foundNode
+  }
+
+  /** Returns the block range at the current selection. */
+  protected getNodeRange(state: EditorState): NodeRange {
+    const cursor = state.selection
+    let node = cursor.$from.blockRange()
+    return node!
   }
 
   /** Utility method to wrap the execution of a ProseMirror command. */
