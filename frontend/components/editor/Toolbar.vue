@@ -1,18 +1,23 @@
 <!-- Action toolbar. -->
 <template>
-  <div class="small-content-block flex">
-    <div class="flex p-2">
-      <!-- Action groups -->
-      <div v-for="group in visibleGroups" class="flex">
-        <!-- Actions of the group -->
-        <div class="flex gap-x-2">
-          <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" v-on="getGroupItemComponentEvents(item)" />
+  <div ref="parent">
+    <div ref="header" class="top-0 z-50">
+      <div class="small-content-block flex">
+        <div class="flex p-2 overflow-x-auto">
+          <!-- Action groups -->
+          <div v-for="group in visibleGroups" class="flex">
+            <!-- Actions of the group -->
+            <div class="flex gap-x-2">
+              <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" v-on="getGroupItemComponentEvents(item)" />
+            </div>
+            <!-- Should be outside the actions container to avoid applying gap to it -->
+            <div class="divider divider-horizontal mx-1"/>
+          </div>
         </div>
-        <!-- Should be outside the actions container to avoid applying gap to it -->
-        <div class="divider divider-horizontal mx-1"/>
       </div>
     </div>
   </div>
+  <div v-if="floating" :style="{'margin-top': `${headerRef?.offsetHeight}px`}" />
 </template>
 
 <script setup lang="ts">
@@ -25,6 +30,11 @@ const { editor } = useEditorInjects()
 const emit = defineEmits<{
   actionUse: [Editor.IAction]
 }>()
+
+const headerRef = useTemplateRef('header')
+const headerParentRef = useTemplateRef('parent')
+
+const floating = ref(false)
 
 function useAction(action: Editor.IAction) {
   emit('actionUse', action)
@@ -101,5 +111,41 @@ function getGroupItemComponentEvents(item: Editor.ToolbarGroupItem) {
     throw "Unimplemented group item: " + item.type
   }
 }
+
+/**
+ * Automatically sets the toolbar to be fixed-positioned when the window is scrolled past it.
+ * Taken from prosemirror-example-setup
+ */
+ function scrollListener() {
+  let menu = headerRef.value!
+  let parent = headerParentRef.value!
+  let editorRect = parent.getBoundingClientRect()
+  if (floating.value) {
+    if (editorRect.top >= 0 || editorRect.bottom >= 0) {
+      floating.value = false
+      menu.style.position = menu.style.left = menu.style.top = menu.style.width = ""
+      menu.style.position = ""
+    } else {
+      menu.style.display = editorRect.top > (window).innerHeight
+        ? "none" : ""
+    }
+  } else {
+    if (editorRect.top < 0) {
+      floating.value = true
+      let menuRect = menu.getBoundingClientRect()
+      menu.style.left = menuRect.left + "px"
+      menu.style.width = menuRect.width + "px"
+      menu.style.position = "fixed"
+    }
+  }
+}
+
+// Register and cleanup scroll listeners
+onUnmounted(() => {
+  window.removeEventListener('scroll', scrollListener)
+})
+onMounted(() => {
+  window.addEventListener('scroll', scrollListener)
+})
 
 </script>
