@@ -26,6 +26,7 @@ export const useArticleEditor = () => {
   editor.registerAction(new FormattingActions.FormatItalic())
   editor.registerAction(new FormattingActions.FormatUnderline())
   editor.registerAction(new FormattingActions.FormatInlineCode())
+  editor.registerAction(new FormattingActions.FormatLink())
   for (const action of FormattingActions.alignmentActions) {
     editor.registerAction(action)
   }

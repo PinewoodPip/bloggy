@@ -1,10 +1,50 @@
 /**
  * ProseMirror utilities for commands and document traversal.
  */
-import type { Attrs, NodeType, Node } from 'prosemirror-model'
-import type { EditorState } from 'prosemirror-state'
+import type { Attrs, NodeType, Node, NodeRange } from 'prosemirror-model'
+import { TextSelection, type EditorState } from 'prosemirror-state'
 
 export const ProseMirrorUtils = {
+  /** Returns a selection over the blocks contained in the cursor selection. */
+  getNodeRange(state: EditorState): NodeRange {
+    const cursor = state.selection
+    let node = cursor.$from.blockRange()
+    return node!
+  },
+
+  /** Returns a text selection that spans the word at the cursor's position. */
+  selectWord(state: EditorState): TextSelection {
+    const range = this.getNodeRange(state)
+    const node = range.$from.node()
+    const cursor = state.selection
+    const from = cursor.from
+    let index = range.$from.parentOffset
+
+    // Find word start
+    let charsBefore = 0
+    while (true) {
+      let nextChar = node.textBetween(index - 1, index)
+      if (!nextChar || nextChar.match(/\W/)) {
+        break
+      }
+      charsBefore++;
+      index--;
+    }
+
+    // Find word end
+    let wordChars = 0
+    while (true) {
+      let nextChar = node.textBetween(index, index + 1)
+      if (!nextChar || nextChar.match(/\W/)) {
+        break
+      }
+      wordChars++;
+      index++;
+    }
+
+    return TextSelection.create(state.doc, from - charsBefore, from - charsBefore + wordChars)
+  },
+
   /** Returns a list of nodes of a type that match the passed attributes, if any. */
   findNodes(state: EditorState, nodeType: NodeType, attrs?: Attrs): {node: Node, startPos: integer, endPos: integer}[] {
     let startPos = 0
@@ -48,5 +88,5 @@ export const ProseMirrorUtils = {
     });
 
     return matches
-  }
+  },
 }

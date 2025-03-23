@@ -13,7 +13,7 @@ export abstract class Action implements IAction {
     this.def = def
   }
 
-  abstract execute(state: EditorState): Transaction | Promise<Transaction> | null
+  abstract execute(state: EditorState, params?: object): Transaction | Promise<Transaction> | null
 
   isActive(state: EditorState): boolean {
     return false
@@ -58,9 +58,7 @@ export abstract class Action implements IAction {
 
   /** Returns the block range at the current selection. */
   protected getNodeRange(state: EditorState): NodeRange {
-    const cursor = state.selection
-    let node = cursor.$from.blockRange()
-    return node!
+    return ProseMirrorUtils.getNodeRange(state)
   }
 
   /** Utility method to wrap the execution of a ProseMirror command. */

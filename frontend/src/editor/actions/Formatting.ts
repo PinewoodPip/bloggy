@@ -1,7 +1,7 @@
 /**
  * Implements text formatting actions: bold, italics, etc.
  */
-import type { EditorState, Transaction } from 'prosemirror-state'
+import { type EditorState, type Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
 import type { ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu, actionID, alignmentType, keybind } from '../Editor'
 import { schema } from '../Schema'
@@ -107,6 +107,46 @@ export class FormatInlineCode extends Action {
   }
 }
 
+export class FormatLink extends Action {
+  static override ID = 'FormatLink'
+
+  constructor() {
+    super({
+      id: FormatLink.ID,
+      name: 'Set Link',
+      icon: 'material-symbols:link',
+    })
+  }
+
+  execute(state: EditorState, params: {href: string, title: string}): Transaction | Promise<Transaction> | null {
+    const toggleLink = toggleMark(schema.marks.link, params)
+    const cursor = state.selection
+
+    // If there is no text selected, select the word at the cursor and apply the link to it
+    if (cursor.from == cursor.to) {
+      // Create new selection around the word
+      const selection = ProseMirrorUtils.selectWord(state)
+      let tr = state.tr
+      tr = tr.setSelection(selection)
+
+      // Add link mark to selection
+      tr = tr.addMark(selection.from, selection.to, schema.marks.link.create(params))
+
+      return tr
+    } else { // Otherwise apply link to whole selection
+      return this.getTransaction(toggleLink, state)
+    }
+  }
+
+  override isActive(state: EditorState): boolean {
+    return this.isMarkActive(state, state.schema.marks.code)
+  }
+
+  override getDefaultKeyCombo(): keybind | null {
+    return null
+  }
+}
+
 export class SetAlignment extends Action {
   static override ID = 'SetAlignment'
   /* Extend as necessary. */
@@ -166,5 +206,6 @@ export const actionGroup: ToolbarGroup = {
       name: 'Set Alignment',
       actionIDs: alignmentActionIDs,
     } as ToolbarGroupActionMenu,
+    {type: 'action', actionID: FormatLink.ID} as ToolbarGroupAction,
   ]
 }

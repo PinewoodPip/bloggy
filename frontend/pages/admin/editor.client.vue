@@ -81,8 +81,10 @@
     <EditorSettings @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
   </UModal>
 
+  <!-- Metadata modal -->
   <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
 
+  <!-- Footnote modal -->
   <FullscreenModal v-model="footnoteEditorVisible">
     <template #headerTitle>
       Edit footnote
@@ -96,6 +98,9 @@
       <IconButton class="btn-primary" icon="i-material-symbols-edit-document" @click="onConfirmFootnote">Confirm</IconButton>
     </template>
   </FullscreenModal>
+
+  <!-- Link modal -->
+  <EditorModalLink v-model:open="linkEditorVisible" v-model:link="editableLink" @confirm="onLinkEdited" />
 </template>
 
 <script setup lang="ts">
@@ -108,6 +113,7 @@ import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
+import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
@@ -123,6 +129,11 @@ const documentPropertiesVisible = ref(false)
 const sidebarVisible = ref(true)
 const contextMenuOpen = ref(false)
 const footnoteEditorVisible = ref(false)
+const linkEditorVisible = ref(false)
+const editableLink = reactive({
+  href: '',
+  title: '',
+})
 const footnoteIndex = ref(0)
 const footnoteText = ref('')
 const articleMetadata = reactive({
@@ -174,14 +185,34 @@ const viewDropdownItems = [
   ]
 ]
 
+function onLinkEdited() {
+  linkEditorVisible.value = false
+  executeAction('FormatLink', editableLink)
+}
+
 /** Execute action commands */
 function onActionUsed(action: Editor.IAction) {
   if (editorRef.value) {
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
+    
     if (state) {
-      executeAction(action.def.id)
+      if (action.def.id == 'FormatLink') {
+        const nodeRange = ProseMirrorUtils.getNodeRange(state)
+        const node = nodeRange.$from.node()
+        editableLink.href = ''
+        editableLink.title = ''
+        for (const mark of node.marks) {
+          if (mark.type == schema.marks.link) {
+            editableLink.href = mark.attrs.href
+            editableLink.title = mark.attrs.title
+          }
+        }
+        linkEditorVisible.value = true
+      } else {
+        executeAction(action.def.id)
+      }
     }
   }
 }
@@ -291,14 +322,14 @@ function isKeyComboBound(keyCombo: Editor.actionID) {
 }
 
 /** Executes an action over the current selection. */
-function executeAction(actionID: string) {
+function executeAction(actionID: string, params?: object) {
   const action = editor.value.getAction(actionID)
   const editorRaw = toRaw(editorRef.value)
   const view = toRaw(editorRaw!.editorView)
-  const state = view?.state!
+  const state = toRaw(view?.state!)
 
   // Run action and apply transaction
-  let transaction = action.execute(state)
+  let transaction = action.execute(state, params)
   if (transaction) {
     Promise.resolve(transaction).then((a) => {
       toRaw(toRaw(editorRef.value)!.editorView)?.dispatch(a)

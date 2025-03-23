@@ -72,6 +72,7 @@ nodes = nodes.addToEnd('footnote', {
 
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,
+  link: BasicSchema.spec.marks.get('link') as MarkSpec,
   em: BasicSchema.spec.marks.get('em') as MarkSpec, // Italics
   code: BasicSchema.spec.marks.get('code') as MarkSpec, // Inline code
   underline: {

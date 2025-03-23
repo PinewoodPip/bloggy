@@ -16,6 +16,7 @@ import Paragraph from './node/Paragraph.vue'
 import CodeBlock from './node/CodeBlock.vue'
 import Footnote from './node/Footnote.vue'
 import Underline from './mark/Underline.vue'
+import Link from './mark/Link.vue'
 import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
 import markdownit from 'markdown-it'
@@ -98,6 +99,9 @@ watchEffect((onCleanup) => {
           markViews: {
             underline: markViewFactory({
               component: Underline,
+            }),
+            link: markViewFactory({
+              component: Link,
             }),
           }
         },
