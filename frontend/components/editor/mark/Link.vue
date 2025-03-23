@@ -1,6 +1,8 @@
 <!-- Mark view for links. -->
 <template>
-  <span class="link link-secondary" :ref="contentRef"/>
+  <UTooltip :text="mark.attrs.title">
+    <span class="link link-secondary" :ref="contentRef"/>
+  </UTooltip>
 </template>
 
 <script setup lang="ts">
