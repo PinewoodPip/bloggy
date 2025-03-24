@@ -10,6 +10,7 @@ from core.config import CONFIG
 import crud.user as UserCrud
 import crud.article as ArticleCrud
 import crud.category as CategoryCrud
+import crud.file as FileCrud
 
 @pytest.fixture(scope="function", autouse=True)
 def db_session():
@@ -33,3 +34,8 @@ def db_session():
     for category in categories:
         if category.directory_name != "": # Don't delete root category
             CategoryCrud.delete_category(db, category)
+
+    # Delete all files
+    files = FileCrud.get_all(db)
+    for file in files:
+        FileCrud.delete_file(db, file)

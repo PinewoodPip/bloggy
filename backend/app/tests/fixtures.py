@@ -1,11 +1,12 @@
 """
 Fixtures for common test scenarios, pre-creating required entities.
 """
-from utils import create_random_auth_editor, create_random_admin, get_session, get_token_header, create_random_category, create_random_article
+from utils import create_random_auth_editor, create_random_admin, create_random_file, get_session, get_token_header, create_random_category, create_random_article, random_lower_string
 from utils import RandomEditor
 from dataclasses import dataclass, asdict
 from schemas.category import CategoryOutput
 from schemas.article import ArticleOutput
+from schemas.file import FileOutput, FileInput
 import pytest
 
 @dataclass
@@ -21,6 +22,13 @@ class ArticleTestScenario(UserTestScenario):
     category_path: str
     article: ArticleOutput
     article_path: str
+
+@dataclass
+class FileTestScenario(UserTestScenario):
+    """
+    A scenario with user accounts and uploaded files.
+    """
+    files: list[FileOutput]
 
 @pytest.fixture
 def user_scenario() -> UserTestScenario:
@@ -54,4 +62,15 @@ def article_scenario(user_scenario) -> ArticleTestScenario:
         article=article_output,
         article_path=article_output.path,
         **asdict(user_scenario),
+    )
+
+@pytest.fixture
+def file_scenario(user_scenario) -> FileTestScenario:
+    db = get_session()
+    files = []
+    for _ in range(5):
+        files.append(create_random_file(db, user_scenario.editor.username))
+    return FileTestScenario(
+        files=files,
+        **asdict(user_scenario)
     )

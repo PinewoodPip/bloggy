@@ -16,6 +16,7 @@ class User(Base):
 
     editor: Mapped["Editor"] = relationship("Editor", back_populates="user", cascade="all")
     admin: Mapped["Admin"] = relationship("Admin", back_populates="user", cascade="all")
+    uploaded_files = relationship("File", back_populates="uploader")
 
 class Admin(Base):
     __tablename__ = "admins"
