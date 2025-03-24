@@ -10,6 +10,7 @@ class FileData(BaseModel):
     Base file schema.
     """
     path: str
+    filename: str
     content: str # Base64-encoded.
 
 class FileInput(FileData):
@@ -24,12 +25,28 @@ class FileInput(FileData):
         if not PATH_PATTERN.match(path): # Cannot contain characters that are reserved or would require url-encoding
             raise ValueError("Invalid path")
         return path
+    
+class FilePreview(BaseModel):
+    """
+    Schema for file metadata, without content.
+    """
+    path: str
+    filename: str
+    uploader: UserOutput
 
-class FileOutput(FileData):
+class FileOutput(FilePreview):
     """
     Schema for reading files.
     """
-    uploader: UserOutput
+    content: str
+
+class FileTreeOutput(BaseModel):
+    """
+    Schema for a file tree.
+    """
+    folder_name: str # Folder name
+    files: list[FilePreview]
+    subfolders: dict[str, "FileTreeOutput"]
 
 class FileUpdate(FileData):
     """

@@ -19,6 +19,16 @@ async def upload_file(file_input: FileSchemas.FileInput, db: Session=Depends(get
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
+@router.get("/", response_model=FileSchemas.FileTreeOutput)
+async def get_all(db: Session=Depends(get_db)):
+    """
+    Gets all files as a tree structure.
+    """
+    try:
+        return FileCrud.get_tree_output(db)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.get("/{file_path:path}", response_model=FileSchemas.FileOutput)
 async def get_file(file_path: str, db: Session=Depends(get_db)):
     """

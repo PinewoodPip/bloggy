@@ -1,3 +1,4 @@
+from collections import defaultdict
 from sqlalchemy.orm import Session, InstanceState
 from sqlalchemy.inspection import inspect
 from pydantic import BaseModel
@@ -38,3 +39,19 @@ def concatenate_path(*components: str) -> str:
     if path.startswith("//"): # Will occur if first component is root ("/")
         path = path[1:]
     return path
+
+def nested_dict():
+    """
+    Creates a default dictionary where each value is an other default dictionary.
+    Source: https://stackoverflow.com/a/58917078
+    """
+    return defaultdict(nested_dict)
+
+def default_to_regular(d):
+    """
+    Converts defaultdicts of defaultdicts to dict of dicts.
+    Source: https://stackoverflow.com/a/58917078
+    """
+    if isinstance(d, defaultdict):
+        d = {k: default_to_regular(v) for k, v in d.items()}
+    return d
