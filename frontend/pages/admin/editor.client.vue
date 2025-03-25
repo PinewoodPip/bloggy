@@ -101,6 +101,9 @@
 
   <!-- Link modal -->
   <EditorModalLink v-model:open="linkEditorVisible" v-model:link="editableLink" @confirm="onLinkEdited" />
+
+  <!-- Hotlink image modal -->
+  <EditorModalHotlinkImage v-model:open="imageHotlinkEditorVisible" v-model:image="hotlinkedImage" @confirm="onImageEdited" />
 </template>
 
 <script setup lang="ts">
@@ -133,6 +136,11 @@ const linkEditorVisible = ref(false)
 const editableLink = reactive({
   href: '',
   title: '',
+})
+const imageHotlinkEditorVisible = ref(false)
+const hotlinkedImage = reactive({
+  src: '',
+  alt: '',
 })
 const footnoteIndex = ref(0)
 const footnoteText = ref('')
@@ -190,6 +198,10 @@ function onLinkEdited() {
   executeAction('FormatLink', editableLink)
 }
 
+function onImageEdited() {
+  executeAction('InsertImage', hotlinkedImage)
+}
+
 /** Execute action commands */
 function onActionUsed(action: Editor.IAction) {
   if (editorRef.value) {
@@ -210,6 +222,10 @@ function onActionUsed(action: Editor.IAction) {
           }
         }
         linkEditorVisible.value = true
+      } else if (action.def.id == 'HotlinkImage') {
+        hotlinkedImage.src = ''
+        hotlinkedImage.alt = ''
+        imageHotlinkEditorVisible.value = true
       } else {
         executeAction(action.def.id)
       }
@@ -237,6 +253,8 @@ function saveDocument() {
   // Serialize the document and PATCH the article
   const state = toRaw(editorRef.value!.editorState!)
   const markdownStr = editor.value.serializeDocument(state)
+  console.log('Serialized document')
+  console.log(markdownStr)
   requestPatchArticle({
     title: articleMetadata.title,
     content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
@@ -337,11 +355,20 @@ function executeAction(actionID: string, params?: object) {
   }
 }
 
+/**
+ * Handle events from node renders.
+ */
 // @ts-ignore
 emitter.on('editor.footnoteSelected', (node: Node) => {
   footnoteIndex.value = node.attrs.index
   footnoteText.value = node.attrs.text
   footnoteEditorVisible.value = true
+})
+// @ts-ignore
+emitter.on('editor.imageSelected', (node: Node) => {
+  hotlinkedImage.src = node.attrs.src
+  hotlinkedImage.alt = node.attrs.alt
+  imageHotlinkEditorVisible.value = true
 })
 
 function onConfirmFootnote() {

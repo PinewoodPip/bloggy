@@ -15,6 +15,7 @@ import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import CodeBlock from './node/CodeBlock.vue'
 import Footnote from './node/Footnote.vue'
+import Image from './node/Image.vue'
 import Underline from './mark/Underline.vue'
 import Link from './mark/Link.vue'
 import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
@@ -77,6 +78,9 @@ watchEffect((onCleanup) => {
       }),
       footnote: nodeViewFactory({
         component: Footnote,
+      }),
+      image: nodeViewFactory({
+        component: Image,
       }),
     },
     [
@@ -145,6 +149,11 @@ watchEffect((onCleanup) => {
   padding: 5px 0;
   margin-bottom: 23px;
   position: relative;
+}
+
+/* Images */
+.editor img {
+  display: inline; 
 }
 
 /* Alerts */

@@ -87,7 +87,7 @@ export class InsertFootnote extends Action {
 
     const newIndex = footnotes.length + 1
     let tr = state.tr
-    tr.replaceSelectionWith(footnoteNode.createAndFill({text: 'testing', index: newIndex})!)
+    tr.replaceSelectionWith(footnoteNode.createAndFill({text: 'A footnote', index: newIndex})!)
 
     return tr
   }
@@ -99,7 +99,6 @@ export class InsertFootnote extends Action {
     if (footnotes.length > 0) {
       const footnote = footnotes[0]
       tr = state.tr
-      console.log(footnote)
       tr = tr.setNodeAttribute(footnote.startPos, 'text', text)
     }
     return tr

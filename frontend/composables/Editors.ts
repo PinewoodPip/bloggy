@@ -9,6 +9,7 @@ import * as SectioningActions from '~/src/editor/actions/Sectioning'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as ListActions from '~/src/editor/actions/Lists'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
+import * as MediaActions from '~/src/editor/actions/Media'
 
 /** Creates an article editor model. */
 export const useArticleEditor = () => {
@@ -44,6 +45,13 @@ export const useArticleEditor = () => {
   editor.registerAction(new ClipboardActions.Copy())
   editor.registerAction(new ClipboardActions.Paste())
   editor.registerToolbarGroup(ClipboardActions.actionGroup)
+
+  // Media actions
+  editor.registerAction(new MediaActions.InsertImage())
+  for (const action of MediaActions.imageActions) {
+    editor.registerAction(action)
+  }
+  editor.registerToolbarGroup(MediaActions.actionGroup)
 
   // List actions
   editor.registerAction(new ListActions.ToggleBulletList())
