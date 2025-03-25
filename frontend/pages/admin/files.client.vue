@@ -47,10 +47,12 @@ function onFileUploadRequested(node: SiteFileTree | SiteFilePreview) {
 }
 
 /** Opens files in a new tab. */
-function onItemClick(e: SiteFilePreview | SiteFileTree) {
+function onItemClick(item: SiteFilePreview | SiteFileTree) {
   // TODO
-  e = e as SiteFilePreview
-  if (e.filename) {
+  item = item as SiteFilePreview
+  if (item.filename) {
+    const path = `${window.location.origin}/files${item.path}`
+    window.open(path, '_blank')?.focus();
   }
 }
 
