@@ -86,7 +86,7 @@ const tags = computed(() => {
 })
 
 const socialMediaSharingURL = computed(() => {
-  return window.location.href // TODO remove anchor
+  return import.meta.client ? window.location.href.replace(/#.*$/, '') : '' // Drop hashes to link to the top of the page
 })
 
 const socialNetworks = computed(() => {
