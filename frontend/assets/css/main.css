@@ -105,6 +105,9 @@ div[data-nuxtui-contextmenu-dropdown] > div:nth-child(2) {
 div[aria-haspopup=menu] > button > span {
   color: oklch(var(--pc));
 }
+div[aria-haspopup=menu] > button > span.iconify {
+  color: unset; /* Revert color for icon buttons */
+}
 div[aria-haspopup=menu] > button {
   box-shadow: none !important;
 }
