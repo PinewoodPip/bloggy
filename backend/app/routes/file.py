@@ -56,6 +56,21 @@ async def patch_file(file_path: str, file_update: FileSchemas.FileUpdate, db: Se
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.put("/{file_path:path}", response_model=FileSchemas.FileOutput)
+async def put_file(file_path: str, file_input: FileSchemas.FileInput, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+    """
+    Uploads or replaces a file.
+    """
+    try:
+        file = FileCrud.get_by_path(db, "/" + file_path)
+        if file:
+            file = FileCrud.update_file(db, file, FileSchemas.FileUpdate(path=file_input.path, content=file_input.content))
+        else:
+            file = FileCrud.create_file(db, current_user, file_input)
+        return FileCrud.create_file_output(db, file)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.delete("/{file_path:path}", response_model=FileSchemas.FileOutput)
 async def delete_file(file_path: str, file_update: FileSchemas.FileUpdate, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
