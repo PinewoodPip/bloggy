@@ -14,7 +14,7 @@ export class InsertImage extends Action {
     super({
       id: 'InsertImage',
       name: 'Insert Image',
-      icon: 'heroicons:photo-16-solid',
+      icon: 'material-symbols:image',
     })
   }
 
@@ -39,6 +39,24 @@ export class HotlinkImage extends Action {
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
+    return null
+  }
+}
+
+export class UploadImage extends Action {
+  static override ID: string = 'UploadImage'
+
+  constructor() {
+    super({
+      id: 'UploadImage',
+      name: 'Upload image',
+      icon: 'material-symbols:image-arrow-up-rounded',
+    })
+  }
+
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
     return null
   }
 }
@@ -48,6 +66,7 @@ export class HotlinkImage extends Action {
  */
 let _imageActions: Action[] = [
   new HotlinkImage(),
+  new UploadImage(),
 ]
 const alertActionIDs: actionID[] = []
 for (const action of _imageActions) {
@@ -58,7 +77,7 @@ let _actionGroup: ToolbarGroup = {
   items: [
     {
       type: 'actionMenu',
-      icon: 'material-symbols:lightbulb-2-outline',
+      icon: 'material-symbols:image',
       name: 'Insert image',
       actionIDs: alertActionIDs,
     } as ToolbarGroupActionMenu,

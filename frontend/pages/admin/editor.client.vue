@@ -104,6 +104,9 @@
 
   <!-- Hotlink image modal -->
   <EditorModalHotlinkImage v-model:open="imageHotlinkEditorVisible" v-model:image="hotlinkedImage" @confirm="onImageEdited" />
+
+  <!-- Upload image modal -->
+  <AdminFileUploadModal v-model:open="imageUploadModalVisible" v-model:file="imageUpload" @create="onImageUploaded" />
 </template>
 
 <script setup lang="ts">
@@ -146,6 +149,11 @@ const footnoteIndex = ref(0)
 const footnoteText = ref('')
 const articleMetadata = reactive({
   title: '',
+})
+const imageUploadModalVisible = ref(false)
+const imageUpload = reactive({
+  path: '',
+  originalPath: '',
 })
 
 const fileDropdownItems = [
@@ -226,6 +234,10 @@ function onActionUsed(action: Editor.IAction) {
         hotlinkedImage.src = ''
         hotlinkedImage.alt = ''
         imageHotlinkEditorVisible.value = true
+      } else if (action.def.id == 'UploadImage') {
+        imageUpload.path = ''
+        imageUpload.originalPath = ''
+        imageUploadModalVisible.value = true
       } else {
         executeAction(action.def.id)
       }
@@ -383,6 +395,10 @@ function onConfirmFootnote() {
   }
 
   footnoteEditorVisible.value = false
+}
+
+function onImageUploaded(file: SiteFile) {
+  executeAction('InsertImage', {src: '/files' + file.path})
 }
 
 function getActionContextMenuEntry(actionID: Editor.actionID): object {

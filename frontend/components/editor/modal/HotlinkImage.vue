@@ -6,7 +6,7 @@
     </template>
     <template #form>
       <FormGroupInputField v-model="image.src" label="URL" icon="material-symbols:link" :required="true" />
-      <FormGroupInputField v-model="image.alt" label="Alt" help="Description shown in tooltip and to assitive technologies." icon="material-symbols:title" />
+      <FormGroupInputField v-model="image.alt" label="Alt" help="Description shown in tooltip and to assistive technologies." icon="material-symbols:title" />
     </template>
     <template #footer>
       <IconButton class="btn-primary" icon="material-symbols:add-link" :disabled="!canConfirm" @click="confirm">Confirm</IconButton>
