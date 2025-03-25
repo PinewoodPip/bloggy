@@ -6,6 +6,9 @@ declare global {
   type userRole = "admin"|"editor"
   /** ISO 8601 date */
   type dateISOString = string
+  type base64String = string
+  /** Slash-delimited resource path, with a leading slash. */
+  type path = string
 
   /** Schema for GET /users/{username} */
   type User = {
@@ -125,5 +128,37 @@ declare global {
   interface ContentPanelRelevantSearchItems {
     CategoryIDs: Set<categoryID>,
     ArticleIDs: Set<articleID>,
+  }
+
+  /** File schemas */
+  type SiteFileData = {
+    path: string,
+    filename: string,
+    content: base64String,
+  }
+
+  type SiteFileCreationRequest = {
+    path: string,
+    content: base64String,
+  }
+
+  type SiteFilePreview = SiteFileData & {
+    uploader: User,
+  }
+
+  type SiteFile = SiteFilePreview & {
+    content: base64String,
+  }
+
+  type SiteFileTree = {
+    folder_name: string,
+    path: string,
+    files: SiteFilePreview[],
+    subfolders: {[key: string]: SiteFileTree}
+  }
+
+  type SiteFileUpdate = SiteFileData & {
+    path?: string,
+    content?: base64String,
   }
 }

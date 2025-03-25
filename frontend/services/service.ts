@@ -35,6 +35,11 @@ class Service {
     return this.axios.patch(route, payload, this.getConfig())
   }
 
+  /** Sends a PUT request. */
+  protected put(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
+    return this.axios.put(route, payload, this.getConfig())
+  }
+
   /** Returns the headers to use for requests */
   protected getConfig(): AxiosRequestConfig {
     if (!Cookies.get("auth_token")) {

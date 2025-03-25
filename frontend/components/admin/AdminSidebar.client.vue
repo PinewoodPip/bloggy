@@ -6,6 +6,7 @@
     <div class="flexcol gap-y-2 overflow-y-auto">
       <AdminSidebarButton icon="i-heroicons-book-open" page="content">Content</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-user" page="users">Users</AdminSidebarButton>
+      <AdminSidebarButton icon="material-symbols:image-outline" page="files">Files</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-calendar" page="events">Events</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-cog-6-tooth" page="config">Configuration</AdminSidebarButton>
 
