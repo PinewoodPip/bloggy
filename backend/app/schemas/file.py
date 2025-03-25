@@ -4,19 +4,13 @@ from pydantic import BaseModel, field_validator
 from schemas.user import UserOutput
 
 PATH_PATTERN = re.compile(r"^\/[a-zA-z0-9\/]+\.[\w]+$", re.A) # Allows alphanumeric + underscore and slashes; must end with an extension
-    
-class FileData(BaseModel):
-    """
-    Base file schema.
-    """
-    path: str
-    filename: str
-    content: str # Base64-encoded.
 
-class FileInput(FileData):
+class FileInput(BaseModel):
     """
     Schema for creating files.
     """
+    path: str
+    content: str # Base64-encoded.
 
     @field_validator("path", check_fields=False)
     def validate_url(cls, path: str):
@@ -45,10 +39,11 @@ class FileTreeOutput(BaseModel):
     Schema for a file tree.
     """
     folder_name: str # Folder name
+    path: str
     files: list[FilePreview]
     subfolders: dict[str, "FileTreeOutput"]
 
-class FileUpdate(FileData):
+class FileUpdate(BaseModel):
     """
     Schema for updating files.
     """

@@ -122,7 +122,7 @@ def _get_file_tree_dict(paths: dict[str, File]) -> dict:
 def build_tree_output(db: Session, current: FileTreeOutput, d: dict) -> FileTreeOutput:
     for key, item in d.items():
         if type(item) == dict:
-            subfolder = FileTreeOutput(folder_name=key, files=[], subfolders={})
+            subfolder = FileTreeOutput(folder_name=key, path=f"{current.path}/{key}", files=[], subfolders={})
             subfolder = build_tree_output(db, subfolder, item)
             current.subfolders[key] = subfolder
         else:
@@ -137,7 +137,8 @@ def get_tree_output(db: Session) -> FileTreeOutput:
     paths_dict = {file.path: file for file in files}
     processed = _get_file_tree_dict(paths_dict)
 
-    new_dict = FileTreeOutput(folder_name="/", files=[], subfolders={})
+    new_dict = FileTreeOutput(folder_name="/", path="", files=[], subfolders={})
     build_tree_output(db, new_dict, processed[""]) # Start from "/""
+    new_dict.path = "/"
 
     return new_dict
