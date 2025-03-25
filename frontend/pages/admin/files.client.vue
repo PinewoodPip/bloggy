@@ -1,5 +1,5 @@
 <template>
-  <AdminPage header="Content" icon="material-symbols:image-outline" hint="Manage articles and categories.">
+  <AdminPage header="Content" icon="material-symbols:image-outline" hint="Manage images and other files.">
     <div class="flex py-3">
       <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
 
