@@ -21,9 +21,10 @@
 
     <VerticalFill/>
 
-    <!-- User info -->
     <hr/>
-    <div class="flex p-2">
+
+    <!-- User info -->
+    <div class="flex px-2 pt-2"> <!-- No bottom padding as the sidebar already has enough -->
       <!-- TODO -->
       <AvatarIcon class="size-24"/>
       <div class="flexcol p-2">

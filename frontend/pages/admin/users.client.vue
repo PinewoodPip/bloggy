@@ -9,11 +9,11 @@
       <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
     </div>
 
-    <hr/>
+    <hr class="mb-2"/>
 
     <!-- Users list -->
     <div class="flex-grow overflow-x-auto">
-      <div class="flexcol gap-y-2">
+      <div class="flexcol gap-y-1">
         <AdminUserListEntry v-for="user in filteredUsers" :user="user" :editable="loggedInUser?.role === 'admin' || user.username === loggedInUser?.username" @edit="editUser"/>
       </div>
     </div>

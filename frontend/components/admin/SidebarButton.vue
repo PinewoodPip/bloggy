@@ -21,8 +21,8 @@ function isCurrentPage(page: string): boolean {
 }
 
 function buttonHighlightClass(page: string) {
-  const isHighlighted = isCurrentPage(page)
-  return { "btn-secondary": isHighlighted, "btn-primary": !isHighlighted }
+  const isActive = isCurrentPage(page)
+  return { "btn-primary": isActive, "btn-secondary": !isActive }
 }
 
 </script>
