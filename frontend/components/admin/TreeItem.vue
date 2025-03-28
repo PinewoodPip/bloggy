@@ -34,12 +34,16 @@
     </div>
 
     <!-- Padding creates a nested tree appearance -->
-    <div v-if="!collapsed" class="pl-2">
-      <!-- Child nodes; events must be propagated to root -->
-      <TreeItem v-for="child in children" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" v-on="onEvent" />
-      
-      <!-- Leafs -->
-      <TreeItem v-for="child in leafs" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" v-on="onEvent" />
+    <div v-if="!collapsed && hasChildren" class="flex pl-3 flex-grow">
+      <div class="border-l border-l-neutral/30 mx-1 my-2" />
+      <div class="flexcol flex-grow">
+        <!-- Child nodes; events must be propagated to root -->
+        <TreeItem v-for="child in children" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" v-on="onEvent" />
+        
+        <!-- Leafs -->
+        <TreeItem v-for="child in leafs" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" v-on="onEvent" />
+
+      </div>
     </div>
   </div>
 </template>
@@ -118,3 +122,9 @@ const hasChildren = computed(() => {
 })
 
 </script>
+
+<style lang="css" scoped>
+.test {
+  box-shadow: -2px 0 #000;
+}
+</style>
