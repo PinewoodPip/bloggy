@@ -1,6 +1,6 @@
 <!-- Modal for editing link properties. -->
 <template>
-  <FullscreenModal v-model="open" :can-confirm="true" :confirm-callback="confirm">
+  <FullscreenModal v-model="isOpen" :can-confirm="true" :confirm-callback="confirm">
     <template #headerTitle>
       Edit link
     </template>
@@ -15,24 +15,43 @@
 </template>
 
 <script setup lang="ts">
+import type { LinkAttrs } from '~/src/editor/Editor';
 
 const emit = defineEmits<{
-  confirm: [],
+  confirm: [LinkAttrs],
 }>()
 
-const link = defineModel('link', {
+const link = defineModel<LinkAttrs>('link', {
   default: {
     title: '',
     href: '',
   },
 })
 
-const open = defineModel('open', {
-  default: false,
+const isOpen = ref(false)
+
+function open(attrs?: LinkAttrs) {
+  // Reset form
+  link.value.href = ''
+  link.value.title = ''
+
+  // Copy attrs
+  if (attrs) {
+    for (const key in attrs) {
+      // @ts-ignore
+      link.value[key] = attrs[key]
+    }
+  }
+
+  isOpen.value = true
+}
+defineExpose({
+  open,
 })
 
 function confirm() {
-  emit('confirm')
+  isOpen.value = false
+  emit('confirm', link.value)
 }
 
 </script>

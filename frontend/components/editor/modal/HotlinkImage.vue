@@ -1,6 +1,6 @@
 <!-- Modal for inserting images from links. -->
 <template>
-  <FullscreenModal v-model="open" :can-confirm="canConfirm" :confirm-callback="confirm">
+  <FullscreenModal v-model="openModel" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
       Insert image from link
     </template>
@@ -15,29 +15,49 @@
 </template>
 
 <script setup lang="ts">
+import type { Reactive } from 'vue';
+import type { ImageAttrs } from '~/src/editor/Editor';
 
 const emit = defineEmits<{
-  confirm: [],
+  confirm: [ImageAttrs],
 }>()
 
-const image = defineModel('image', {
-  default: {
-    src: '',
-    alt: '',
-  },
+const image: Reactive<ImageAttrs> = reactive({
+  src: '',
+  alt: '',
 })
 
-const open = defineModel('open', {
+const openModel = defineModel('open', {
   default: false,
 })
 
+/** Opens the modal. Attrs may be provided to edit an existing image's attrs. */
+function open(attrs?: ImageAttrs) {
+  // Reset values
+  image.src = ''
+  image.alt = ''
+
+  // Copy attrs
+  if (attrs) {
+    for (const key in attrs) {
+      // @ts-ignore
+      image[key] = attrs[key]
+    }
+  }
+
+  openModel.value = true
+}
+defineExpose({
+  open,
+})
+
 const canConfirm = computed(() => {
-  return image.value.src !== ''
+  return image.src !== ''
 })
 
 function confirm() {
-  open.value = false
-  emit('confirm')
+  openModel.value = false
+  emit('confirm', image)
 }
 
 </script>

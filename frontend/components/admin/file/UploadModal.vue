@@ -34,10 +34,28 @@ const openModel = defineModel('open', {
 const fileModel = defineModel<{
   originalPath: string,
   path: string,
-}>('file', {required: true})
+}>('file', {
+  default: {
+    originalPath: '',
+    path: ''
+  },
+})
 
 const content = ref('')
 const encodedContent = ref('')
+
+/** 
+ * Opens the modal.
+ * `originalPath` is expected when replacing an existing file upload.
+ */
+function open(path?: string, originalPath?: string) {
+  fileModel.value.path = ''
+  fileModel.value.originalPath = ''
+  openModel.value = true
+}
+defineExpose({
+  open,
+})
 
 // Reset form when the modal is re-opened
 watch(openModel, () => {

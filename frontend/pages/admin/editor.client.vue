@@ -85,28 +85,16 @@
   <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
 
   <!-- Footnote modal -->
-  <FullscreenModal v-model="footnoteEditorVisible">
-    <template #headerTitle>
-      Edit footnote
-    </template>
-    <template #form>
-      <textarea v-model="footnoteText" class="textarea textarea-primary">
-
-      </textarea>
-    </template>
-    <template #footer>
-      <IconButton class="btn-primary" icon="i-material-symbols-edit-document" @click="onConfirmFootnote">Confirm</IconButton>
-    </template>
-  </FullscreenModal>
+  <EditorModalFootnote ref="footnoteModal" @confirm="onConfirmFootnote" />
 
   <!-- Link modal -->
-  <EditorModalLink v-model:open="linkEditorVisible" v-model:link="editableLink" @confirm="onLinkEdited" />
+  <EditorModalLink ref="linkModal" @confirm="onLinkEdited" />
 
   <!-- Hotlink image modal -->
-  <EditorModalHotlinkImage v-model:open="imageHotlinkEditorVisible" v-model:image="hotlinkedImage" @confirm="onImageEdited" />
+  <EditorModalHotlinkImage ref="hotlinkImageModal" @confirm="onImageEdited" />
 
   <!-- Upload image modal -->
-  <AdminFileUploadModal v-model:open="imageUploadModalVisible" v-model:file="imageUpload" @create="onImageUploaded" />
+  <AdminFileUploadModal ref="imageUploadModal" @create="onImageUploaded" />
 </template>
 
 <script setup lang="ts">
@@ -120,6 +108,7 @@ import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import { schema } from '~/src/editor/Schema'
+import type { ImageAttrs } from '~/src/editor/Editor'
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
@@ -129,31 +118,18 @@ const router = useRouter()
 const route = useRoute()
 
 const editor = ref(useArticleEditor())
+const linkModal = useTemplateRef('linkModal')
+const imageUploadModal = useTemplateRef('imageUploadModal')
+const hotlinkImageModal = useTemplateRef('hotlinkImageModal')
+const footnoteModal = useTemplateRef('footnoteModal')
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
 const sidebarVisible = ref(true)
 const contextMenuOpen = ref(false)
-const footnoteEditorVisible = ref(false)
-const linkEditorVisible = ref(false)
-const editableLink = reactive({
-  href: '',
-  title: '',
-})
-const imageHotlinkEditorVisible = ref(false)
-const hotlinkedImage = reactive({
-  src: '',
-  alt: '',
-})
-const footnoteIndex = ref(0)
-const footnoteText = ref('')
+
 const articleMetadata = reactive({
   title: '',
-})
-const imageUploadModalVisible = ref(false)
-const imageUpload = reactive({
-  path: '',
-  originalPath: '',
 })
 
 const fileDropdownItems = [
@@ -201,13 +177,12 @@ const viewDropdownItems = [
   ]
 ]
 
-function onLinkEdited() {
-  linkEditorVisible.value = false
-  executeAction('FormatLink', editableLink)
+function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
+  executeAction('FormatLink', linkAttrs)
 }
 
-function onImageEdited() {
-  executeAction('InsertImage', hotlinkedImage)
+function onImageEdited(imgAttrs: ImageAttrs) {
+  executeAction('InsertImage', imgAttrs)
 }
 
 /** Execute action commands */
@@ -221,23 +196,21 @@ function onActionUsed(action: Editor.IAction) {
       if (action.def.id == 'FormatLink') {
         const nodeRange = ProseMirrorUtils.getNodeRange(state)
         const node = nodeRange.$from.node()
-        editableLink.href = ''
-        editableLink.title = ''
+
+        // Search for a link within the node
+        let linkAttrs: Editor.LinkAttrs | undefined = undefined
         for (const mark of node.marks) {
           if (mark.type == schema.marks.link) {
-            editableLink.href = mark.attrs.href
-            editableLink.title = mark.attrs.title
+            linkAttrs = mark.attrs as Editor.LinkAttrs
+            break
           }
         }
-        linkEditorVisible.value = true
+
+        linkModal.value!.open(linkAttrs)
       } else if (action.def.id == 'HotlinkImage') {
-        hotlinkedImage.src = ''
-        hotlinkedImage.alt = ''
-        imageHotlinkEditorVisible.value = true
+        hotlinkImageModal.value!.open()
       } else if (action.def.id == 'UploadImage') {
-        imageUpload.path = ''
-        imageUpload.originalPath = ''
-        imageUploadModalVisible.value = true
+        imageUploadModal.value!.open()
       } else {
         executeAction(action.def.id)
       }
@@ -372,29 +345,26 @@ function executeAction(actionID: string, params?: object) {
  */
 // @ts-ignore
 emitter.on('editor.footnoteSelected', (node: Node) => {
-  footnoteIndex.value = node.attrs.index
-  footnoteText.value = node.attrs.text
-  footnoteEditorVisible.value = true
+  footnoteModal.value?.open({
+    index: node.attrs.index,
+    text: node.attrs.text,
+  })
 })
 // @ts-ignore
 emitter.on('editor.imageSelected', (node: Node) => {
-  hotlinkedImage.src = node.attrs.src
-  hotlinkedImage.alt = node.attrs.alt
-  imageHotlinkEditorVisible.value = true
+  hotlinkImageModal.value!.open(node.attrs as ImageAttrs)
 })
 
-function onConfirmFootnote() {
+function onConfirmFootnote(attrs: Editor.FootnoteAttrs) {
   const state = toRaw(editorState.value)
   const view = toRaw(editorView.value)
 
+  // Execute action
   const action = editor.value.getAction('InsertFootnote') as WidgetActions.InsertFootnote
-  let tr = action.updateFootnote(state, footnoteIndex.value, footnoteText.value)
-
+  let tr = action.updateFootnote(state, attrs.index, attrs.text)
   if (tr) {
     view.dispatch(tr)
   }
-
-  footnoteEditorVisible.value = false
 }
 
 function onImageUploaded(file: SiteFile) {
