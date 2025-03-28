@@ -2,7 +2,7 @@
  * Implements actions for inserting semantic block nodes, such as code blocks.
  */
 import { setBlockType } from 'prosemirror-commands'
-import { Node } from "prosemirror-model"
+import { Node, NodeRange } from "prosemirror-model"
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import type { actionID, alertType, ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu } from '../Editor'
@@ -47,9 +47,25 @@ export class InsertAlert extends Action {
 
     if (this.selectionHasNode(state, alertNode, {type: this.alertType})) { // If the selection is already an alert of the same type, pop its child out (removing the alert in the process, as it cannot be a leaf)
       let tr = state.tr
+
+      let found = false
+      let depth = -1
+      let parentStart = null
+      let parentEnd = null
       const cursor = tr.selection
-      const nodeStart = cursor.$from.blockRange()!
-      tr = tr.lift(nodeStart, nodeStart!.depth - 1)
+      while (!found) {
+        const parent = cursor.$from.node(depth)
+        if (parent.type === alertNode) {
+          parentStart = cursor.$from.start(depth)
+          parentEnd = cursor.$from.end(depth)
+          break
+        }
+        depth--;
+      }
+      if (parentStart && parentEnd) {
+        const nodeStart = tr.doc.resolve(parentStart).blockRange(tr.doc.resolve(parentEnd))!
+        tr = tr.lift(nodeStart, 0)
+      }
       return tr
     } else if (this.selectionHasNode(state, alertNode)) { // If the selection has some other type of alert, change its type
       let tr = state.tr
@@ -60,9 +76,8 @@ export class InsertAlert extends Action {
     } else { // Otherwise create an alert and insert the selection as its child
       let tr = state.tr
       const cursor = tr.selection
-      const nodeStart = cursor.$from.blockRange()!
-      tr.replaceWith(nodeStart.start, nodeStart.end, alertNode.create({type: this.alertType}, nodeStart.$from.node()))
-      tr.setSelection(TextSelection.create(tr.doc, cursor.from + 1)) // Move cursor into the new node
+      const nodeStart = cursor.$from.blockRange(cursor.$to)!
+      tr.wrap(nodeStart, [{type: alertNode}])
       return tr
     }
   }
