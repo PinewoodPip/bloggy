@@ -92,6 +92,10 @@ async function onFileChanged(e: InputEvent) {
 /** Query for uploading the file. */
 const { mutate: requestCreation, status: creationStatus } = useMutation({
   mutationFn: (request: SiteFileCreationRequest) => {
+    // Automatically prepend leading slash
+    if (!request.path.startsWith('/')) {
+      request.path = '/' + request.path
+    }
     return fileService.putFile(fileModel.value.originalPath, request)
   },
   onSuccess: (file) => {
