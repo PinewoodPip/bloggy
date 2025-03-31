@@ -4,6 +4,8 @@
       <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..."/>
 
       <HorizontalFill/>
+
+      <IconButton class="btn-primary btn-md" icon="material-symbols:upload" @click="onUploadFileRequested">Upload file</IconButton>
     </div>
 
     <hr/>
@@ -54,6 +56,14 @@ function onItemClick(item: SiteFilePreview | SiteFileTree) {
     const path = `${window.location.origin}/files${item.path}`
     window.open(path, '_blank')?.focus();
   }
+}
+
+/** Opens the upload modal with all fields blank. */
+function onUploadFileRequested() {
+  fileUpload.content = null
+  fileUpload.path = ''
+  fileUpload.originalPath = ''
+  fileUploadModalVisible.value = true
 }
 
 // Tree node property getters
