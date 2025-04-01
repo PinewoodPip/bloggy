@@ -173,3 +173,37 @@ def test_article_change_category(article_scenario):
     # Check the article is no longer retrievable from old path
     response = client.get(f"/articles/{article_scenario.article.path[1:]}", headers=article_scenario.editor_token_header)
     assert is_not_found(response)
+
+def test_article_tags(article_scenario):
+    """
+    Tests manipulating article tags.
+    """
+    # Set tags
+    patch = ArticleUpdate(
+        tags=["new tag", "new tag 2"],
+    )
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    assert is_ok_response(response)
+    output = ArticleOutput.model_validate(response.json())
+    assert len(output.tags) == 2
+    for tag in patch.tags:
+        assert tag in output.tags
+
+    # Remove tag
+    patch = ArticleUpdate(
+        tags=["new tag"],
+    )
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    assert is_ok_response(response)
+    output = ArticleOutput.model_validate(response.json())
+    assert output.tags == ["new tag"]
+
+    # Replace tags
+    tags = ["brand new tag", "a", "b", "c"]
+    patch = ArticleUpdate(
+        tags=tags,
+    )
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    assert is_ok_response(response)
+    output = ArticleOutput.model_validate(response.json())
+    assert set(output.tags) == set(tags)

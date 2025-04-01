@@ -1,7 +1,7 @@
 """
     Article-related tables.
 """
-from sqlalchemy import Column, String, ForeignKey, Integer, LargeBinary, DateTime, Boolean, Enum, Table
+from sqlalchemy import Column, Index, String, ForeignKey, Integer, LargeBinary, DateTime, Boolean, Enum, Table
 from sqlalchemy.orm import relationship, Mapped
 from core.config import Base
 from datetime import datetime, timezone
@@ -24,6 +24,21 @@ article_authors = Table(
     Column("author_username", ForeignKey("editors.username")),
 )
 
+article_tags = Table(
+    "article_tags",
+    Base.metadata,
+    Column("article_id", ForeignKey("articles.id")),
+    Column("tag_id", ForeignKey("tags.id")),
+)
+
+class Tag(Base):
+    """Article text tags."""
+    __tablename__ = "tags"
+    id = Column(Integer, index=True, primary_key=True, unique=True)
+    name = Column(String, index=Index("tag_name_index", postgresql_using="hash"), unique=True)
+    
+    articles: Mapped[list["Article"]] = relationship(secondary="article_tags", back_populates="tags")
+
 class Article(Base):
     __tablename__ = "articles"
 
@@ -42,8 +57,9 @@ class Article(Base):
     category_sorting_index = Column(Integer, default=0)
     summary = Column(String)
     # TODO featured image
-    # TODO tags, comments
+    # TODO comments
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")
     authors: Mapped[list["Editor"]] = relationship(secondary="article_authors", cascade="all", back_populates="articles")
+    tags: Mapped[list["Tag"]] = relationship(secondary="article_tags", cascade="all", back_populates="articles")
 

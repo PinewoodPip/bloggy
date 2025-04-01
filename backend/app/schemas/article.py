@@ -46,6 +46,7 @@ class ArticleUpdate(ArticleBase):
     authors: Optional[list[str]] = None # List of usernames
     category_path: Optional[str] = None
     summary: Optional[str] = None
+    tags: Optional[list[str]] = None
 
 class ArticlePreview(ArticleBase):
     """Schema for basic article metadata, without content fields."""
@@ -61,6 +62,7 @@ class ArticlePreview(ArticleBase):
     category_sorting_index: int
     authors: list[UserSchema.UserOutput]
     summary: str
+    tags: list[str]
 
 class ArticleOutput(ArticlePreview):
     """Complete article schema that includes metadata and content."""

@@ -12,7 +12,7 @@ import crud.utils as CrudUtils
 from datetime import datetime
 import warnings
 
-PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time"])
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags"])
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
@@ -47,6 +47,36 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
 
     return article
 
+def try_create_tags(db: Session, tags: list[str]) -> list[Tag]:
+    """
+    Creates tag objects from a list of tag names, if they don't exist already.
+    Returns the objects of all tags, including ones that already existed.
+    """
+    tag_objects = []
+    for name in tags:
+        tag = db.query(Tag).filter(Tag.name == name).first()
+        if not tag:
+            tag = Tag(
+                name=name,
+            )
+            db.add(tag)
+        tag_objects.append(tag)
+    db.flush()
+    return tag_objects
+
+def get_tags_by_name(db: Session, tags: list[str]) -> list[Tag]:
+    """
+    Returns tag objects by their name.
+    """
+    tag_objects = []
+    for name in tags:
+        tag = db.query(Tag).filter(Tag.name == name).first()
+        if tag:
+            tag_objects.append(tag)
+        else:
+            raise ValueError("Tag not found with name " + name)
+    return tag_objects
+
 def update_article(db: Session, article: Article, article_update: ArticleUpdate) -> Article:
     """
     Updates an article's data.
@@ -78,6 +108,11 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
     # Update publishing time
     if article_update.publish_time != None:
         article.publish_time = datetime.fromisoformat(article_update.publish_time)
+
+    # Update tags
+    if article_update.tags != None:
+        tag_list = try_create_tags(db, article_update.tags)
+        article.tags = tag_list
 
     db.commit()
     db.refresh(article)
@@ -155,6 +190,12 @@ def update_article_in_search(es: Elasticsearch, article: Article, text_content: 
     """
     es.update(index="articles", id=str(article.id), doc=create_elasticsearch_document(article, text_content))
 
+def create_tags_name_list(tags: list[Tag]) -> list[str]:
+    """
+    Creates a list of names of the passed tags.
+    """
+    return [tag.name for tag in tags]
+
 def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     """
     Creates a preview schema for an article.
@@ -165,6 +206,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
         "category_name": article.category.name,
         "path": get_article_path(db, article),
         "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
+        "tags": create_tags_name_list(article.tags),
     })
 
 def get_article_path(db: Session, article: Article) -> str:
@@ -216,6 +258,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         category_name=article.category.name,
         path=get_article_path(db, article),
         summary=article.summary,
+        tags=create_tags_name_list(article.tags),
     )
 
 def create_search_output(db: Session, search_results: list[Article]) -> ArticleSearchResults:
