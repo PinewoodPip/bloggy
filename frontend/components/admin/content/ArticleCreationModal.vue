@@ -41,7 +41,9 @@ const model: ModelRef<boolean> = defineModel({
 const articleData: Reactive<ArticleCreationRequest> = reactive({
   filename: '',
   title: '',
-  content: '',
+  content: ' ',
+  summary: '',
+  text: '',
 })
 
 function confirm() {
@@ -57,7 +59,7 @@ watchEffect(() => {
   if (props.categoryPath) {
     articleData.filename = ''
     articleData.title = ''
-    articleData.content = ''
+    articleData.content = ' '
   }
 })
 

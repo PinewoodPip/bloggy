@@ -109,6 +109,8 @@ import type { AxiosError } from 'axios'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import { schema } from '~/src/editor/Schema'
 import type { ImageAttrs } from '~/src/editor/Editor'
+import { Markdown } from '~/src/editor/markdown/Parser'
+import * as cheerio from 'cheerio';
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
@@ -177,6 +179,9 @@ const viewDropdownItems = [
   ]
 ]
 
+/** Max amount of characters to use for auto-generated summaries. */
+const MAX_SUMMARY_LENGTH = 250
+
 function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
   executeAction('FormatLink', linkAttrs)
 }
@@ -238,11 +243,21 @@ function saveDocument() {
   // Serialize the document and PATCH the article
   const state = toRaw(editorRef.value!.editorState!)
   const markdownStr = editor.value.serializeDocument(state)
+
+  // Extract text without markdown markers
+  const $ = cheerio.load(Markdown.render(markdownStr))
+  const text = extractText($)
+  
+  // Generate "summary"
+  const summary = text.substring(0, MAX_SUMMARY_LENGTH)
+
   console.log('Serialized document')
   console.log(markdownStr)
   requestPatchArticle({
     title: articleMetadata.title,
     content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
+    text: text,
+    summary: summary,
   })
 }
 

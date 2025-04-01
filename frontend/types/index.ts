@@ -64,6 +64,7 @@ declare global {
     path: string,
     category_sorting_index: integer,
     authors: User[],
+    summary: string,
   }
 
   type Article = ArticlePreview & {
@@ -99,6 +100,8 @@ declare global {
     title: string,
     /** Raw document text */
     content: string,
+    summary: string,
+    text: string,
   }
 
   type ArticleUpdateRequest = {
@@ -114,6 +117,8 @@ declare global {
     category_sorting_index?: integer,
     authors?: string[],
     category_path?: string,
+    summary: string,
+    text: string,
   }
 
   type ArticleSearchResults = {
