@@ -10,6 +10,11 @@ declare global {
   /** Slash-delimited resource path, with a leading slash. */
   type path = string
 
+  type DynamicComponentDef = {
+    component: Component | string,
+    props: object,
+  }
+
   /** Schema for GET /users/{username} */
   type User = {
     username: string,
