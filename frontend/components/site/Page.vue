@@ -24,7 +24,7 @@
       </ul>
 
       <!-- TODO search -->
-      <IconedInput v-model="searchTerm" icon="i-heroicons-magnifying-glass" placeholder="Search..." />
+      <SiteSearchBar />
     </nav>
 
     <!-- Main -->
@@ -68,7 +68,5 @@
 </template>
 
 <script setup lang="ts">
-
-const searchTerm = ref('')
 
 </script>

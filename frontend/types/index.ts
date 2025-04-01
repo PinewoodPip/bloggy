@@ -116,6 +116,10 @@ declare global {
     category_path?: string,
   }
 
+  type ArticleSearchResults = {
+    results: ArticlePreview[],
+  }
+
   type CategoryUpdateRequest = {
     name?: string,
     description?: string,

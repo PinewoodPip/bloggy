@@ -2,6 +2,7 @@ import UserService from "~/services/user"
 import CategoryService from "~/services/category"
 import ArticleService from "~/services/article"
 import FileService from "~/services/file"
+import SearchService from "~/services/search"
 
 // Cached service instances;
 // each composable only ever creates one of each service.
@@ -9,6 +10,7 @@ var userService: UserService|null = null
 var categoryService: CategoryService|null = null
 var articleService: ArticleService|null = null
 var fileService: FileService|null = null
+var searchService: SearchService|null = null
 
 export const useUserService = () => {
   if (!userService) {
@@ -40,4 +42,12 @@ export const useFileService = () => {
     fileService = new FileService(config.public.API_URL as string)
   }
   return fileService
+}
+
+export const useSearchService = () => {
+  if (!searchService) {
+    const config = useRuntimeConfig()
+    searchService = new SearchService(config.public.API_URL as string)
+  }
+  return searchService
 }
