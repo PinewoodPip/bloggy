@@ -68,7 +68,7 @@ const nextPageIndices = computed(() => {
 // Refetch articles and scroll back to the top when the page index changes
 watch(currentPage, () => {
   refetchCategory()
-  scrollViewToElement(contentTopRef) // Scroll back to top
+  DOMUtils.scrollViewToElement(contentTopRef) // Scroll back to top
 })
 
 /** Query for fetching category articles */

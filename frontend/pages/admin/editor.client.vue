@@ -246,7 +246,7 @@ function saveDocument() {
 
   // Extract text without markdown markers
   const $ = cheerio.load(Markdown.render(markdownStr))
-  const text = extractText($)
+  const text = DOMUtils.extractText($)
   
   // Generate "summary"
   const summary = text.substring(0, MAX_SUMMARY_LENGTH)
