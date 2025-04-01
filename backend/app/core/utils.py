@@ -1,6 +1,7 @@
 """
     App-wide utility methods.
 """
+from elasticsearch import Elasticsearch
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from jose import jwt, JWTError, ExpiredSignatureError
@@ -44,3 +45,13 @@ def get_current_user_optional(db: Session=Depends(get_db), credentials: HTTPAuth
     if not credentials:
         return None
     return get_current_user(db, credentials)
+
+def get_elastic_search():
+    if CONFIG.ES_ENABLED:
+        es = Elasticsearch([CONFIG.ES_URL], basic_auth=(CONFIG.ES_USERNAME, CONFIG.ES_PASSWORD))
+        try:
+            yield es
+        finally:
+            es.close()
+    else:
+        yield None

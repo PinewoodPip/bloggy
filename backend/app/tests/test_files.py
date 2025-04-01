@@ -30,10 +30,9 @@ def test_create_file(user_scenario):
     assert file_output.content == content_str
     assert file_output.path == file_input.path
 
-
 def test_create_file_invalid_path(file_scenario):
     """
-    Tests files with invalid paths.
+    Tests creating files with invalid paths.
     """
     # Create files with invalid path strings
     content_bytes, content_str = create_random_file_content()

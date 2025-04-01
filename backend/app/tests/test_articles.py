@@ -19,6 +19,8 @@ def test_create_article(article_scenario):
         filename=random_lower_string(),
         title=random_lower_string(),
         content="A document",
+        text="A document",
+        summary="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
     assert is_ok_response(response)
@@ -39,6 +41,8 @@ def test_create_article_nonexistent_category(article_scenario):
         filename=random_lower_string(),
         title=random_lower_string(),
         content="A document",
+        text="A document",
+        summary="A document",
     )
     response = client.post(f"/articles/nonexistent{random_lower_string()}/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
     assert is_bad_request(response, "category")
@@ -51,6 +55,8 @@ def test_create_article_category_name_conflict(article_scenario):
         filename=article_scenario.category.directory_name,
         title=random_lower_string(),
         content="A document",
+        text="A document",
+        summary="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
     assert is_bad_request(response, "category already exists at this path")
@@ -64,6 +70,8 @@ def test_create_article_duplicate_filename(article_scenario):
         filename=random_lower_string(),
         title=random_lower_string(),
         content="A document",
+        text="A document",
+        summary="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.editor_token_header, json=article_input.model_dump())
     assert is_ok_response(response)
@@ -88,6 +96,8 @@ def test_create_article_wrong_role(article_scenario):
         filename=random_lower_string(),
         title=random_lower_string(),
         content="A document",
+        text="A document",
+        summary="A document",
     )
     response = client.post(f"/articles/{article_input.filename}", headers=article_scenario.admin_token_header, json=article_input.model_dump())
     assert is_unauthorized_request(response, "Only editors")

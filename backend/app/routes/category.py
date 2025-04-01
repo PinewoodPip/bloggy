@@ -42,7 +42,7 @@ async def get_category(category_path: str, articles_amount: int = 5, articles_sk
 @router.patch("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
 async def patch_category(category_path: str, category_update: CategorySchemas.CategoryUpdate, db: Session=Depends(get_db)):
     """
-    Fetches a category by its full URL path.
+    Patches a category by its full URL path.
     """
     try:
         category = CategoryCrud.get_category_by_path(db, "/" + category_path)

@@ -23,6 +23,12 @@ class AppConfig():
     DB_USERNAME: str
     DB_PASSWORD: str
 
+    # ElasticSearch credentials
+    ES_ENABLED: int
+    ES_URL: str # Including port.
+    ES_USERNAME: str
+    ES_PASSWORD: str
+
     def __init__(self):
         for field in fields(AppConfig): # Assign fields
             value = os.getenv(field.name)

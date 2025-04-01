@@ -1,6 +1,6 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, field_validator
+from typing import Annotated, Optional
+from pydantic import BaseModel, Field, field_validator
 from models.article import ArticleViewEnum # TODO move these enums here?
 from models.category import *
 from schemas.category_preview import CategoryPreview
@@ -25,15 +25,18 @@ class ArticleBase(BaseModel):
     
 class ArticleInput(ArticleBase):
     """Schema for creation requests."""
-    filename: str
+    filename: Annotated[str, Field(description="Identifier. Must be unique within the article's category. Does not require an extension.")]
     title: str
-    content: str # Raw document text
+    content: Annotated[str, Field(description="Markdown-like text content.")]
+    text: Annotated[str, Field(description="Raw unformatted text transcript of the article.")]
+    summary: Annotated[str, Field(description="Should be unformatted text.")]
 
 class ArticleUpdate(ArticleBase):
     """Schema for patching requests."""
     filename: Optional[str] = None
     title: Optional[str] = None
     content: Optional[str] = None # Raw document text
+    text: Optional[str] = None
     publish_time: Optional[str] = None # As ISO 8601 date
     is_visible: Optional[bool] = None
     view_type: Optional[ArticleViewEnum] = None
@@ -42,6 +45,7 @@ class ArticleUpdate(ArticleBase):
     category_sorting_index: Optional[int] = None
     authors: Optional[list[str]] = None # List of usernames
     category_path: Optional[str] = None
+    summary: Optional[str] = None
 
 class ArticlePreview(ArticleBase):
     """Schema for basic article metadata, without content fields."""
@@ -52,9 +56,11 @@ class ArticlePreview(ArticleBase):
     publish_time: Optional[datetime]
     is_visible: bool
     category_path: str
+    category_name: str
     path: str # Full path to article
     category_sorting_index: int
     authors: list[UserSchema.UserOutput]
+    summary: str
 
 class ArticleOutput(ArticlePreview):
     """Complete article schema that includes metadata and content."""
@@ -63,3 +69,6 @@ class ArticleOutput(ArticlePreview):
     view_type: ArticleViewEnum
     can_comment: bool
     show_authors: bool
+
+class ArticleSearchResults(BaseModel):
+    results: list[ArticlePreview]

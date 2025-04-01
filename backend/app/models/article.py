@@ -40,7 +40,8 @@ class Article(Base):
     can_comment = Column(Boolean, default=False)
     show_authors = Column(Boolean, default=True)
     category_sorting_index = Column(Integer, default=0)
-    # TODO featured image, summary field
+    summary = Column(String)
+    # TODO featured image
     # TODO tags, comments
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")

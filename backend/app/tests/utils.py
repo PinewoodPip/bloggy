@@ -98,10 +98,12 @@ def create_random_article(db: Session, category_path: str) -> ArticleOutput:
     Creates a random article under a category.
     """
     author = create_random_auth_editor(db)
-    article = ArticleCrud.create_article(db, category_path, ArticleInput(
+    article = ArticleCrud.create_article(db, None, category_path, ArticleInput(
         filename=random_lower_string(),
         title=random_lower_string(),
         content="Test content",
+        text="A document",
+        summary="A test document",
     ), UserCrud.get_by_username(db, author.username).editor)
     return ArticleCrud.create_article_output(db, article)
 

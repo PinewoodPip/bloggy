@@ -1,6 +1,7 @@
 """
     CRUD methods for article-related tables.
 """
+from elasticsearch import Elasticsearch
 from sqlalchemy.orm import Session
 from models.user import Editor
 from schemas.article import *
@@ -9,10 +10,11 @@ import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.utils as CrudUtils
 from datetime import datetime
+import warnings
 
 PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time"])
 
-def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
+def create_article(db: Session, es: Elasticsearch | None, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
     Creates an article.
     """
@@ -31,17 +33,25 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
         filename=article_input.filename,
         title=article_input.title,
         content=article_input.content.encode(),
+        summary=article_input.summary,
     )
 
     # Add initial author
     article.authors.append(author)
 
+    # Add to the transaction & flush to assign ID, since it's necessary for ES
     db.add(article)
+    db.flush()
+
+    # Index in ES
+    if es:
+        es.index(index="articles", id=str(article.id), document=create_elasticsearch_document(article, article_input.text))
+
     db.commit()
 
     return article
 
-def update_article(db: Session, article: Article, article_update: ArticleUpdate) -> Article:
+def update_article(db: Session, es: Elasticsearch | None, article: Article, article_update: ArticleUpdate) -> Article:
     """
     Updates an article's data.
     """
@@ -73,6 +83,10 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
     if article_update.publish_time != None:
         article.publish_time = datetime.fromisoformat(article_update.publish_time)
 
+    # Update document in ES
+    if es:
+        es.update(index="articles", id=str(article.id), doc=create_elasticsearch_document(article, article_update.text))
+
     db.commit()
     db.refresh(article)
     return article
@@ -99,6 +113,31 @@ def article_exists(db: Session, category_path: str, article_filename: str) -> bo
         pass
     return has_article
 
+def search_articles(db: Session, es: Elasticsearch, text: str | None, limit: int) -> list[Article]:
+    """
+    Searches articles by text content.
+    """
+    # Search in ES
+    query = {
+        "multi_match": {
+            "query": text,
+            "type": "phrase_prefix",
+            "fields": ["title", "content", "summary", "authors"],
+        }
+    }
+    results = es.search(index="articles", query=query, size=limit)
+
+    # Fetch articles in DB
+    articles: list[Article] = []
+    for hit in results["hits"]["hits"]:
+        article_id = hit["_id"]
+        article = db.query(Article).filter(Article.id == article_id).first()
+        if article:
+            articles.append(article)
+        else:
+            warnings.warn(f"Article document exists in ES but not in DB? {article_id}")
+    return articles
+
 def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     """
     Creates a preview schema for an article.
@@ -106,6 +145,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     category_path = CategoryCrud.get_category_path(db, article.category)
     return CrudUtils.create_schema(article, ArticlePreview, {
         "category_path": category_path,
+        "category_name": article.category.name,
         "path": get_article_path(db, article),
         "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
     })
@@ -116,6 +156,17 @@ def get_article_path(db: Session, article: Article) -> str:
     """
     category_path = CategoryCrud.get_category_path(db, article.category)
     return f"{category_path}/{article.filename}" if category_path != "/" else f"/{article.filename}" # Avoid extra leading slash
+
+def create_elasticsearch_document(article: Article, text_content: str) -> dict:
+    """
+    Creates an ES document for an article.
+    """
+    return {
+        "title": article.title,
+        "content": text_content,
+        "summary": article.summary,
+        "authors": [author.display_name for author in article.authors],
+    }
 
 def create_article_output(db: Session, article: Article) -> ArticleOutput:
     """
@@ -145,5 +196,15 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
         category_path=category_path,
+        category_name=article.category.name,
         path=get_article_path(db, article),
+        summary=article.summary,
+    )
+
+def create_search_output(db: Session, search_results: list[Article]) -> ArticleSearchResults:
+    """
+    Creates an output schema for article search results.
+    """
+    return ArticleSearchResults(
+        results=[create_article_preview(db, article) for article in search_results],
     )
