@@ -14,7 +14,7 @@ import warnings
 
 PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time"])
 
-def create_article(db: Session, es: Elasticsearch | None, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
+def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
     Creates an article.
     """
@@ -43,15 +43,11 @@ def create_article(db: Session, es: Elasticsearch | None, category_path: str, ar
     db.add(article)
     db.flush()
 
-    # Index in ES
-    if es:
-        es.index(index="articles", id=str(article.id), document=create_elasticsearch_document(article, article_input.text))
-
     db.commit()
 
     return article
 
-def update_article(db: Session, es: Elasticsearch | None, article: Article, article_update: ArticleUpdate) -> Article:
+def update_article(db: Session, article: Article, article_update: ArticleUpdate) -> Article:
     """
     Updates an article's data.
     """
@@ -83,10 +79,6 @@ def update_article(db: Session, es: Elasticsearch | None, article: Article, arti
     if article_update.publish_time != None:
         article.publish_time = datetime.fromisoformat(article_update.publish_time)
 
-    # Update document in ES
-    if es:
-        es.update(index="articles", id=str(article.id), doc=create_elasticsearch_document(article, article_update.text))
-
     db.commit()
     db.refresh(article)
     return article
@@ -99,6 +91,15 @@ def get_article_by_path(db: Session, category_path: str, article_url: str) -> Ar
     article = db.query(Article).filter(Article.filename == article_url, Article.category_id == category.id).first() # Must have same filename and be within the category
     if not article:
         raise ValueError("There is no article at the path")
+    return article
+
+def get_article(db: Session, article_id: int) -> Article:
+    """
+    Returns an article by ID.
+    """
+    article = db.query(Article).filter(Article.id == article_id).first()
+    if not article:
+        raise ValueError("There is no article with that ID")
     return article
 
 def article_exists(db: Session, category_path: str, article_filename: str) -> bool:
@@ -137,6 +138,22 @@ def search_articles(db: Session, es: Elasticsearch, text: str | None, limit: int
         else:
             warnings.warn(f"Article document exists in ES but not in DB? {article_id}")
     return articles
+
+def index_article_in_search(es: Elasticsearch, article: Article, text_content: str):
+    """
+    Indexes an article in ElasticSearch.
+
+    text_content is expected to be a raw transcript (no formatting).
+    """
+    es.index(index="articles", id=str(article.id), document=create_elasticsearch_document(article, text_content))
+
+def update_article_in_search(es: Elasticsearch, article: Article, text_content: str):
+    """
+    Updates an article in ElasticSearch.
+    
+    text_content is expected to be a raw transcript (no formatting).
+    """
+    es.update(index="articles", id=str(article.id), doc=create_elasticsearch_document(article, text_content))
 
 def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     """
