@@ -87,19 +87,6 @@ watchEffect((onCleanup) => {
       // Hash display for headings
       new Plugin({
         props: {
-          decorations(state) {
-            const { $from } = state.selection
-            const node = $from.node()
-            if (node.type.name !== 'heading')
-              return DecorationSet.empty
-
-            const widget = getHashWidget($from.before() + 1, {
-              side: -1,
-              level: node.attrs.level,
-            })
-
-            return DecorationSet.create(state.doc, [widget])
-          },
           markViews: {
             underline: markViewFactory({
               component: Underline,
