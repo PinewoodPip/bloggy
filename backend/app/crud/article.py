@@ -149,16 +149,35 @@ def article_exists(db: Session, category_path: str, article_filename: str) -> bo
         pass
     return has_article
 
-def search_articles(db: Session, es: Elasticsearch, text: str | None, limit: int) -> list[Article]:
+def search_articles(db: Session, es: Elasticsearch, text: str | None, tags: list[str] | None, limit: int) -> list[Article]:
     """
     Searches articles by text content.
     """
     # Search in ES
+    query_should_clause = []
+    # Text queries (title, content, etc.)
+    if text:
+        query_should_clause.append({
+            "multi_match": {
+                "query": text,
+                "type": "phrase_prefix",
+                "fields": ["title", "content", "summary", "authors"],
+            }
+        })
+    # Tag keyword query
+    if tags:
+        query_should_clause.extend(
+            {
+                "multi_match": {
+                    "query": tag,
+                    "type": "phrase",
+                    "fields": ["tags"],
+                }
+            }
+        for tag in tags)
     query = {
-        "multi_match": {
-            "query": text,
-            "type": "phrase_prefix",
-            "fields": ["title", "content", "summary", "authors"],
+        "bool": {
+            "should": query_should_clause,
         }
     }
     results = es.search(index="articles", query=query, size=limit)
@@ -225,6 +244,7 @@ def create_elasticsearch_document(article: Article, text_content: str) -> dict:
         "content": text_content,
         "summary": article.summary,
         "authors": [author.display_name for author in article.authors],
+        "tags": [tag.name for tag in article.tags],
     }
 
 def create_article_output(db: Session, article: Article) -> ArticleOutput:

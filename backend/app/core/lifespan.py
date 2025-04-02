@@ -54,6 +54,7 @@ async def lifespan(app: FastAPI):
                 "authors": {"type": "text"},
                 "content": {"type": "search_as_you_type"},
                 "summary": {"type": "search_as_you_type"},
+                "tags": {"type": "keyword"},
             })
 
         es.close()
