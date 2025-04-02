@@ -82,7 +82,7 @@ const author = computed(() => {
 })
 
 const tags = computed(() => {
-  return ['test-tag', 'test-tag-2', 'test-tag-3'] // TODO
+  return article.value?.tags
 })
 
 const socialMediaSharingURL = computed(() => {

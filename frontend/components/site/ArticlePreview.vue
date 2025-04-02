@@ -10,7 +10,7 @@
       <hr class="faint-hr" />
 
       <!-- Summary -->
-      <p class="min-h-16">TODO</p>
+      <p class="min-h-16">{{ article.summary }}</p>
 
       <hr class="faint-hr" />
 
@@ -44,7 +44,7 @@ const articleURL = computed(() => {
 })
 
 const tags = computed(() => {
-  return ['test-tag', 'test-tag-2', 'test-tag-3']
+  return props.article.tags
 })
 
 </script>

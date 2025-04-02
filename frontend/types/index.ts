@@ -70,6 +70,7 @@ declare global {
     category_sorting_index: integer,
     authors: User[],
     summary: string,
+    tags: string[],
   }
 
   type Article = ArticlePreview & {
@@ -124,6 +125,7 @@ declare global {
     category_path?: string,
     summary: string,
     text: string,
+    tags: string[],
   }
 
   type ArticleSearchResults = {
