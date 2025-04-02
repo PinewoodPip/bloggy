@@ -149,11 +149,10 @@ def article_exists(db: Session, category_path: str, article_filename: str) -> bo
         pass
     return has_article
 
-def search_articles(db: Session, es: Elasticsearch, text: str | None, tags: list[str] | None, limit: int) -> list[Article]:
+def search_articles(db: Session, es: Elasticsearch, text: str | None, tags: list[str] | None, authors: list[str] | None, limit: int) -> list[Article]:
     """
     Searches articles by text content.
     """
-    # Search in ES
     query_should_clause = []
     # Text queries (title, content, etc.)
     if text:
@@ -175,6 +174,16 @@ def search_articles(db: Session, es: Elasticsearch, text: str | None, tags: list
                 }
             }
         for tag in tags)
+    # Authors query
+    if authors:
+        query_should_clause.extend({
+            "multi_match": {
+                "query": author,
+                "type": "phrase",
+                "fields": ["authors"],
+            }
+        } for author in authors)
+
     query = {
         "bool": {
             "should": query_should_clause,
