@@ -65,6 +65,7 @@ declare global {
     publish_time?: dateISOString,
     is_visible: boolean,
     category_path: string,
+    category_name: string,
     /** Full path to article */
     path: string,
     category_sorting_index: integer,

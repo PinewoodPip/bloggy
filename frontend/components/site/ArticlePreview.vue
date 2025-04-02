@@ -5,7 +5,7 @@
       <h2 class="card-title link">
         <RouterLink :to="articleURL">{{ article.title }}</RouterLink>
       </h2>
-      <SiteArticleMetadataSubtitle :article="article" />
+      <SiteArticleMetadataSubtitle :article="article" :show-category="true" />
       
       <hr class="faint-hr" />
 

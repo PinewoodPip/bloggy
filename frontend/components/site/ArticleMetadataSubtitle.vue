@@ -8,6 +8,9 @@
     <span v-if="articleDate">
       on {{ articleDate }}
     </span>
+    <span v-if="showCategory">
+      in <StyledLink :to="categoryLink">{{ categoryLabel }}</StyledLink>
+    </span>
   </span>
 </template>
 
@@ -15,7 +18,16 @@
 
 const props = defineProps<{
   article: ArticlePreview,
+  showCategory?: boolean,
 }>()
+
+const categoryLink = computed(() => {
+  return '/categories' + props.article.category_path
+})
+
+const categoryLabel = computed(() => {
+  return props.article.category_name
+})
 
 const articleDate = computed(() => {
   const date = props.article.publish_time
