@@ -6,6 +6,9 @@ import Service from './service'
 type SearchQuery = {
   text?: string,
   tags?: string[],
+  /** Expected to be editor display name. */
+  authors?: string[],
+  /** Max amount of articles to return. */
   limit?: integer,
 }
 

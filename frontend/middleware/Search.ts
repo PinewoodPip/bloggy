@@ -3,7 +3,7 @@
 export default defineNuxtRouteMiddleware((to, from) => {
   const route = useRoute()
   const query = route.query
-  if (!query.tag && !query.text) {
+  if (!query.tag && !query.text && !query.author) {
     return navigateTo('/')
   }
 })

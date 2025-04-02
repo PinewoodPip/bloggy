@@ -31,12 +31,24 @@ import { useQuery } from '@tanstack/vue-query'
 const SearchService = useSearchService()
 const route = useRoute()
 
+/** The text being searched. */
 const textQuery = computed(() => {
   return route.query.text as string
 })
 
+/** The tags being searched. */
 const tags = computed(() => {
   const param = route.query.tag
+  if (!param) {
+    return undefined
+  } else {
+    return typeof param === 'string' ? [param as string] : (param as string[])
+  }
+})
+
+/** The display names of the authors being searched. */
+const authors = computed(() => {
+  const param = route.query.author
   if (!param) {
     return undefined
   } else {
@@ -57,10 +69,6 @@ const breadcrumbs = computed(() => {
   ]
 })
 
-const query = computed(() => {
-  return route.query
-})
-
 /** Concatenates all search query params into a user-friendly string. */
 const searchQueryLabel = computed(() => {
   let queries: string[] = []
@@ -71,7 +79,15 @@ const searchQueryLabel = computed(() => {
     let prefixedTags = tags.value.map((tag) => `#${tag}`)
     queries.push(prefixedTags.join(', '))
   }
+  if (authors.value) {
+    queries.push('articles by ' + authors.value.join(', '))
+  }
   return queries.join(', ')
+})
+
+// Required for query catching and automatic re-fetching
+const query = computed(() => {
+  return route.query
 })
 
 /** Query for search results. */
@@ -81,6 +97,7 @@ const { data: searchResults, status: searchStatus, refetch: search } = useQuery(
     const results = await SearchService.searchArticles({
       tags: tags.value,
       text: textQuery.value,
+      authors: authors.value,
     })
     return results
   },
