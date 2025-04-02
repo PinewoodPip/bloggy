@@ -3,6 +3,7 @@
  */
 import axios, { Axios, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 import Cookies from "js-cookie"
+import qs from 'qs'
 
 class Service {
   API_URL: string
@@ -22,6 +23,9 @@ class Service {
   protected get(route: string, params?: object): Promise<AxiosResponse<any, any>> {
     const options = this.getConfig()
     options.params = params
+    options.paramsSerializer = (params) => {
+      return qs.stringify(params, { arrayFormat: 'repeat' })
+    }
     return this.axios.get(route, options)
   }
 

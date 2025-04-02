@@ -65,7 +65,9 @@ const { data: searchResults, status: searchStatus, refetch: search } = useQuery(
   queryKey: ["siteArticleSearch", cachedSearchTerm],
   queryFn: async () => {
     if (searchTerm.value !== '') {
-      const results = await SearchService.searchArticles(searchTerm.value)
+      const results = await SearchService.searchArticles({
+        text: searchTerm.value,
+      })
       return results
     } else {
       return null
