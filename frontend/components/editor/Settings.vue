@@ -8,11 +8,11 @@
       <!-- Keybinds -->
       <h3>Keybinds</h3>
       <!-- Groups -->
-      <div v-for="group in editor.toolbarGroups">
+      <div v-for="group in toolbar.getToolbarGroups()">
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsAction v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" :is-visible-in-toolbar="editor.isActionVisibleInToolbar(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
+          <EditorSettingsAction v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" :is-visible-in-toolbar="toolbar.isActionVisibleInToolbar(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
         </div>
       </div>
     </template>
@@ -43,9 +43,10 @@
 
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
+import * as Toolbar from '~/src/editor/Toolbar'
 
 const keybindStringifier = useKeybindStringifier()
-const { editor } = useEditorInjects()
+const { editor, toolbar } = useEditorInjects()
 
 const rebindingModalVisible = ref(false)
 const pendingRebindActionID: Ref<Editor.actionID | null> = ref(null)
@@ -74,13 +75,13 @@ function resetBindingModal() {
   conflictingAction.value = null
 }
 
-function getGroupActions(group: Editor.ToolbarGroup): Editor.actionID[] {
+function getGroupActions(group: Toolbar.Group): Editor.actionID[] {
   const actions: Editor.actionID[] = []
   for (const item of group.items) {
     if (item.type === 'action') {
-      actions.push((item as Editor.ToolbarGroupAction).actionID)
+      actions.push((item as Toolbar.GroupAction).actionID)
     } else if (item.type === 'actionMenu') {
-      for (const actionID of (item as Editor.ToolbarGroupActionMenu).actionIDs) {
+      for (const actionID of (item as Toolbar.GroupActionMenu).actionIDs) {
         actions.push(actionID)
       }
     }
@@ -108,7 +109,7 @@ function onResetKeybind(actionID: Editor.actionID) {
 
 /** Sets visibility and saves preferences. */
 function onToggleActionVisibility(actionID: Editor.actionID, visible: boolean) {
-  editor.value.setActionVisibleInToolbar(actionID, visible)
+  toolbar.value.setActionVisibleInToolbar(actionID, visible)
   editor.value.savePreferences("ArticleEditor")
 }
 

@@ -114,7 +114,7 @@ declare global {
   type ArticleUpdateRequest = {
     filename?: string,
     title?: string,
-    /** Raw document text */
+    /** Markdown document */
     content?: string,
     publish_time?: dateISOString,
     is_visible?: boolean,
@@ -124,9 +124,10 @@ declare global {
     category_sorting_index?: integer,
     authors?: string[],
     category_path?: string,
-    summary: string,
-    text: string,
-    tags: string[],
+    summary?: string,
+    /** Plaintext transcript of the article */
+    text?: string,
+    tags?: string[],
   }
 
   type ArticleSearchResults = {

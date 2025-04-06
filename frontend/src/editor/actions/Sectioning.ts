@@ -4,7 +4,8 @@
  */
 import { setBlockType, wrapIn } from 'prosemirror-commands'
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { actionID, keybind, ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu } from '../Editor'
+import type { actionID, keybind } from '../Editor'
+import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -106,7 +107,7 @@ for (let i = 1; i <= 6; ++i) {
   _headingActions.push(action)
   headingActionIDs.push(action.def.id)
 }
-let _actionGroup: ToolbarGroup = {
+let _actionGroup: Group = {
   name: 'Sectioning',
   items: [
     {
@@ -114,15 +115,15 @@ let _actionGroup: ToolbarGroup = {
       icon: 'i-material-symbols-h-mobiledata-badge-outline',
       name: 'Set Heading',
       actionIDs: headingActionIDs,
-    } as ToolbarGroupActionMenu,
+    } as GroupActionMenu,
     {
       type: 'action',
       actionID: InsertHorizontalRule.ID,
-    } as ToolbarGroupAction,
+    } as GroupAction,
     {
       type: 'action',
       actionID: MakeQuote.ID,
-    } as ToolbarGroupAction,
+    } as GroupAction,
   ],
 }
 export const headingActions = _headingActions

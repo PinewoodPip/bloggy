@@ -6,6 +6,7 @@ import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { schema } from '~/src/editor/Schema'
+import { Toolbar } from './Toolbar'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
@@ -40,56 +41,23 @@ export interface IAction {
   getDefaultKeyCombo(): keybind | null,
 }
 
-export type actionGroupItemType = 'action'|'actionMenu'
-
-export interface ToolbarGroupItem {
-  type: actionGroupItemType,
-}
-
-export interface ToolbarGroupAction extends ToolbarGroupItem {
-  type: 'action',
-  actionID: string,
-}
-
-/** Groups up actions into a single toolbar item that opens a menu containing each action. */
-export interface ToolbarGroupActionMenu extends ToolbarGroupItem {
-  type: 'actionMenu',
-  name: string,
-  icon: string,
-  actionIDs: string[],
-}
-
-/** Groups multiple related toolbar items. */
-export interface ToolbarGroup {
-  name: string,
-  items: ToolbarGroupItem[],
-}
-
 /** Main editor model class. Holds registered actions. */
 export class Editor {
   actions: {[id: actionID]: IAction} = {}
-  toolbarGroups: ToolbarGroup[] = []
+
+  private toolbar: Toolbar
 
   // Action keybind mappings
   private customActionBindings: {[id: actionID]: keybind} = {}
   private customBindingToAction: {[combo: keybind]: actionID} = {}
 
-  /** Actions that should not be shown in the toolbar. */
-  private hiddenActions: Set<actionID> = new Set()
+  constructor() {
+    this.toolbar = new Toolbar()
+  }
 
   /** Registers an editor action. */
   registerAction(action: Action) {
     this.actions[action.def.id] = action
-  }
-
-  /** Registers an action group. Will be the last in the list. */
-  registerToolbarGroup(group: ToolbarGroup) {
-    this.toolbarGroups.push(group)
-  }
-
-  /** Returns all action groups in order of registration. */
-  getToolbarGroups(): ToolbarGroup[] {
-    return this.toolbarGroups
   }
 
   /** Returns a registered action by its ID. */
@@ -98,6 +66,11 @@ export class Editor {
       throw 'Action not registered: ' + id
     }
     return this.actions[id]
+  }
+
+  /** Returns the toolbar model. */
+  getToolbar(): Toolbar {
+    return this.toolbar
   }
 
   /** Returns the keybind for an action. */
@@ -131,20 +104,6 @@ export class Editor {
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }
 
-  /** Returns whether an action should appear in the toolbar. */
-  isActionVisibleInToolbar(actionID: actionID) {
-    return !this.hiddenActions.has(actionID)
-  }
-
-  /** Sets whether an action should appear in the toolbar. */
-  setActionVisibleInToolbar(actionID: actionID, visible: boolean) {
-    if (!visible) {
-      this.hiddenActions.add(actionID)
-    } else {
-      this.hiddenActions.delete(actionID)
-    }
-  }
-
   /** Serializes a document to a Markdown-like string. */
   serializeDocument(state: EditorState): string {
     let markdownStr = DocumentSerializer.serialize(state.doc)
@@ -170,7 +129,7 @@ export class Editor {
   savePreferences(storageKey: string) {
     const saveData = {
       keybinds: this.customActionBindings,
-      hiddenActions: [...this.hiddenActions.values()],
+      hiddenActions: [...this.toolbar.getHiddenActions().values()],
     }
     window.localStorage.setItem(storageKey, JSON.stringify(saveData))
   }
@@ -193,7 +152,7 @@ export class Editor {
 
       // Apply toolbar preferences
       for (const actionID of parsedSaveData.hiddenActions || []) {
-        this.setActionVisibleInToolbar(actionID, false)
+        this.toolbar.setActionVisibleInToolbar(actionID, false)
       }
     }
   }

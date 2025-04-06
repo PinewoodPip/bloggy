@@ -3,7 +3,8 @@
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
-import type { ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu, actionID, alignmentType, keybind } from '../Editor'
+import type { actionID, alignmentType, keybind } from '../Editor'
+import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -193,19 +194,19 @@ for (const alignType of ['right', 'left', 'center', 'justify']) {
   alignmentActionIDs.push(action.def.id)
 }
 export const alignmentActions = _alignmentActions
-export const actionGroup: ToolbarGroup = {
+export const actionGroup: Group = {
   name: 'Formatting',
   items: [
-    {type: 'action', actionID: FormatBold.ID} as ToolbarGroupAction,
-    {type: 'action', actionID: FormatItalic.ID} as ToolbarGroupAction,
-    {type: 'action', actionID: FormatUnderline.ID} as ToolbarGroupAction,
-    {type: 'action', actionID: FormatInlineCode.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: FormatBold.ID} as GroupAction,
+    {type: 'action', actionID: FormatItalic.ID} as GroupAction,
+    {type: 'action', actionID: FormatUnderline.ID} as GroupAction,
+    {type: 'action', actionID: FormatInlineCode.ID} as GroupAction,
     {
       type: 'actionMenu',
       icon: 'material-symbols:format-align-left',
       name: 'Set Alignment',
       actionIDs: alignmentActionIDs,
-    } as ToolbarGroupActionMenu,
-    {type: 'action', actionID: FormatLink.ID} as ToolbarGroupAction,
+    } as GroupActionMenu,
+    {type: 'action', actionID: FormatLink.ID} as GroupAction,
   ]
 }

@@ -22,10 +22,11 @@
 
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
+import * as Toolbar from '~/src/editor/Toolbar'
 import ActionButton from './ActionButton.vue'
 import ActionMenuButton from './ActionMenuButton.vue'
 
-const { editor } = useEditorInjects()
+const { editor, toolbar } = useEditorInjects()
 
 const emit = defineEmits<{
   actionUse: [Editor.IAction]
@@ -42,8 +43,8 @@ function useAction(action: Editor.IAction) {
 
 /** Toolbar groups to show, based on user preferences. */
 const visibleGroups = computed(() => {
-  const groups: Editor.ToolbarGroup[] = []
-  for (const group of editor.value.getToolbarGroups()) {
+  const groups: Toolbar.Group[] = []
+  for (const group of toolbar.value.getToolbarGroups()) {
     // Check if any action in the group is visible
     const visible = getVisibleGroupItems(group).length > 0
     if (visible) {
@@ -54,16 +55,16 @@ const visibleGroups = computed(() => {
 })
 
 /** Returns the visible items of a toolbar group. */
-function getVisibleGroupItems(group: Editor.ToolbarGroup) {
-  const items: Editor.ToolbarGroupItem[] = []
+function getVisibleGroupItems(group: Toolbar.Group) {
+  const items: Toolbar.GroupItem[] = []
   for (const item of group.items) {
     let visible = false
     if (item.type === 'action') {
-      visible = editor.value.isActionVisibleInToolbar((item as Editor.ToolbarGroupAction).actionID)
+      visible = toolbar.value.isActionVisibleInToolbar((item as Toolbar.GroupAction).actionID)
     } else if (item.type === 'actionMenu') {
-      const menuActions = (item as Editor.ToolbarGroupActionMenu).actionIDs
+      const menuActions = (item as Toolbar.GroupActionMenu).actionIDs
       visible = ArrayUtils.anyInArray(menuActions, (actionID) => {
-        return editor.value.isActionVisibleInToolbar(actionID)
+        return toolbar.value.isActionVisibleInToolbar(actionID)
       })
     } else {
       throw 'Unsupported item type ' + item.type
@@ -76,7 +77,7 @@ function getVisibleGroupItems(group: Editor.ToolbarGroup) {
 }
 
 // Component, props and event getters for the dynamic toolbar item component
-function getGroupItemComponent(item: Editor.ToolbarGroupItem) {
+function getGroupItemComponent(item: Toolbar.GroupItem) {
   if (item.type === 'action') {
     return ActionButton
   } else if (item.type === 'actionMenu') {
@@ -85,20 +86,20 @@ function getGroupItemComponent(item: Editor.ToolbarGroupItem) {
     throw "Unimplemented group item: " + item.type
   }
 }
-function getGroupItemComponentProps(item: Editor.ToolbarGroupItem) {
+function getGroupItemComponentProps(item: Toolbar.GroupItem) {
   if (item.type === 'action') {
     return {
-      action: editor.value.getAction((item as Editor.ToolbarGroupAction).actionID),
+      action: editor.value.getAction((item as Toolbar.GroupAction).actionID),
     }
   } else if (item.type === 'actionMenu') {
     return {
-      menu: item as Editor.ToolbarGroupActionMenu,
+      menu: item as Toolbar.GroupActionMenu,
     }
   } else {
     throw "Unimplemented group item: " + item.type
   }
 }
-function getGroupItemComponentEvents(item: Editor.ToolbarGroupItem) {
+function getGroupItemComponentEvents(item: Toolbar.GroupItem) {
   if (item.type === 'action') {
     return {
       use: useAction,

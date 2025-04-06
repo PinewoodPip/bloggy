@@ -15,12 +15,13 @@ import * as MediaActions from '~/src/editor/actions/Media'
 export const useArticleEditor = () => {
   // Create editor
   const editor: Editor.Editor = new Editor.Editor()
+  const toolbar = editor.getToolbar()
 
   // Add default actions and groups
   // History actions
   editor.registerAction(new HistoryActions.Undo())
   editor.registerAction(new HistoryActions.Redo())
-  editor.registerToolbarGroup(HistoryActions.actionGroup)
+  toolbar.registerToolbarGroup(HistoryActions.actionGroup)
 
   // Formatting actions
   editor.registerAction(new FormattingActions.FormatBold())
@@ -31,7 +32,7 @@ export const useArticleEditor = () => {
   for (const action of FormattingActions.alignmentActions) {
     editor.registerAction(action)
   }
-  editor.registerToolbarGroup(FormattingActions.actionGroup)
+  toolbar.registerToolbarGroup(FormattingActions.actionGroup)
 
   // Sectioning actions
   for (const action of SectioningActions.headingActions) {
@@ -39,24 +40,24 @@ export const useArticleEditor = () => {
   }
   editor.registerAction(new SectioningActions.InsertHorizontalRule())
   editor.registerAction(new SectioningActions.MakeQuote())
-  editor.registerToolbarGroup(SectioningActions.actionGroup)
+  toolbar.registerToolbarGroup(SectioningActions.actionGroup)
 
   // Clipboard actions
   editor.registerAction(new ClipboardActions.Copy())
   editor.registerAction(new ClipboardActions.Paste())
-  editor.registerToolbarGroup(ClipboardActions.actionGroup)
+  toolbar.registerToolbarGroup(ClipboardActions.actionGroup)
 
   // Media actions
   editor.registerAction(new MediaActions.InsertImage())
   for (const action of MediaActions.imageActions) {
     editor.registerAction(action)
   }
-  editor.registerToolbarGroup(MediaActions.actionGroup)
+  toolbar.registerToolbarGroup(MediaActions.actionGroup)
 
   // List actions
   editor.registerAction(new ListActions.ToggleBulletList())
   editor.registerAction(new ListActions.ToggleNumberedList())
-  editor.registerToolbarGroup(ListActions.actionGroup)
+  toolbar.registerToolbarGroup(ListActions.actionGroup)
 
   // Widget actions
   editor.registerAction(new WidgetActions.InsertCodeBlock())
@@ -64,7 +65,7 @@ export const useArticleEditor = () => {
     editor.registerAction(action)
   }
   editor.registerAction(new WidgetActions.InsertFootnote())
-  editor.registerToolbarGroup(WidgetActions.actionGroup)
+  toolbar.registerToolbarGroup(WidgetActions.actionGroup)
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {
@@ -79,7 +80,11 @@ export const useArticleEditor = () => {
 /** Auxiliary composable to import editor injects. */
 export const useEditorInjects = () => {
   const editor = inject<Ref<Editor.Editor>>('editor')!
+  // Use computed to make contexts that use it reactive even if they don't use the editor itself
+  const toolbar = computed(() => {
+    return editor.value!.getToolbar()
+  })
   const editorState = inject<Ref<EditorState>>('editorState')!
 
-  return {editor, editorState}
+  return {editor, editorState, toolbar}
 }

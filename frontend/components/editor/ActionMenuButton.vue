@@ -10,11 +10,12 @@
 
 <script setup lang="ts">
 import type * as Editor from '~/src/editor/Editor'
+import type * as Toolbar from '~/src/editor/Toolbar'
 
-const { editor, editorState } = useEditorInjects()
+const { editor, editorState, toolbar } = useEditorInjects()
 
 const props = defineProps<{
-  menu: Editor.ToolbarGroupActionMenu,
+  menu: Toolbar.GroupActionMenu,
 }>()
 
 const emit = defineEmits<{
@@ -31,7 +32,7 @@ function toggleMenu() {
 const menuItems = computed(() => {
   const items = []
   for (const actionID of props.menu.actionIDs) {
-    if (editor.value.isActionVisibleInToolbar(actionID)) {
+    if (toolbar.value.isActionVisibleInToolbar(actionID)) {
       const action = editor.value.getAction(actionID)
       items.push({
         label: action.def.name,

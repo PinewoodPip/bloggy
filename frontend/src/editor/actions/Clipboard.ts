@@ -3,7 +3,7 @@
  */
 import { Node } from 'prosemirror-model'
 import type { EditorState, Transaction } from 'prosemirror-state'
-import type { ToolbarGroup, ToolbarGroupAction } from '../Editor'
+import type { Group, GroupAction } from '../Toolbar'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -81,10 +81,10 @@ export class Paste extends Action {
   }
 }
 
-export const actionGroup: ToolbarGroup = {
+export const actionGroup: Group = {
   name: 'Clipboard',
   items: [
-    {type: 'action', actionID: Copy.ID} as ToolbarGroupAction,
-    {type: 'action', actionID: Paste.ID} as ToolbarGroupAction,
+    {type: 'action', actionID: Copy.ID} as GroupAction,
+    {type: 'action', actionID: Paste.ID} as GroupAction,
   ]
 }

@@ -5,7 +5,8 @@ import { setBlockType } from 'prosemirror-commands'
 import { Node, NodeRange } from "prosemirror-model"
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
-import type { actionID, alertType, ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu } from '../Editor'
+import type { actionID, alertType, } from '../Editor'
+import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -135,23 +136,23 @@ const alertActionIDs: actionID[] = []
 for (const action of _alertActions) {
   alertActionIDs.push(action.def.id)
 }
-let _actionGroup: ToolbarGroup = {
+let _actionGroup: Group = {
   name: 'Widgets',
   items: [
     {
       type: 'action',
       actionID: InsertCodeBlock.ID,
-    } as ToolbarGroupAction,
+    } as GroupAction,
     {
       type: 'actionMenu',
       icon: 'material-symbols:lightbulb-2-outline',
       name: 'Toggle Note',
       actionIDs: alertActionIDs,
-    } as ToolbarGroupActionMenu,
+    } as GroupActionMenu,
     {
       type: 'action',
       actionID: InsertFootnote.ID,
-    } as ToolbarGroupAction,
+    } as GroupAction,
   ],
 }
 export const actionGroup = _actionGroup

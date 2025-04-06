@@ -5,7 +5,8 @@ import { lift } from 'prosemirror-commands'
 import { wrapInList } from 'prosemirror-schema-list'
 import { NodeType, NodeRange, type Attrs } from "prosemirror-model"
 import type { Command, EditorState, Transaction } from 'prosemirror-state'
-import type { actionID, keybind, ToolbarGroup, ToolbarGroupActionMenu } from '../Editor'
+import type { actionID, keybind } from '../Editor'
+import type { Group, GroupActionMenu } from '../Toolbar'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -79,7 +80,7 @@ const headingActionIDs: actionID[] = [
   ToggleBulletList.ID,
   ToggleNumberedList.ID,
 ]
-let _actionGroup: ToolbarGroup = {
+let _actionGroup: Group = {
   name: 'Lists',
   items: [
     {
@@ -87,7 +88,7 @@ let _actionGroup: ToolbarGroup = {
       icon: 'material-symbols:format-list-bulleted',
       name: 'Toggle List',
       actionIDs: headingActionIDs,
-    } as ToolbarGroupActionMenu,
+    } as GroupActionMenu,
   ],
 }
 export const actionGroup = _actionGroup

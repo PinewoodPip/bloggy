@@ -2,7 +2,8 @@
  * Implements actions for inserting media nodes, such as images.
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
-import type { actionID, ToolbarGroup, ToolbarGroupAction, ToolbarGroupActionMenu } from '../Editor'
+import type { actionID } from '../Editor'
+import type { Group, GroupActionMenu } from '../Toolbar'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
 import { schema } from '../Schema'
@@ -72,7 +73,7 @@ const alertActionIDs: actionID[] = []
 for (const action of _imageActions) {
   alertActionIDs.push(action.def.id)
 }
-let _actionGroup: ToolbarGroup = {
+let _actionGroup: Group = {
   name: 'Media',
   items: [
     {
@@ -80,7 +81,7 @@ let _actionGroup: ToolbarGroup = {
       icon: 'material-symbols:image',
       name: 'Insert image',
       actionIDs: alertActionIDs,
-    } as ToolbarGroupActionMenu,
+    } as GroupActionMenu,
   ],
 }
 export const actionGroup = _actionGroup
