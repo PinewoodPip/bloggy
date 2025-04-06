@@ -244,6 +244,15 @@ def get_article_path(db: Session, article: Article) -> str:
     category_path = CategoryCrud.get_category_path(db, article.category)
     return f"{category_path}/{article.filename}" if category_path != "/" else f"/{article.filename}" # Avoid extra leading slash
 
+def get_by_id(db: Session, id: int) -> Category:
+    """
+    Returns an article by its ID.
+    """
+    article = db.query(Article).filter(Article.id == id).first()
+    if not article:
+        raise ValueError("There is no article with that ID")
+    return article
+
 def create_elasticsearch_document(article: Article, text_content: str) -> dict:
     """
     Creates an ES document for an article.

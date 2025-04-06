@@ -1,5 +1,5 @@
 """
-    User-related tables.
+Tables for file management.
 """
 import typing
 from sqlalchemy import Column, Integer, LargeBinary, String, ForeignKey

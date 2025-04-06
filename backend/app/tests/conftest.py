@@ -11,6 +11,7 @@ import crud.user as UserCrud
 import crud.article as ArticleCrud
 import crud.category as CategoryCrud
 import crud.file as FileCrud
+import crud.site as SiteCrud
 
 @pytest.fixture(scope="function", autouse=True)
 def db_session():
@@ -22,6 +23,14 @@ def db_session():
     yield # Run test first
 
     db = get_session()
+
+    # Reset config
+    config = SiteCrud.get_config(db)
+    config.site_name = "Bloggy site"
+    config.logo_file_id = None
+    config.favicon_file_id = None
+    config.navigation = {"root_nodes": []}
+    db.commit()
 
     # Remove all users except default admin
     users = UserCrud.get_all(db, None)

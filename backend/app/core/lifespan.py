@@ -10,6 +10,7 @@ from core.config import CONFIG, SessionLocal
 from models.user import User
 from crud.user import create_default_admin
 from crud.category import create_root_category
+from crud.site import try_create_config
 import time
 
 @asynccontextmanager
@@ -26,6 +27,7 @@ async def lifespan(app: FastAPI):
             time.sleep(1)
 
     # Ensure essential entities exist
+    try_create_config(db)
     create_default_admin(db)
     create_root_category(db)
 

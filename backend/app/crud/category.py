@@ -186,6 +186,15 @@ def create_category_output(db: Session, category: Category, articles_amount: int
         subcategories=subcategories,
     )
 
+def get_by_id(db: Session, id: int) -> Category:
+    """
+    Returns a category by its ID.
+    """
+    category = db.query(Category).filter(Category.id == id).first()
+    if not category:
+        raise ValueError("There is no category with that ID")
+    return category
+
 def get_all(db: Session) -> list[Category]:
     """
     Returns all categories.

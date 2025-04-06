@@ -1,4 +1,3 @@
 .pytest_cache
-.venv
-.test.env
+*.env
 mock_data
