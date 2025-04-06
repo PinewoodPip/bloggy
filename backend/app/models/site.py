@@ -3,7 +3,7 @@
 Tables related to the global site configuration.
 """
 import typing
-from sqlalchemy import Column, Integer, LargeBinary, String, ForeignKey, JSON
+from sqlalchemy import Boolean, Column, Integer, LargeBinary, String, ForeignKey, JSON
 from sqlalchemy.orm import relationship, Mapped
 from core.config import Base
 if typing.TYPE_CHECKING:
@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
 
 class SiteConfig(Base):
     """
-    Table site-wide configuration settings.
+    Table for site-wide configuration settings.
     """
     __tablename__ = "config"
 
@@ -23,3 +23,15 @@ class SiteConfig(Base):
 
     logo: Mapped["File"] = relationship("File", foreign_keys=[logo_file_id])
     favicon: Mapped["File"] = relationship("File", foreign_keys=[favicon_file_id])
+
+class SocialNetwork(Base):
+    """
+    Table for a social network the site admits for sharing.
+    """
+    __tablename__ = "socialnetworks"
+
+    id = Column(String, index=True, primary_key=True)
+
+    name = Column(String)
+    can_share = Column(Boolean, default=False)
+    """Whether sharing to this social network is enabled."""

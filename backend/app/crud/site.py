@@ -1,18 +1,18 @@
 """
-CRUD methods for Files table.
+CRUD methods for site config tables.
 """
 from sqlalchemy.orm import Session
 import crud.utils as CrudUtils
 import crud.file as FileCrud
 import crud.category as CategoryCrud
 import crud.article as ArticleCrud
-from models.site import SiteConfig
+from models.site import SiteConfig, SocialNetwork
 from schemas.site import *
 from schemas.navigation import *
 from typing import cast
 import json
 
-PATCH_FILE_EXCLUDED_FIELDS = set(["navigation", "favicon_path", "logo_path"])
+PATCH_FILE_EXCLUDED_FIELDS = set(["navigation", "favicon_path", "logo_path", "social_networks"])
 
 def get_config(db: Session) -> SiteConfig:
     """
@@ -50,10 +50,53 @@ def update_config(db: Session, config_update: ConfigUpdate) -> SiteConfig:
         except Exception as e:
             db.rollback()
             raise e
+        
+    # Update enabled social networks
+    if config_update.social_networks != None:
+        enabled_networks = set(config_update.social_networks)
+        all_networks = get_social_networks(db)
+
+        # Ensure passed IDs are valid
+        all_networks_set = set(network.id for network in all_networks)
+        if len(enabled_networks - all_networks_set) > 0:
+            raise ValueError("One or more network IDs are invalid")
+
+        # Update state of all networks
+        for network in all_networks: # Should always be small enough for all() to not matter.
+            can_share = network.id in enabled_networks
+            update_social_network(db, SocialNetworkUpdate(
+                id=network.id,
+                can_share=can_share,
+            ))
 
     db.commit()
     db.refresh(config)
     return config
+
+def update_social_network(db: Session, network_update: SocialNetworkUpdate) -> SocialNetwork:
+    """
+    Updates the settings of a social network.
+    """
+    network = db.query(SocialNetwork).filter(SocialNetwork.id == network_update.id).first()
+    if not network:
+        raise ValueError("There is no network with ID " + network_update.id)
+    network.can_share = network_update.can_share
+
+    db.commit()
+    return network
+
+def register_social_network(db: Session, network_input: SocialNetworkInput):
+    """
+    Registers a social network that the site's content can be shared to, if one doesn't already exist with the given ID.
+    """
+    exists = db.query(SocialNetwork).filter(SocialNetwork.id == network_input.id).first()
+    if not exists:
+        network = SocialNetwork(
+            id=network_input.id,
+            name=network_input.name
+        )
+        db.add(network)
+        db.commit()
 
 def try_create_config(db: Session) -> SiteConfig:
     """
@@ -69,6 +112,12 @@ def try_create_config(db: Session) -> SiteConfig:
         )
         db.add(config)
         db.commit()
+
+def get_social_networks(db: Session) -> list[SocialNetwork]:
+    """
+    Returns the social networks registered for the site.
+    """
+    return db.query(SocialNetwork).all()
 
 def create_navigation_output(db: Session, navigation: dict) -> NavigationOutput:
     """
@@ -88,7 +137,8 @@ def create_configuration_output(db: Session, config: SiteConfig) -> ConfigOutput
         site_name=config.site_name,
         logo=logo,
         favicon=favicon,
-        navigation=create_navigation_output(db, config.navigation)
+        navigation=create_navigation_output(db, config.navigation),
+        social_networks=[network.id for network in get_social_networks(db) if network.can_share],
     )
 
 def parse_navigation_node(db: Session, node: dict) -> NavigationNode:

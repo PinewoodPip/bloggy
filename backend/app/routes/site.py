@@ -24,7 +24,7 @@ async def get_config(db: Session=Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.patch("/config", response_model=SiteCrud.ConfigOutput)
-async def get_config(config_update: SiteSchemas.ConfigUpdate, db: Session=Depends(get_db), user: User=Depends(get_current_user)):
+async def patch_config(config_update: SiteSchemas.ConfigUpdate, db: Session=Depends(get_db), user: User=Depends(get_current_user)):
     """
     Patches the site's global configuration.
     """

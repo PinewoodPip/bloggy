@@ -5,12 +5,13 @@ from contextlib import asynccontextmanager
 from elasticsearch import Elasticsearch
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
+from schemas.site import SocialNetworkInput
 from core.utils import get_elastic_search
-from core.config import CONFIG, SessionLocal
+from core.config import CONFIG, SOCIAL_NETWORKS, SessionLocal
 from models.user import User
 from crud.user import create_default_admin
 from crud.category import create_root_category
-from crud.site import try_create_config
+from crud.site import try_create_config, register_social_network
 import time
 
 @asynccontextmanager
@@ -30,6 +31,13 @@ async def lifespan(app: FastAPI):
     try_create_config(db)
     create_default_admin(db)
     create_root_category(db)
+
+    # Register social networks
+    for network_id, name in SOCIAL_NETWORKS.items():
+        register_social_network(db, SocialNetworkInput(
+            id=network_id,
+            name=name
+        ))
 
     # Initialize ES indices if it's enabled
     if CONFIG.ES_ENABLED:

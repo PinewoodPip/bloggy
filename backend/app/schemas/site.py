@@ -14,6 +14,7 @@ class ConfigUpdate(BaseModel):
     favicon_path: Optional[str] = None
     logo_path: Optional[str] = None
     navigation: Optional[NavigationUpdate] = None
+    social_networks: Optional[list[str]] = None
 
 class ConfigOutput(BaseModel):
     """
@@ -22,4 +23,23 @@ class ConfigOutput(BaseModel):
     site_name: str
     logo: FileOutput | None
     favicon: FileOutput | None
+
     navigation: NavigationOutput
+    """The site's navigation schema."""
+
+    social_networks: list[str]
+    """Social networks the site allows sharing to."""
+
+class SocialNetworkInput(BaseModel):
+    """
+    Schema for registering supported social networks.
+    """
+    id: str
+    name: str
+
+class SocialNetworkUpdate(BaseModel):
+    """
+    Schema for updating a social network's configuration.
+    """
+    id: str
+    can_share: bool

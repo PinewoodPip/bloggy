@@ -42,6 +42,19 @@ class AppConfig():
 
 CONFIG = AppConfig()
 
+SOCIAL_NETWORKS: dict[str, str] = {
+    "facebook": "Facebook",
+    "x": "X",
+    "tumblr": "Tumblr",
+    "reddit": "Reddit",
+    "pinterest": "Pinterest",
+    "vk": "VK",
+    "weibo": "Weibo",
+    "wordpress": "Wordpress",
+    "baidu": "Baidu",
+    "linkedin": "LinkedIn",
+}
+
 URL_DATABASE = f"postgresql://{CONFIG.DB_USERNAME}:{CONFIG.DB_PASSWORD}@{CONFIG.DB_ADDRESS}/{CONFIG.DB_NAME}"
 
 engine = create_engine(URL_DATABASE)

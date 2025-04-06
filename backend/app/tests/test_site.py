@@ -26,11 +26,11 @@ def test_patch_config_files(file_scenario):
         favicon_path=favicon_path,
         logo_path=logo_path,
     )
-    response = client.patch("/site/config", headers=scenario.editor_token_header, json=config_update.model_dump(exclude_none=True))
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json=config_update.model_dump(exclude_none=True))
     assert is_ok_response(response)
 
     # Refetch config
-    response = client.get("/site/config", headers=scenario.editor_token_header)
+    response = client.get("/site/config", headers=scenario.admin_token_header)
     assert is_ok_response(response)
 
     site = ConfigOutput.model_validate(response.json())
@@ -63,7 +63,7 @@ def test_navigation(file_scenario, article_scenario):
             ]
         )
     )
-    response = client.patch("/site/config", headers=scenario.editor_token_header, json=config_update.model_dump(exclude_none=True))
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json=config_update.model_dump(exclude_none=True))
     assert is_ok_response(response)
 
     site = ConfigOutput.model_validate(response.json())
@@ -87,7 +87,7 @@ def test_navigation_invalid_paths(file_scenario, article_scenario):
             ]
         )
     )
-    response = client.patch("/site/config", headers=scenario.editor_token_header, json=config_update.model_dump(exclude_none=True))
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json=config_update.model_dump(exclude_none=True))
     assert is_bad_request(response, "category")
 
     # Try invalid category/article path nested in a group
@@ -103,5 +103,26 @@ def test_navigation_invalid_paths(file_scenario, article_scenario):
             ]
         )
     )
-    response = client.patch("/site/config", headers=scenario.editor_token_header, json=config_update.model_dump(exclude_none=True))
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json=config_update.model_dump(exclude_none=True))
     assert is_bad_request(response, "category")
+
+def test_social_networks(user_scenario):
+    """
+    Tests toggling which social networks the site allows sharing to.
+    """
+    scenario = user_scenario
+
+    # Test changing to valid networks
+    networks = ["facebook", "x"]
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json={
+        "social_networks": networks,
+    })
+    assert is_ok_response(response)
+    new_networks = ConfigOutput.model_validate(response.json()).social_networks
+    assert set(new_networks) == set(networks)
+
+    # Test invalid network IDs
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json={
+        "social_networks": ["invalid"],
+    })
+    assert is_bad_request(response, "invalid")
