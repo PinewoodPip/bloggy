@@ -1,7 +1,9 @@
 from typing import Annotated
 from elasticsearch import Elasticsearch
 from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import Response
 from sqlalchemy.orm import Session
+from models.user import User
 from core.config import get_db
 from core.utils import get_current_user, get_current_user_optional, get_elastic_search
 import schemas.site as SiteSchemas
@@ -34,3 +36,45 @@ async def get_config(config_update: SiteSchemas.ConfigUpdate, db: Session=Depend
         return SiteCrud.create_configuration_output(db, config)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get(
+    "/favicon",
+    response_class=Response, # Necessary for Swagger to not show an an extra "application/json" return type
+    responses = {
+        200: {
+            "content": {"image/png": {}}
+        }
+    }
+)
+async def get_favicon(db: Session=Depends(get_db)):
+    """
+    Returns the site's favicon.
+    """
+    config = SiteCrud.get_config(db)
+    if config.favicon:
+        # Send raw image data
+        data = config.favicon.content
+        response = Response(content=data, media_type="image/png", status_code=200)
+        return response
+    raise HTTPException(status_code=404)
+
+@router.get(
+    "/logo",
+    response_class=Response, # Necessary for Swagger to not show an an extra "application/json" return type
+    responses = {
+        200: {
+            "content": {"image/png": {}}
+        }
+    }
+)
+async def get_logo(db: Session=Depends(get_db)):
+    """
+    Returns the site's logo.
+    """
+    config = SiteCrud.get_config(db)
+    if config.logo:
+        # Send raw image data
+        data = config.logo.content
+        response = Response(content=data, media_type="image/png", status_code=200)
+        return response
+    raise HTTPException(status_code=404)
