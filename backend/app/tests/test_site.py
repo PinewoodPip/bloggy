@@ -119,7 +119,7 @@ def test_social_networks(user_scenario):
     })
     assert is_ok_response(response)
     new_networks = ConfigOutput.model_validate(response.json()).social_networks
-    assert set(new_networks) == set(networks)
+    assert set(network.id for network in new_networks.values() if network.can_share) == set(networks)
 
     # Test invalid network IDs
     response = client.patch("/site/config", headers=scenario.admin_token_header, json={

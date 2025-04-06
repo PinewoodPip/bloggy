@@ -138,8 +138,16 @@ def create_configuration_output(db: Session, config: SiteConfig) -> ConfigOutput
         logo=logo,
         favicon=favicon,
         navigation=create_navigation_output(db, config.navigation),
-        social_networks=[network.id for network in get_social_networks(db) if network.can_share],
+        social_networks={
+            network.id: create_social_network_output(db, network) for network in get_social_networks(db)
+        },
     )
+
+def create_social_network_output(db: Session, network: SocialNetwork) -> SocialNetworkOutput:
+    """
+    Creates an output schema for a social network's state.
+    """
+    return CrudUtils.create_schema(network, SocialNetworkOutput)
 
 def parse_navigation_node(db: Session, node: dict) -> NavigationNode:
     """

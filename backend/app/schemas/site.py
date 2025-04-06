@@ -6,6 +6,28 @@ from pydantic import BaseModel, field_validator
 from schemas.file import FileOutput
 from schemas.navigation import NavigationUpdate, NavigationOutput
 
+class SocialNetworkInput(BaseModel):
+    """
+    Schema for registering supported social networks.
+    """
+    id: str
+    name: str
+
+class SocialNetworkUpdate(BaseModel):
+    """
+    Schema for updating a social network's configuration.
+    """
+    id: str
+    can_share: bool
+
+class SocialNetworkOutput(BaseModel):
+    """
+    Schema for a social network's state.
+    """
+    id: str
+    name: str
+    can_share: bool
+
 class ConfigUpdate(BaseModel):
     """
     Schema for updating the site config.
@@ -27,19 +49,5 @@ class ConfigOutput(BaseModel):
     navigation: NavigationOutput
     """The site's navigation schema."""
 
-    social_networks: list[str]
-    """Social networks the site allows sharing to."""
-
-class SocialNetworkInput(BaseModel):
-    """
-    Schema for registering supported social networks.
-    """
-    id: str
-    name: str
-
-class SocialNetworkUpdate(BaseModel):
-    """
-    Schema for updating a social network's configuration.
-    """
-    id: str
-    can_share: bool
+    social_networks: dict[str, SocialNetworkOutput]
+    """Maps network ID to its name and whether sharing is enabled."""
