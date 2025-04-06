@@ -3,8 +3,9 @@
  */
 import { useQuery } from '@tanstack/vue-query'
 import type { SocialNetworkOutput } from '~/services/site'
+import { useSiteConfig } from './SiteConfig'
 
-const NETWORK_ICONS: {[id: string]: string} = {
+export const NETWORK_ICONS: {[id: string]: string} = {
   facebook: "i-la-facebook",
   x: "i-la-twitter",
   tumblr: "i-la-tumblr",
@@ -18,27 +19,24 @@ const NETWORK_ICONS: {[id: string]: string} = {
 }
 
 export type SocialNetworkOutputWithIcon = SocialNetworkOutput & {
-  icon?: string,
+  icon: string,
 }
 
 /** Query for the social networks the site supports. */
 export const useSocialNetworks = () => {
-  const siteService = useSiteService()
+  const { data: config } = useSiteConfig()
   const query = useQuery({
     queryKey: ["socialNetworks"],
     queryFn: async () => {
-      const config = await siteService.getSiteConfig()
-
       // Add icon field
       const networks: {[id: string]: SocialNetworkOutputWithIcon} = {}
-      for (const id in config.social_networks) {
-        const network = config.social_networks[id]
+      for (const id in config.value?.social_networks) {
+        const network = config.value.social_networks[id]
         networks[id] = {
-          icon: NETWORK_ICONS[id],
+          icon: NETWORK_ICONS[id] || 'material-symbols:question-mark',
           ...network,
         }
       }
-
       return networks
     },
   })
@@ -46,10 +44,11 @@ export const useSocialNetworks = () => {
   /** Networks that the site admits sharing to. */
   const enabledNetworks = computed(() => {
     const networks: {[id: string]: SocialNetworkOutputWithIcon} = {}
-    for (const id in query.data.value) {
-      const network = query.data.value[id]
+    for (const id in config.value?.social_networks) {
+      const network = config.value.social_networks[id]
       if (network.can_share) {
-        networks[id] = network
+        networks[id] = Object.assign({}, network) as SocialNetworkOutputWithIcon
+        networks[id].icon = NETWORK_ICONS[id] || 'material-symbols:question-mark'  // Add icon field
       }
     }
     return networks

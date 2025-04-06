@@ -12,6 +12,14 @@ export type SocialNetworkOutput = {
   can_share: boolean,
 }
 
+export type SiteConfigUpdate = {
+  site_name?: string,
+  favicon_path?: string,
+  logo_path?: string,
+  navigation?: NavigationUpdate,
+  social_networks?: string[],
+}
+
 export type SiteConfig = {
   site_name: string,
   favicon_path?: string,
@@ -35,6 +43,15 @@ class SiteService extends Service {
     }
   }
 
+  /** Updates the site's global config. */
+  async updateSiteConfig(config: SiteConfigUpdate): Promise<SiteConfig> {
+    try {
+      const response = await this.patch('/site/config', config)
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
 }
 
 export default SiteService

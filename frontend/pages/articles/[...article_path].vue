@@ -55,7 +55,7 @@
             <div class="flex gap-2 flex-wrap">
               <share-network v-for="network in socialNetworks" :network="network.name.toLowerCase()" :url="socialMediaSharingURL" v-slot="{ share }">
                 <UTooltip :text="`Share on ${network.name}`">
-                  <IconButton class="btn-secondary btn-sm" :icon="network.icon || 'material-symbols:question-mark'" @click="share">{{ network.name }}</IconButton>
+                  <IconButton class="btn-secondary btn-sm" :icon="network.icon" @click="share">{{ network.name }}</IconButton>
                 </UTooltip>
               </share-network>
             </div>
