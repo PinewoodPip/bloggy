@@ -55,7 +55,7 @@
             <div class="flex gap-2 flex-wrap">
               <share-network v-for="network in socialNetworks" :network="network.name.toLowerCase()" :url="socialMediaSharingURL" v-slot="{ share }">
                 <UTooltip :text="`Share on ${network.name}`">
-                  <IconButton class="btn-secondary btn-sm" :icon="network.icon" @click="share">{{ network.name }}</IconButton>
+                  <IconButton class="btn-secondary btn-sm" :icon="network.icon || 'material-symbols:question-mark'" @click="share">{{ network.name }}</IconButton>
                 </UTooltip>
               </share-network>
             </div>
@@ -72,6 +72,7 @@ import type { AxiosError } from 'axios'
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const { enabledNetworks: socialNetworks } = useSocialNetworks()
 const router = useRouter()
 const route = useRoute()
 
@@ -87,23 +88,6 @@ const tags = computed(() => {
 
 const socialMediaSharingURL = computed(() => {
   return import.meta.client ? window.location.href.replace(/#.*$/, '') : '' // Drop hashes to link to the top of the page
-})
-
-const socialNetworks = computed(() => {
-  // TODO fetch from site settings
-  const networks: {name: string, icon: string}[] = [
-    {name: "Facebook", icon: "i-la-facebook"},
-    {name: "X", icon: "i-la-twitter"}, // TODO new icon
-    {name: "Tumblr", icon: "i-la-tumblr"},
-    {name: "Reddit", icon: "i-la-reddit"},
-    {name: "Pinterest", icon: "i-la-pinterest"},
-    {name: "VK", icon: "i-la-vk"},
-    {name: "Weibo", icon: "i-la-weibo"},
-    {name: "Wordpress", icon: "i-la-wordpress"},
-    {name: "Baidu", icon: "i-la-baidu"}, // TODO icon
-    {name: "LinkedIn", icon: "i-la-linkedin"},
-  ]
-  return networks
 })
 
 onMounted(() => {
