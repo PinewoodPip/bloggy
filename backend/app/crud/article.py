@@ -77,6 +77,12 @@ def get_tags_by_name(db: Session, tags: list[str]) -> list[Tag]:
             raise ValueError("Tag not found with name " + name)
     return tag_objects
 
+def get_all_tags(db: Session) -> list[Tag]:
+    """
+    Returns all tags that have been used on the site.
+    """
+    return db.query(Tag).all()
+
 def update_article(db: Session, article: Article, article_update: ArticleUpdate) -> Article:
     """
     Updates an article's data.
@@ -223,6 +229,14 @@ def create_tags_name_list(tags: list[Tag]) -> list[str]:
     Creates a list of names of the passed tags.
     """
     return [tag.name for tag in tags]
+
+def create_tags_output(db: Session, tags: list[Tag]) -> TagsOutput:
+    """
+    Creates an output schema for a list of tags.
+    """
+    return TagsOutput(
+        tags=[CrudUtils.create_schema(tag, TagOutput) for tag in tags]
+    )
 
 def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     """

@@ -10,6 +10,10 @@ import warnings
 
 router = APIRouter()
 
+# Names that cannot be used for articles created at root,
+# as they would conflict with special endpoints.
+RESERVED_NAMES = set(["tags"])
+
 def _create_article(db: Session, es: Elasticsearch | None, background_tasks: BackgroundTasks, user: User, category_path: str, article_input: ArticleSchemas.ArticleInput) -> ArticleSchemas.ArticleOutput:
     """
     Auxiliary function for creating an article.
@@ -97,6 +101,13 @@ async def create_article(category_path: str, article_input: ArticleSchemas.Artic
     """
     return _create_article(db, es, background_tasks, current_user, "/" + category_path, article_input)
 
+@router.get("/tags", response_model=ArticleSchemas.TagsOutput)
+async def get_tags(db: Session=Depends(get_db)):
+    """
+    Returns all tags that have been used on the site.
+    """
+    return ArticleCrud.create_tags_output(db, ArticleCrud.get_all_tags(db))
+
 @router.post("/{article_url}", response_model=ArticleSchemas.ArticleOutput)
 async def create_article_at_root(article_input: ArticleSchemas.ArticleInput, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search), current_user: User=Depends(get_current_user)):
     """
@@ -104,6 +115,9 @@ async def create_article_at_root(article_input: ArticleSchemas.ArticleInput, bac
     It's necessary for this to be a separate endpoint,
     as the catch-all syntax will not catch POSTs to root of the endpoint collection.
     """
+    # Disallow using names that would conflict with the API endpoints
+    if article_input.filename in RESERVED_NAMES:
+        raise HTTPException(status_code=405, detail="Cannot create an article with this name")
     return _create_article(db, es, background_tasks, current_user, "/", article_input)
 
 @router.get("/{category_path:path}/{article_url}", response_model=ArticleSchemas.ArticleOutput) # Automatically splits out the last part of the path.
@@ -136,4 +150,7 @@ async def patch_article_at_root(article_url: str, article_update: ArticleSchemas
     It's necessary for this to be a separate endpoint,
     as the catch-all syntax will not catch GETs to root of the endpoint collection.
     """
+    # Disallow using names that would conflict with the API endpoints
+    if article_update.filename in RESERVED_NAMES:
+        raise HTTPException(status_code=405, detail="Cannot create an article with this name")
     return _patch_article(db, es, background_tasks, "/", article_url, article_update)

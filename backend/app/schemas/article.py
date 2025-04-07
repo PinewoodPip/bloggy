@@ -74,3 +74,12 @@ class ArticleOutput(ArticlePreview):
 
 class ArticleSearchResults(BaseModel):
     results: list[ArticlePreview]
+
+class TagOutput(BaseModel):
+    """Schema for a tag entity."""
+    id: int
+    name: str
+
+class TagsOutput(BaseModel):
+    """Schema for tags used in articles on the site."""
+    tags: list[TagOutput]
