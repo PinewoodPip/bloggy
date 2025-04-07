@@ -17,7 +17,7 @@ onNuxtReady(() => {
 const favicon = useFavicon()
 const runtimeConfig = useRuntimeConfig()
 onMounted(() => {
-  favicon.value = runtimeConfig.public.API_URL + 'site/favicon'
+  favicon.value = runtimeConfig.public.apiUrl + 'site/favicon'
 })
 
 </script>

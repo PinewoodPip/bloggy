@@ -14,7 +14,7 @@ var serviceInstances: {[className: string]: Service} = {}
 export const useService = (id: string, serviceClass: new (apiURL: string) => Service) => {
   if (!(id in serviceInstances)) {
     const config = useRuntimeConfig()
-    const instance = new serviceClass(config.public.API_URL)
+    const instance = new serviceClass(import.meta.server ? config.public.serverApiUrl : config.public.apiUrl)
     serviceInstances[id] = instance
   }
   return serviceInstances[id]

@@ -73,7 +73,7 @@
 const runtimeConfig = useRuntimeConfig()
 
 const logoPath = computed(() => {
-  return runtimeConfig.public.API_URL + 'site/logo'
+  return runtimeConfig.public.apiUrl + 'site/logo'
 })
 
 </script>

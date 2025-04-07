@@ -11,7 +11,8 @@ export default defineNuxtConfig({
   // Expose env variables to vue components and compasables
   runtimeConfig: {
     public: {
-      API_URL: process.env.API_URL,
+      apiUrl: '',
+      serverApiUrl: '',
     }
   },
   compatibilityDate: "2025-02-11"

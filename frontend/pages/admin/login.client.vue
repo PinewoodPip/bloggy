@@ -18,10 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import UserService from "../../services/user"
-
-const config = useRuntimeConfig()
-const userService = new UserService(config.public.API_URL as string)
+const userService = useUserService()
 const router = useRouter()
 const responseToast = useResponseToast()
 
