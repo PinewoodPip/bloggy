@@ -28,6 +28,9 @@
 
       <!-- Show authors -->
       <FormGroupCheckbox v-model="articleData.show_authors" label="Show authors" help="Whether to show author names and cards in the published article page." icon="i-material-symbols-account-box" />
+
+      <!-- Tags -->
+      <FormGroupMultiselect v-model="chosenTags" :options="tagOptions" :multiple="true" track-by="name" option-label-key="name" label="Tags" help="Categorizes the article thematically." :show-labels="true" :searchable="true" placeholder="Select tags" aria-label="select tags" @search-change="onTagSearchChanged" />
     </template>
 
     <template #footer>
@@ -39,10 +42,12 @@
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query';
 import type { ModelRef, Reactive } from 'vue';
+import type { Tag } from '~/services/article';
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
 const { data: editors, status: editorsStatus } = useEditors()
+const { data: allTags } = useSiteTags()
 
 const props = defineProps<{
   categoryPath: string,
@@ -65,11 +70,18 @@ const articleData: Reactive<ArticleUpdateRequest> = reactive({
   view_type: 'single_page',
   can_comment: true,
   show_authors: true,
-  // TODO authors, category path, sorting index
+  tags: [],
+  // TODO category path, sorting index
   // category_sorting_index: 0,
 })
 const chosenAuthors: Ref<User[]> = ref([])
 const publishDate: Ref<string | undefined> = ref(undefined)
+const chosenTags: Ref<Tag[]> = ref([])
+/** Used to insert options into the multiselect dynamically */
+const newDummyTag: Reactive<Tag> = reactive({
+  id: -1,
+  name: '',
+})
 
 const viewOptions = [
   {
@@ -84,9 +96,10 @@ const viewOptions = [
 
 function confirm() {
   requestPatch({
-    authors: chosenAuthors.value.map((author) => author.username),
-    publish_time: utcDateStr.value!,
     ...articleData,
+    authors: chosenAuthors.value.map((author) => author.username),
+    tags: chosenTags.value.map((tag) => tag.name),
+    publish_time: utcDateStr.value!,
   })
 }
 
@@ -104,14 +117,39 @@ watchEffect(() => {
     articleData.view_type = article.view_type
     articleData.can_comment = article.can_comment
     articleData.show_authors = article.show_authors
+    articleData.tags = article.tags
     chosenAuthors.value = article.authors
     publishDate.value = article.publish_time ? article.publish_time : undefined
   }
 })
 
-/**
- * UTC ISO date string of the publish time.
- */
+// Update chosen tags model when list of tags changes
+watch(allTags, () => {
+  if (allTags.value) {
+    chosenTags.value = allTags.value?.tags.filter((tag) => {
+      return props.article.tags.includes(tag.name)
+    })
+  }
+})
+
+/** Update dummy tag with the search query */
+function onTagSearchChanged(query: string) {
+  newDummyTag.name = query
+}
+
+/** Tags visible in the multiselect dropdown */
+const tagOptions = computed(() => {
+  const tags = [...allTags.value?.tags || []]
+
+  // Add new tag option if the search query doesn't match any existing one
+  if (!tags.find((tag) => tag.name === newDummyTag.name)) {
+    tags.push(Object.assign({}, newDummyTag))
+  }
+
+  return tags
+})
+
+/* UTC ISO date string of the publish time. */
 const utcDateStr = computed(() => {
   if (publishDate.value) {
     let date = new Date(publishDate.value);
@@ -121,7 +159,7 @@ const utcDateStr = computed(() => {
   }
 })
 
-/** Query for creating the article */
+/** Mutation for creating the article */
 const { mutate: requestPatch, status: patchStatus } = useMutation({
   mutationFn: (request: ArticleUpdateRequest) => {
     return articleService.updateArticle(props.categoryPath + '/' + props.article.filename, request)
