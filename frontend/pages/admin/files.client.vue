@@ -25,11 +25,10 @@
 </template>
 
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
 import type { TreeItemGetters } from '~/components/admin/TreeItem.vue'
 
-const fileService = useFileService()
 provide<TreeItemGetters<SiteFileTree, SiteFile>>('siteFileTree', useSiteFileTree())
+const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useSiteFiles()
 
 const searchTerm = ref("")
 const fileUploadModalVisible = ref(false)
@@ -69,14 +68,5 @@ function onUploadFileRequested() {
 function onContentChanged() {
   refetchContentTree()
 }
-
-/** Query to fetch file tree. */
-const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useQuery({
-  queryKey: ["fileTree"],
-  queryFn: async () => {
-    const tree = await fileService.getAll()
-    return tree
-  },
-})
 
 </script>

@@ -22,8 +22,8 @@ export type SiteConfigUpdate = {
 
 export type SiteConfig = {
   site_name: string,
-  favicon_path?: string,
-  logo_path?: string,
+  favicon?: SiteFile,
+  logo?: SiteFile,
   navigation: Navigation,
   social_networks: {[id: string]: SocialNetworkOutput},
 }

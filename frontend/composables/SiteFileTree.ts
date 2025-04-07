@@ -1,3 +1,5 @@
+import { useQuery } from "@tanstack/vue-query"
+
 type TreeNode = SiteFileTree | SiteFile
 
 const IMAGE_EXTENSIONS = new Set([
@@ -73,4 +75,16 @@ export const useSiteFileTree = () => {
       return false
     },
   }
+}
+
+/** Query to fetch file tree. */
+export const useSiteFiles = () => {
+  const fileService = useFileService()
+  return useQuery({
+    queryKey: ["fileTree"],
+    queryFn: async () => {
+      const tree = await fileService.getAll()
+      return tree
+    },
+  })
 }

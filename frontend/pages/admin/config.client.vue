@@ -3,13 +3,16 @@
 
     <!-- Branding -->
     <h2 class="mt-2">Branding</h2>
-    <div class="flex">
-      <div class="flexcol flex-grow">
+    <div class="flex gap-x-5">
+      <div class="flexcol flex-grow gap-y-2">
         <!-- Site name -->
         <FormGroupInputField v-model="state.site_name" label="Site name" hint="Shown in title bar." icon="material-symbols:drive-file-rename-outline" />
+
+        <!-- Favicon -->
+        <FormGroupSiteFile v-model="state.favicon_path" label="Favicon" hint="Icon shown by the browser tab." icon="material-symbols:star" />
       </div>
       <div class="flexcol flex-grow">
-
+        <FormGroupSiteImage v-model="state.logo_path" label="Logo" />
       </div>
     </div>
 
@@ -44,9 +47,7 @@ const enabledNetworks: Reactive<{[id: string]: boolean}> = reactive({})
 
 const { data: config, status: configStatus } = useSiteConfig()
 
-const state: Reactive<SiteConfigUpdate> = reactive({
-  site_name: '',
-})
+const state: Reactive<SiteConfigUpdate> = reactive({})
 
 function applyChanges() {
   const enabledNetworksList: string[] = []
@@ -56,17 +57,19 @@ function applyChanges() {
     }
   }
   requestPatch({
+    ...state, // Should be done first so its "unused" properties get overwritten (ex. the network map)
     social_networks: enabledNetworksList,
-    ...state,
   })
 }
 
 // Initialize models when config loads
 watch(config, () => {
+  Object.assign(state, config.value)
+  state.logo_path = config.value?.logo?.path
+  state.favicon_path = config.value?.favicon?.path
   for (const network in config.value?.social_networks) {
     enabledNetworks[network] = config.value.social_networks[network].can_share
   }
-  state.site_name = config.value?.site_name
 })
 
 /** Query for updating the config */
