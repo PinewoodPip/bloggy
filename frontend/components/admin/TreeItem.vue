@@ -7,11 +7,11 @@
         <UIcon class="size-6" :name="icon" />
 
         <!-- Path and title -->
-        <UTooltip :text="tooltipGetter(item)">
+        <UTooltip :text="getters.getTooltip(item)">
           <template v-if="tooltipComponent" #text>
             <component :is="tooltipComponent.component" v-bind="tooltipComponent.props" />
           </template>
-          <p>{{ nameGetter(item) }}</p>
+          <p>{{ getters.getName(item) }}</p>
         </UTooltip>
 
         <!-- TODO slot for extra icons -->
@@ -22,11 +22,11 @@
       <!-- Management buttons; stop modifier prevents clicks from also toggling children -->
       <div class="invisible group-hover:visible flex gap-x-2">
         <!-- Create node button -->
-        <UTooltip v-if="canCreateNode(item as Node)" text="Create folder">
+        <UTooltip v-if="getters.canCreateNode(item as Node)" text="Create folder">
           <IconButton class="btn-sm btn-secondary" icon="material-symbols:create-new-folder" :override-height="true" @click.stop="emit('createNode', item as Node)" />
         </UTooltip>
         <!-- Create leaf button -->
-        <UTooltip v-if="canCreateLeaf(item as Node)" text="Create item">
+        <UTooltip v-if="getters.canCreateLeaf(item as Node)" text="Create item">
           <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" :override-height="true" @click.stop="emit('createLeaf', item as Node)" />
         </UTooltip>
         <!-- Edit button -->
@@ -41,10 +41,10 @@
       <div class="border-l border-l-neutral/30 mx-1 my-2" />
       <div class="flexcol flex-grow">
         <!-- Child nodes; events must be propagated to root -->
-        <TreeItem v-for="child in children" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" :tooltip-component-getter="props.tooltipComponentGetter" v-on="onEvent" />
+        <TreeItem v-for="child in children" :item="child" v-on="onEvent" />
         
         <!-- Leafs -->
-        <TreeItem v-for="child in leafs" :item="child" :node-type-getter="nodeTypeGetter" :children-node-getter="childrenNodeGetter" :children-leaf-getter="childrenLeafGetter" :name-getter="nameGetter" :tooltip-getter="tooltipGetter" :can-create-leaf="canCreateLeaf" :can-create-node="canCreateNode" :leaf-icon="leafIcon" :can-edit-node="canEditNode" :can-edit-leaf="canEditLeaf" :can-delete-node="canDeleteNode" :can-delete-leaf="canDeleteLeaf" :tooltip-component-getter="props.tooltipComponentGetter" v-on="onEvent" />
+        <TreeItem v-for="child in leafs" :item="child" v-on="onEvent" />
       </div>
     </div>
   </div>
@@ -52,13 +52,13 @@
 
 <script setup lang="ts" generic="Node extends object, Leaf extends Object">
 
-const props = defineProps<{
-  item: Node | Leaf,
-  nodeTypeGetter: (obj: Node | Leaf) => "node" | "leaf",
-  childrenNodeGetter: (obj: Node) => Node[],
-  childrenLeafGetter: (obj: Node) => Leaf[],
-  nameGetter: (obj: Node | Leaf) => string,
-  tooltipGetter: (obj: Node | Leaf) => string,
+/** Getters intended to be injected to define properties of the tree's nodes. */
+export type TreeItemGetters<Node, Leaf> = {
+  getNodeType: (obj: Node | Leaf) => "node" | "leaf",
+  getChildrenNodes: (obj: Node) => Node[],
+  getChildrenLeafs: (obj: Node) => Leaf[],
+  getName: (obj: Node | Leaf) => string,
+  getTooltip: (obj: Node | Leaf) => string,
   canCreateLeaf: (obj: Node) => boolean,
   canCreateNode: (obj: Node) => boolean,
   canEditNode: (node: Node) => boolean,
@@ -66,8 +66,14 @@ const props = defineProps<{
   canDeleteNode: (node: Node) => boolean,
   canDeleteLeaf: (leaf: Leaf) => boolean,
   /** Allows customizing the tooltip element by the name of the item. */
-  tooltipComponentGetter?: (node: Node | Leaf) => DynamicComponentDef | null,
+  getTooltipComponent?: (node: Node | Leaf) => DynamicComponentDef | null,
   leafIcon: string,
+}
+
+const getters = inject<TreeItemGetters<Node, Leaf>>('siteFileTree')!
+
+const props = defineProps<{
+  item: Node | Leaf,
 }>()
 
 const emit = defineEmits<{
@@ -78,7 +84,7 @@ const emit = defineEmits<{
 }>()
 
 const children = computed(() => {
-  return props.childrenNodeGetter(props.item as Node)
+  return getters.getChildrenNodes(props.item as Node)
 })
 
 function onClick() {
@@ -100,29 +106,29 @@ const onEvent = {
 }
 
 const tooltipComponent = computed(() => {
-  return props.tooltipComponentGetter ? props.tooltipComponentGetter(props.item) : null
+  return getters.getTooltipComponent ? getters.getTooltipComponent(props.item) : null
 })
 
 const icon = computed(() => {
   if (hasChildren.value) {
     return collapsed.value ? 'material-symbols:folder' : 'material-symbols:folder-open'
   } else {
-    return props.leafIcon
+    return getters.leafIcon
   }
 })
 
 const leafs = computed(() => {
-  return nodeType.value == 'node' ? props.childrenLeafGetter(props.item as Node) : []
+  return nodeType.value == 'node' ? getters.getChildrenLeafs(props.item as Node) : []
 })
 
 const collapsed = ref(false)
 
 const nodeType = computed(() => {
-  return props.nodeTypeGetter(props.item)
+  return getters.getNodeType(props.item)
 })
 
 const canEdit = computed(() => {
-  return nodeType.value == 'leaf' ? props.canEditLeaf(props.item as Leaf) : props.canEditNode(props.item as Node)
+  return nodeType.value == 'leaf' ? getters.canEditLeaf(props.item as Leaf) : getters.canEditNode(props.item as Node)
 })
 
 const hasChildren = computed(() => {

@@ -14,7 +14,7 @@
     <div class="flex-grow overflow-x-auto">
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root folder; subfolders will be rendered recursively -->
-        <AdminTreeItem :item="contentTree" :node-type-getter="getNodeType" :children-node-getter="getNodeSubnodes" :children-leaf-getter="getNodeLeafs" :name-getter="getNodeName" :tooltip-getter="getNodeTooltip" :can-create-leaf="canCreateLeaf" leaf-icon="material-symbols:article" :can-create-node="() => false" :can-delete-leaf="() => true" :can-edit-node="() => false" :can-delete-node="() => false" :can-edit-leaf="() => true" :tooltip-component-getter="getTooltipComponent" @create-leaf="onFileUploadRequested" @create-node="onFileUploadRequested" @edit="onFileUploadRequested" @click="onItemClick" />
+        <AdminTreeItem :item="contentTree"  @create-leaf="onFileUploadRequested" @create-node="onFileUploadRequested" @edit="onFileUploadRequested" @click="onItemClick" />
       </div>
       <div v-else class="loading loading-spinner" />
     </div>
@@ -26,9 +26,10 @@
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
+import type { TreeItemGetters } from '~/components/admin/TreeItem.vue'
 
 const fileService = useFileService()
-const router = useRouter()
+provide<TreeItemGetters<SiteFileTree, SiteFile>>('siteFileTree', useSiteFileTree())
 
 const searchTerm = ref("")
 const fileUploadModalVisible = ref(false)
@@ -37,12 +38,6 @@ const fileUpload = reactive({
   path: '',
   content: null,
 })
-
-const IMAGE_EXTENSIONS = new Set([
-  '.jpg', 'jpeg', '.png', '.svg', '.apng', '.gif', '.webp',
-])
-
-type TreeNode = SiteFileTree | SiteFile
 
 /** Opens the file upload modal. */
 function onFileUploadRequested(node: SiteFileTree | SiteFilePreview) {
@@ -68,56 +63,6 @@ function onUploadFileRequested() {
   fileUpload.path = ''
   fileUpload.originalPath = ''
   fileUploadModalVisible.value = true
-}
-
-// Tree node property getters
-function getNodeType(node: SiteFileTree | SiteFilePreview) {
-  // @ts-ignore
-  return node.filename ? 'leaf' : 'node'
-}
-function getNodeTooltip(node: TreeNode) {
-  // @ts-ignore
-  return node.folder_name || node.filename
-}
-function getNodeSubnodes(file: SiteFileTree) {
-  if (!file.folder_name) return []
-  let subfolders = file.subfolders
-  let orderedSubfolders = [...Object.values(subfolders)]
-  return orderedSubfolders
-}
-function getNodeLeafs(tree: SiteFileTree) {
-  return tree.files || []
-}
-function getNodeName(tree: TreeNode) {
-  // @ts-ignore
-  return tree.folder_name || tree.filename
-}
-function canCreateLeaf(node: TreeNode) {
-  // @ts-ignore
-  return node.folder_name !== undefined
-}
-function getTooltipComponent(node: TreeNode) {
-  if (getNodeType(node) === 'leaf' && isImageFile(node as SiteFile)) {
-    return {
-      component: "img",
-      props: {
-        src: '/files' + node.path,
-        class: 'aspect-square max-h-96',
-      }
-    }
-  }
-  return null
-}
-
-/** Returns whether the extension of a file is of a common image kind. */
-function isImageFile(node: SiteFile) {
-  const path = node.path
-  for (const extension of IMAGE_EXTENSIONS) {
-    if (path.toLowerCase().endsWith(extension)) {
-      return true
-    }
-  }
-  return false
 }
 
 /** Refetch categories and articles after management operations */
