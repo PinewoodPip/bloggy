@@ -1,10 +1,11 @@
 <!-- Base component for published site pages; includes header, navigation bar and footer. -->
 <template>
   <UContainer class="flexcol gap-y-5 items-center min-h-screen pt-5">
-    <!-- TODO logo -->
-    <div class="placeholder bg-base-300 w-80 h-32">
-      <p>Logo</p>
-    </div>
+    <figure class="placeholder bg-base-300 h-36 cursor-pointer">
+      <RouterLink to="/">
+        <img class="object-contain h-full" :src="logoPath" alt="Site logo" />
+      </RouterLink>
+    </figure>
 
     <!-- TODO Navbar -->
     <nav class="navbar small-content-block place-content-center bg-base-200">
@@ -68,5 +69,11 @@
 </template>
 
 <script setup lang="ts">
+
+const runtimeConfig = useRuntimeConfig()
+
+const logoPath = computed(() => {
+  return runtimeConfig.public.API_URL + 'site/logo'
+})
 
 </script>
