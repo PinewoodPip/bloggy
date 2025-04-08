@@ -18,15 +18,15 @@
     <div class="flex-grow overflow-x-auto">
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root category; subcategories will be rendered recursively -->
-        <AdminContentCategory :category="contentTree" :relevantItems="relevantItems" @create-child="onCategoryCreateChildRequested" @create-article="onArticleCreateRequested" @edit="onCategoryEditRequested" @edit-article="onArticleEditRequested" @article-click="onArticleClick" />
+        <AdminTreeItem :item="contentTree" @click="onArticleClick" @create-leaf="onArticleCreateRequested" @create-node="onCategoryCreateChildRequested" @edit="onNodeEditRequested" />
       </div>
       <div v-else class="loading loading-spinner" />
     </div>
   </AdminPage>
 
   <!-- Category creation form -->
-  <UModal v-model="creationModalVisible" :overlay="true">
-    <AdminContentCategoryCreationModal :parentCategoryPath="selectedCategoryPath" @created="onContentChanged" @close="creationModalVisible = false" />
+  <UModal v-model="categoryCreationModalVisible" :overlay="true">
+    <AdminContentCategoryCreationModal :parentCategoryPath="selectedCategoryPath" @created="onContentChanged" @close="categoryCreationModalVisible = false" />
   </UModal>
 
   <!-- Category edit form -->
@@ -45,14 +45,18 @@
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
+import type { TreeItemGetters } from '~/components/admin/TreeItem.vue'
 
 const categoryService = useCategoryService()
 const articleService = useArticleService()
 const responseToast = useResponseToast()
 const router = useRouter()
+const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useContentTree()
+const nodeGetters = useContentTreeGetters()
+provide<TreeItemGetters<Category, ArticlePreview>>('siteFileTree', nodeGetters)
 
 const searchTerm = ref("")
-const creationModalVisible = ref(false)
+const categoryCreationModalVisible = ref(false)
 const editCategoryModalOpen = ref(false)
 const articleCreationModalVisible = ref(false)
 const articleEditModalVisible = ref(false)
@@ -61,24 +65,31 @@ const categoryBeingEdited: Ref<Category | null> = ref(null)
 const articleBeingEdited: Ref<ArticlePreview | null> = ref(null)
 const idToCategory: Ref<{[key: categoryID]: Category}> = ref({}) // ID map since API gives a tree structure instead
 
-function onCategoryCreateChildRequested(id: categoryID) {
-  const category = getCategoryByID(id)
+function onCategoryCreateChildRequested(category: Category) {
   // Open creation modal
   selectedCategoryPath.value = category.path
-  creationModalVisible.value = true
+  categoryCreationModalVisible.value = true
 }
 
-function onArticleCreateRequested(id: categoryID) {
-  const category = getCategoryByID(id)
+function onArticleCreateRequested(category: Category) {
   selectedCategoryPath.value = category.path
   articleCreationModalVisible.value = true
 }
 
-function onCategoryEditRequested(id: categoryID) {
-  const category = getCategoryByID(id)
+function onCategoryEditRequested(category: Category) {
   // Open editing modal
   categoryBeingEdited.value = category
   editCategoryModalOpen.value = true
+}
+
+function onNodeEditRequested(node: Category | ArticlePreview) {
+  if ('filename' in node) {
+    node = node as ArticlePreview
+    onArticleEditRequested(node.category_id, node)
+  } else {
+    node = node as Category
+    onCategoryEditRequested(node)
+  }
 }
 
 function onArticleEditRequested(categoryID: categoryID, article: ArticlePreview) {
@@ -89,9 +100,12 @@ function onArticleEditRequested(categoryID: categoryID, article: ArticlePreview)
   refetchArticleToEdit()
 }
 
-function onArticleClick(categoryID: categoryID, article: ArticlePreview) {
-  // Open editor for the article
-  router.push('/admin/editor/?article=' + article.path)
+function onArticleClick(node: Category | ArticlePreview) {
+  if (nodeGetters.getNodeType(node) === 'leaf') {
+    // Open editor for the article
+    node = node as ArticlePreview
+    router.push('/admin/editor/?article=' + node.path)
+  }
 }
 
 /** Redirect to article editor upon creating a new article. */
@@ -170,14 +184,12 @@ function isArticleRelevantToSearch(article: ArticlePreview): boolean {
   return title.includes(searchTerm.value) || filename.includes(searchTerm.value)
 }
 
-const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useQuery({
-  queryKey: ["contentCategories"],
-  queryFn: async () => {
-    idToCategory.value = {} // Clear ID map; should be done before the fetch in case it fails - we don't want the map to contain stale data in that case
-    const tree = await categoryService.getCategory('/')
-    mapCategory(tree) // Create ID-to-object map
-    return tree
-  },
+// Refresh ID map when content changes
+watchEffect(() => {
+  idToCategory.value = {} // Clear ID map; should be done before the fetch in case it fails - we don't want the map to contain stale data in that case
+  if (contentTree.value) { 
+    mapCategory(contentTree.value) // Create ID-to-object map
+  }
 })
 
 /** Query for fetching full data of the article to edit */
