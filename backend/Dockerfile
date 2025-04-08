@@ -3,6 +3,7 @@ FROM python:3.12
 # Install dependencies and copy code
 WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./app /app
 # conftest.py expects a separate env file

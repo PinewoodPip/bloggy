@@ -1,0 +1,52 @@
+name: Unit tests
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: 
+
+jobs:
+  tests:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Create empty .env files
+      run: |
+        echo "Creating empty .env files"
+        touch ./frontend/.docker.env
+        touch ./backend/.docker.env
+        echo ".env files created"
+
+    - name: Set up backend environment variables
+      run: |
+        echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> ./backend/.docker.env
+        echo "ALGORITHM=${{ secrets.ALGORITHM }}" >> ./backend/.docker.env
+        echo "ACCESS_TOKEN_EXPIRE_DAYS=${{ secrets.ACCESS_TOKEN_EXPIRE_DAYS }}" >> ./backend/.docker.env
+        echo "ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}" >> ./backend/.docker.env
+        echo "ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}" >> ./backend/.docker.env
+        echo "DB_NAME=${{ secrets.DB_NAME }}" >> ./backend/.docker.env
+        echo "DB_ADDRESS=${{ secrets.DB_ADDRESS }}" >> ./backend/.docker.env
+        echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ./backend/.docker.env
+        echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ./backend/.docker.env
+        echo "ES_ENABLED=${{ secrets.ES_ENABLED }}" >> ./backend/.docker.env
+        echo "ES_URL=TODO" >> ./backend/.docker.env
+        echo "ES_USERNAME=TODO" >> ./backend/.docker.env
+        echo "ES_PASSWORD=TODO" >> ./backend/.docker.env
+
+    - name: Set up backend environment variables
+      # TODO set API url
+      run: |
+        echo "NUXT_PUBLIC_API_URL=http://backend:8000/" >> ./frontend/.docker.env
+        echo "NUXT_PUBLIC_SERVER_API_URL=http://backend:8000/" >> ./frontend/.docker.env
+
+    - name: Build all Docker containers
+      run: |
+        docker compose -f docker-compose.yml build
+
+    - name: Run the backend tests
+      run: |
+        docker compose run backend-tests
