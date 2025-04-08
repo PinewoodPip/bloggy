@@ -62,14 +62,19 @@ function applyChanges() {
   })
 }
 
-// Initialize models when config loads
-watch(config, () => {
-  Object.assign(state, config.value)
+// Initialize models when config is fetched
+function initializeModel() {
   state.logo_path = config.value?.logo?.path
   state.favicon_path = config.value?.favicon?.path
   for (const network in config.value?.social_networks) {
     enabledNetworks[network] = config.value.social_networks[network].can_share
   }
+}
+onMounted(() => {
+  initializeModel()
+})
+watch(config, () => {
+  initializeModel()
 })
 
 /** Query for updating the config */
