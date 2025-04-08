@@ -44,6 +44,7 @@ class NavigationNodeGroup(NavigationNode):
         ],
         Discriminator(get_node_discriminator),
     ]]
+    name: str
 
 class NavigationNodeGroupOutput(NavigationNode):
     type: SiteNavigationNodeType = SiteNavigationNodeType.group
@@ -56,6 +57,7 @@ class NavigationNodeGroupOutput(NavigationNode):
         ],
         Discriminator(get_node_discriminator),
     ]]
+    name: str
 
 class NavigationCategory(NavigationNode):
     """

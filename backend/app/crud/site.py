@@ -155,7 +155,7 @@ def parse_navigation_node(db: Session, node: dict) -> NavigationNode:
     to the user-friendly output schema version. 
     """
     if node["type"] == "group":
-        return NavigationNodeGroupOutput(type="group", children=[parse_navigation_node(db, subnode) for subnode in node["children"]])
+        return NavigationNodeGroupOutput(type="group", children=[parse_navigation_node(db, subnode) for subnode in node["children"]], name=node["name"])
     elif node["type"] == "category":
         category = CategoryCrud.get_by_id(db, node["category_id"])
         return NavigationCategoryOutput(type="category", category=CategoryCrud.create_category_output(db, category, 0))
@@ -176,6 +176,7 @@ def serialize_navigation_node(db: Session, node: NavigationNode) -> dict:
         return {
             "type": "group",
             "children": [serialize_navigation_node(db, subnode) for subnode in node.children],
+            "name": node.name,
         }
     elif node.type == "category":
         node = cast(NavigationCategory, node)
