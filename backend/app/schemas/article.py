@@ -57,6 +57,7 @@ class ArticlePreview(ArticleBase):
     publish_time: Optional[datetime]
     is_visible: bool
     category_path: str
+    category_id: int
     category_name: str
     path: str # Full path to article
     category_sorting_index: int

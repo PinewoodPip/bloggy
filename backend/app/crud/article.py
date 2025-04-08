@@ -246,6 +246,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
     return CrudUtils.create_schema(article, ArticlePreview, {
         "category_path": category_path,
         "category_name": article.category.name,
+        "category_id": article.category.id,
         "path": get_article_path(db, article),
         "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
         "tags": create_tags_name_list(article.tags),
@@ -290,6 +291,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         category=CategoryPreview(
             id=category.id,
             name=category.name,
+            path=category_path,
             description=category.description,
             directory_name=category.directory_name,
             view_type=CategoryViewEnum[category.view_type.name],
@@ -307,6 +309,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         show_authors=article.show_authors,
         authors=[UserCrud.create_user_output(author.user) for author in article.authors],
         category_path=category_path,
+        category_id=category.id,
         category_name=article.category.name,
         path=get_article_path(db, article),
         summary=article.summary,

@@ -42,7 +42,6 @@ class CategoryUpdate(BaseModel):
 
 class CategoryOutput(CategoryPreview):
     """Schema with a complete view of the category's data."""
-    path: str
     articles: list[ArticlePreview]
     total_articles: int # Total amount of articles regardless of pagination limits applied to the articles field.
     subcategories: list["CategoryOutput"] # Child categories, recursive.

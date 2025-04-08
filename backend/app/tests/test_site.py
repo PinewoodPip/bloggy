@@ -58,7 +58,8 @@ def test_navigation(file_scenario, article_scenario):
                     children=[
                         NavigationArticle(category_path=article_scenario.category_path, article_filename=article_scenario.article.filename),
                         NavigationCategory(category_path=article_scenario.category_path),
-                    ]
+                    ],
+                    name="test",
                 )
             ]
         )
@@ -99,6 +100,7 @@ def test_navigation_invalid_paths(file_scenario, article_scenario):
                         # Bad path nested in group
                         NavigationArticle(category_path="/doesntexist", article_filename="doesntexist"),
                     ],
+                    name="test",
                 ),
             ]
         )

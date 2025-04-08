@@ -5,6 +5,7 @@ class CategoryPreview(BaseModel):
     id: int
     name: str
     description: str
+    path: str
     directory_name: str
     view_type: CategoryViewEnum
     sorting_type: CategorySortingModeEnum
