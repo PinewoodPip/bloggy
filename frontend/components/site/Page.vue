@@ -7,26 +7,8 @@
       </RouterLink>
     </figure>
 
-    <!-- TODO Navbar -->
-    <nav class="navbar small-content-block place-content-center bg-base-200">
-      <ul class="menu menu-horizontal place-content-center px-1 flex-grow">
-        <li><RouterLink :to="'/'">Home</RouterLink></li>
-        <li>
-          <details>
-            <summary>Some category</summary>
-            <ul class="p-2">
-              <li><a>Some subcategory</a></li>
-              <li><a>Some subcategory 2</a></li>
-            </ul>
-          </details>
-        </li>
-        <li><a>Some other category</a></li>
-        <li><a>About</a></li>
-      </ul>
-
-      <!-- TODO search -->
-      <SiteSearchBar />
-    </nav>
+    <!-- Navbar -->
+    <SiteNavigationBar />
 
     <!-- Main -->
     <div class="flex gap-x-5 w-full">
