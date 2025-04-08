@@ -41,5 +41,19 @@ services:
     depends_on:
       - postgres
 
+  backend-tests:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: /bin/sh -c "python -m pytest ./tests -W ignore::DeprecationWarning"
+    env_file:
+    - ./backend/.docker.env
+    depends_on:
+      - backend
+      - postgres
+    profiles:
+      # Prevents the default docker-compose command from starting this service
+      - donotstart
+
 volumes:
   postgres_data:

@@ -5,6 +5,8 @@ WORKDIR /app
 COPY ./requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
 COPY ./app /app
+# conftest.py expects a separate env file
+COPY ./.docker.env /.test.env
 
 # Wait to ensure the DB container has enough time to start up
 CMD ["sleep", "5"]

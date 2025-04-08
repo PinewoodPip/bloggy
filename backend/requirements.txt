@@ -11,3 +11,4 @@ httpx
 ruff
 coverage
 bcrypt
+elasticsearch
