@@ -1,4 +1,4 @@
-<!-- Modal for selecting a file from the CMS. -->
+<!-- Modal for selecting an article/category from the CMS. -->
 <template>
   <FullscreenModal v-model="visible" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
@@ -18,21 +18,21 @@
 <script setup lang="ts">
 import type { TreeItemGetters } from '../TreeItem.vue';
 
-const { data: filesRoot, status: filesStatus } = useSiteFiles()
-const getters = useSiteFileTree()
+const { data: filesRoot, status: filesStatus } = useContentTree()
+const getters = useContentTreeGetters()
 // Adjust getters
 getters.canEditLeaf = () => false
 getters.canCreateLeaf = () => false
 getters.canCollapse = false
-provide<TreeItemGetters<SiteFileTree, SiteFile>>('siteFileTree', getters)
+provide<TreeItemGetters<Category, ArticlePreview>>('siteFileTree', getters)
 
 const emit = defineEmits<{
   confirm: [path],
 }>()
 
 const props = defineProps<{
-  canSelectFiles?: boolean,
-  canSelectFolders?: boolean,
+  canSelectArticles?: boolean,
+  canSelectCategories?: boolean,
 }>();
 
 const selectedFilePath = ref('')
@@ -52,9 +52,9 @@ function confirm() {
 }
 
 /** Updates tracking the selected file. */
-function onFileSelected(node: SiteFileTree | SiteFile) {
+function onFileSelected(node: Category | ArticlePreview) {
   const nodeType = getters.getNodeType(node)
-  if ((nodeType === 'leaf' && props.canSelectFiles) || (nodeType === 'node' && props.canSelectFolders)) {
+  if ((nodeType === 'leaf' && props.canSelectArticles) || (nodeType === 'node' && props.canSelectCategories)) {
     selectedFilePath.value = node.path
   }
 }

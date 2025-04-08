@@ -10,6 +10,7 @@ const IMAGE_EXTENSIONS = new Set([
 export const useSiteFileTree = () => {
   return {
     leafIcon: "material-symbols:article",
+    canCollapse: true,
 
     getNodeType(node: SiteFileTree | SiteFilePreview) {
       // @ts-ignore

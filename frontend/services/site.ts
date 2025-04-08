@@ -2,6 +2,63 @@
  * Utility methods for /site/ API routes.
  */
 import Service from './service'
+
+/**
+ * Navigation output schemas
+ */
+
+export type NavigationNodeType = 'category' | 'article' | 'group' | 'external_url'
+
+export type NavigationCategory = {
+  type: 'category',
+  category: CategoryPreview,
+}
+export type NavigationArticle = {
+  type: 'article',
+  article: ArticlePreview,
+}
+export type NavigationNodeGroup = {
+  type: 'group',
+  children: NavigationNode[],
+  name: string,
+}
+export type NavigationExternalLink = {
+  type: 'external_url',
+  url: string,
+  title: string,
+}
+
+export type Navigation = {
+  root_nodes: NavigationNode[]
+}
+
+export type NavigationNode = NavigationCategory | NavigationArticle | NavigationNodeGroup | NavigationExternalLink
+
+/**
+ * Navigation input schemas
+ */
+
+export type NavigationNodeInput = NavigationCategoryInput | NavigationArticleInput | NavigationNodeGroupInput | NavigationExternalLink
+
+export type NavigationCategoryInput = {
+  type: 'category',
+  category_path: string,
+}
+export type NavigationArticleInput = {
+  type: 'article',
+  category_path: string,
+  article_filename: string,
+}
+export type NavigationNodeGroupInput = {
+  type: 'group',
+  children: NavigationNodeInput[],
+  name: string,
+}
+
+export type NavigationUpdate = {
+  root_nodes: NavigationNodeInput[],
+}
+
 /**
  * General config schemas
  */

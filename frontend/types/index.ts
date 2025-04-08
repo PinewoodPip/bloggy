@@ -49,6 +49,7 @@ declare global {
     name: string,
     description: string,
     directory_name: string,
+    path: path,
     view_type: categoryViewMode,
     sorting_type: categorySortingMode,
   }
@@ -65,6 +66,7 @@ declare global {
     publish_time?: dateISOString,
     is_visible: boolean,
     category_path: string,
+    category_id: integer,
     category_name: string,
     /** Full path to article */
     path: string,

@@ -8,6 +8,7 @@
       <AdminSidebarButton icon="i-heroicons-user" page="users">Users</AdminSidebarButton>
       <AdminSidebarButton icon="material-symbols:image-outline" page="files">Files</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-calendar" page="events">Events</AdminSidebarButton>
+      <AdminSidebarButton icon="material-symbols:assistant-navigation-outline" page="navigation">Navigation</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-cog-6-tooth" page="config">Configuration</AdminSidebarButton>
 
       <!-- Theme picker. TODO remove later -->

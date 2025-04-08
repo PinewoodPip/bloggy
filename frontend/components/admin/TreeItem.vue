@@ -68,6 +68,7 @@ export type TreeItemGetters<Node, Leaf> = {
   /** Allows customizing the tooltip element by the name of the item. */
   getTooltipComponent?: (node: Node | Leaf) => DynamicComponentDef | null,
   leafIcon: string,
+  canCollapse?: boolean,
 }
 
 const getters = inject<TreeItemGetters<Node, Leaf>>('siteFileTree')!
@@ -88,7 +89,7 @@ const children = computed(() => {
 })
 
 function onClick() {
-  if (hasChildren.value) {
+  if (hasChildren.value && getters.canCollapse) {
     collapsed.value = !collapsed.value
   }
   emit('click', props.item)
@@ -110,7 +111,7 @@ const tooltipComponent = computed(() => {
 })
 
 const icon = computed(() => {
-  if (hasChildren.value) {
+  if (nodeType.value === 'node') {
     return collapsed.value ? 'material-symbols:folder' : 'material-symbols:folder-open'
   } else {
     return getters.leafIcon

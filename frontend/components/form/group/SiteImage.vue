@@ -8,7 +8,7 @@
     </UTooltip>
     <IconButton class="btn-secondary" icon="material-symbols:upload-file" @click="onSelectFile">Select file</IconButton>
 
-    <AdminModalFileSelect ref="fileSelectModal" @confirm="onFileSelected" />
+    <AdminModalFileSelect ref="fileSelectModal" :can-select-files="true" @confirm="onFileSelected" />
   </div>
 </template>
 
