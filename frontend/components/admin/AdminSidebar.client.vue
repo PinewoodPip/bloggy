@@ -3,7 +3,7 @@
     <h1>{{ siteName }} control panel</h1>
 
     <!-- Section links -->
-    <div class="flexcol gap-y-2 overflow-y-auto">
+    <div class="flexcol menu menu-bg-base-200 gap-y-1 p-0 overflow-y-auto">
       <AdminSidebarButton icon="i-heroicons-book-open" page="content">Content</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-user" page="users">Users</AdminSidebarButton>
       <AdminSidebarButton icon="material-symbols:image-outline" page="files">Files</AdminSidebarButton>

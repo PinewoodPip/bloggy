@@ -3,9 +3,15 @@
   Highlighted based on current page.
 -->
 <template>
-  <RouterLink :to="'/admin/' + page">
-    <IconButton :icon="icon" :class="buttonHighlightClass(page)" class="btn-smp min-w-full justify-start"><slot/></IconButton>
-  </RouterLink>
+  <li class="min-w-full justify-start">
+    <RouterLink :class="buttonHighlightClass(page)" :to="'/admin/' + page">
+      <!-- Icon -->
+      <UIcon :name="icon"></UIcon>
+
+      <!-- Button label -->
+      <slot/>
+    </RouterLink>
+  </li>
 </template>
 
 <script setup lang="ts">
@@ -22,7 +28,7 @@ function isCurrentPage(page: string): boolean {
 
 function buttonHighlightClass(page: string) {
   const isActive = isCurrentPage(page)
-  return { "btn-primary": isActive, "btn-secondary": !isActive }
+  return { "active": isActive}
 }
 
 </script>
