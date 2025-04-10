@@ -23,6 +23,7 @@ class Service {
   protected get(route: string, params?: object): Promise<AxiosResponse<any, any>> {
     const options = this.getConfig()
     options.params = params
+    // Allow a parameter to be provided multiple times (with different values)
     options.paramsSerializer = (params) => {
       return qs.stringify(params, { arrayFormat: 'repeat' })
     }

@@ -26,6 +26,15 @@ class SearchService extends Service {
       throw error
     }
   }
+  
+  /** Fetches the latest published articles on the site. */
+  async getLatestArticles(limit: integer, skip: integer): Promise<ArticleLatestPosts> {
+    const response = await this.get('/search/articles/latest', {
+      limit: limit,
+      skip: skip,
+    })
+    return response.data
+  }
 }
 
 export default SearchService

@@ -136,6 +136,10 @@ declare global {
     results: ArticlePreview[],
   }
 
+  type ArticleLatestPosts = ArticleSearchResults & {
+    total_articles: integer,
+  }
+
   type CategoryUpdateRequest = {
     name?: string,
     description?: string,
