@@ -182,7 +182,7 @@ def test_article_tags(article_scenario):
     patch = ArticleUpdate(
         tags=["new tag", "new tag 2"],
     )
-    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True), headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     output = ArticleOutput.model_validate(response.json())
     assert len(output.tags) == 2
@@ -193,7 +193,7 @@ def test_article_tags(article_scenario):
     patch = ArticleUpdate(
         tags=["new tag"],
     )
-    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True), headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     output = ArticleOutput.model_validate(response.json())
     assert output.tags == ["new tag"]
@@ -203,7 +203,7 @@ def test_article_tags(article_scenario):
     patch = ArticleUpdate(
         tags=tags,
     )
-    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True))
+    response = client.patch(f"/articles/{article_scenario.article_path[1:]}", json=patch.model_dump(exclude_unset=True), headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     output = ArticleOutput.model_validate(response.json())
     assert set(output.tags) == set(tags)

@@ -137,14 +137,14 @@ async def get_article_at_root(article_url: str, db: Session=Depends(get_db)):
     return _get_article(db, "/", article_url)
 
 @router.patch("/{category_path:path}/{article_url}", response_model=ArticleSchemas.ArticleOutput)
-async def patch_article(category_path: str, article_url: str, article_update: ArticleSchemas.ArticleUpdate, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search)):
+async def patch_article(category_path: str, article_url: str, article_update: ArticleSchemas.ArticleUpdate, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search), current_user: User=Depends(get_current_user)):
     """
     Patches an article by its full URL path.
     """
     return _patch_article(db, es, background_tasks, "/" + category_path, article_url, article_update)
 
 @router.patch("/{article_url}", response_model=ArticleSchemas.ArticleOutput)
-async def patch_article_at_root(article_url: str, article_update: ArticleSchemas.ArticleUpdate, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search)):
+async def patch_article_at_root(article_url: str, article_update: ArticleSchemas.ArticleUpdate, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search), current_user: User=Depends(get_current_user)):
     """
     Patches an article at the root category.
     It's necessary for this to be a separate endpoint,
@@ -152,5 +152,5 @@ async def patch_article_at_root(article_url: str, article_update: ArticleSchemas
     """
     # Disallow using names that would conflict with the API endpoints
     if article_update.filename in RESERVED_NAMES:
-        raise HTTPException(status_code=405, detail="Cannot create an article with this name")
+        raise HTTPException(status_code=405, detail="Cannot use this name for an article")
     return _patch_article(db, es, background_tasks, "/", article_url, article_update)

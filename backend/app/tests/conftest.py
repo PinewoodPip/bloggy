@@ -49,4 +49,6 @@ def db_session():
     for file in files:
         FileCrud.delete_file(db, file)
 
+    db.close()
+
     yield # Run test
