@@ -19,9 +19,7 @@ def db_session():
     Clears the database after every test, ensuring they are self-contained
     without needing to delete created entries explicitly.
     """
-
-    yield # Run test first
-
+    # Clear the DB
     db = get_session()
 
     # Reset config
@@ -43,8 +41,12 @@ def db_session():
     for category in categories:
         if category.directory_name != "": # Don't delete root category
             CategoryCrud.delete_category(db, category)
+        else:
+            CategoryCrud.clear_category(db, category) # Delete articles from root category
 
     # Delete all files
     files = FileCrud.get_all(db)
     for file in files:
         FileCrud.delete_file(db, file)
+
+    yield # Run test

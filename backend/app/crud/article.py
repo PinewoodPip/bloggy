@@ -208,6 +208,13 @@ def search_articles(db: Session, es: Elasticsearch, text: str | None, tags: list
             warnings.warn(f"Article document exists in ES but not in DB? {article_id}")
     return articles
 
+def get_latest_articles(db: Session, limit: int, skip: int) -> list[Article]:
+    """
+    Returns the latest published articles of the site.
+    """
+    articles = db.query(Article).filter(Article.is_visible == True, Article.publish_time != None).order_by(Article.publish_time.desc()).limit(limit).offset(skip)
+    return articles
+
 def index_article_in_search(es: Elasticsearch, article: Article, text_content: str):
     """
     Indexes an article in ElasticSearch.
@@ -268,6 +275,12 @@ def get_by_id(db: Session, id: int) -> Category:
         raise ValueError("There is no article with that ID")
     return article
 
+def get_total_posted_articles(db: Session) -> int:
+    """
+    Returns the amount of visible published articles.
+    """
+    return db.query(Article).filter(Article.is_visible, Article.publish_time != None).count()
+
 def create_elasticsearch_document(article: Article, text_content: str) -> dict:
     """
     Creates an ES document for an article.
@@ -322,4 +335,10 @@ def create_search_output(db: Session, search_results: list[Article]) -> ArticleS
     """
     return ArticleSearchResults(
         results=[create_article_preview(db, article) for article in search_results],
+    )
+
+def create_latest_articles_output(db: Session, articles: list[Article]) -> ArticleLatestPosts:
+    return ArticleLatestPosts(
+        results=[create_article_preview(db, article) for article in articles],
+        total_articles=get_total_posted_articles(db),
     )

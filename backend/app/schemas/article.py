@@ -76,6 +76,9 @@ class ArticleOutput(ArticlePreview):
 class ArticleSearchResults(BaseModel):
     results: list[ArticlePreview]
 
+class ArticleLatestPosts(ArticleSearchResults):
+    total_articles: int
+
 class TagOutput(BaseModel):
     """Schema for a tag entity."""
     id: int

@@ -22,3 +22,14 @@ async def search_articles(text: str=None, tags: Annotated[list[str] | None, Quer
         return ArticleCrud.create_search_output(db, results)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@router.get("/articles/latest", response_model=ArticleSchemas.ArticleLatestPosts)
+async def search_articles(limit: int=5, skip: int=0, db: Session=Depends(get_db)):
+    """
+    Fetches the latest articles published.
+    """
+    try:
+        results = ArticleCrud.get_latest_articles(db, limit, skip)
+        return ArticleCrud.create_latest_articles_output(db, results)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

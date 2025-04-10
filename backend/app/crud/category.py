@@ -204,8 +204,16 @@ def get_all(db: Session) -> list[Category]:
 
 def delete_category(db: Session, category: Category):
     """
-        Deletes a category and all its articles.
+    Deletes a category and all its articles.
     """
-    # TODO articles, if not cascade
+    clear_category(db, category)
     db.delete(category)
+    db.commit()
+
+def clear_category(db: Session, category: Category):
+    """
+    Deletes all articles of a category.
+    """
+    for article in category.articles:
+        db.delete(article)
     db.commit()

@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 from schemas.user import UserInput, UserLogin, UserOutput
 from crud.user import create_admin, create_editor, authenticate, create_user_output
 from schemas.category import CategoryInput, CategoryOutput
-from schemas.article import ArticleInput, ArticleOutput
+from schemas.article import ArticleInput, ArticleOutput, ArticleUpdate
 from schemas.file import FileOutput, FileInput
 from models.user import User, Editor, Admin
 from dataclasses import dataclass
@@ -17,6 +17,7 @@ import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.article as ArticleCrud
 import crud.file as FileCrud
+from datetime import datetime, timedelta, timezone
 import base64
 import random
 import string
@@ -105,6 +106,19 @@ def create_random_article(db: Session, category_path: str) -> ArticleOutput:
         text="A document",
         summary="A test document",
     ), UserCrud.get_by_username(db, author.username).editor)
+    return ArticleCrud.create_article_output(db, article)
+
+def create_random_article_post(db: Session, category_path: str, minutes_offset: int) -> ArticleOutput:
+    """
+    Creates an article set to be visible at an offset time from now.
+    """
+    date = datetime.now(timezone.utc) + timedelta(minutes=minutes_offset)
+    iso_date = date.isoformat()
+    article = create_random_article(db, category_path)
+    article = ArticleCrud.update_article(db, ArticleCrud.get_article_by_path(db, article.category_path, article.filename), ArticleUpdate(
+        is_visible=True,
+        publish_time=iso_date,
+    ))
     return ArticleCrud.create_article_output(db, article)
 
 def create_random_file(db: Session, uploader_username: str) -> FileOutput:
