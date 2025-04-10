@@ -10,19 +10,19 @@
       
       <!-- Article results -->
       <li v-for="article in searchResults?.results">
-        <RouterLink class="p-0 px-2" :to="'/articles' + article.path">
-          <article class="flexcol bg-base-100 hover:bg-base-200 rounded-box w-96 p-2">
+        <article class="flexcol items-start bg-base-100 hover:bg-base-200 rounded-box w-96 p-2">
+          <RouterLink class="p-0 px-2" :to="'/articles' + article.path">
             <h2 class="card-title">{{ article.title }}</h2>
+          </RouterLink>
 
-            <p class="text-sm">Posted in {{ article.path }}</p>
-            <p>{{ article.summary }} ...</p>
+          <p class="text-sm">Posted in {{ article.path }}</p>
+          <p>{{ article.summary }} ...</p>
 
-            <!-- Tags -->
-            <div class="card-actions justify-end">
-              <!-- TODO tags -->
-            </div>
-          </article>
-        </RouterLink>
+          <!-- Tags -->
+          <div class="card-actions justify-end w-full">
+            <SiteArticleTag v-for="tag in article.tags" :tag="tag" />
+          </div>
+        </article>
       </li>
       <li v-if="searchResults?.results.length === 0">
         <p>No articles found.</p>
