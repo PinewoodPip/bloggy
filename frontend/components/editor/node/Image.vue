@@ -7,13 +7,14 @@
 
 <script setup lang="ts">
 import { useNodeViewContext } from '@prosemirror-adapter/vue'
+import type { NodeCallbacks } from '~/pages/admin/editor.client.vue'
 
 const { contentRef, node } = useNodeViewContext()
-const emitter = useGlobalEvents()
+const nodeCallbacks = inject<NodeCallbacks>('nodeCallbacks')
 
 /** Notify the editor when the image is selected. */
 function onClick() {
-  emitter.emit('editor.imageSelected', node.value)
+  nodeCallbacks?.selectNode(node.value)
 }
 
 </script>

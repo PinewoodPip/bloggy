@@ -9,12 +9,13 @@
 
 <script setup lang="ts">
 import { useNodeViewContext } from '@prosemirror-adapter/vue'
+import type { NodeCallbacks } from '~/pages/admin/editor.client.vue'
 
 const { contentRef, selected, node } = useNodeViewContext()
-const emitter = useGlobalEvents()
+const nodeCallbacks = inject<NodeCallbacks>('nodeCallbacks')
 
 function onClick() {
-  emitter.emit('editor.footnoteSelected', node.value)
+  nodeCallbacks?.selectNode(node.value)
 }
 
 </script>

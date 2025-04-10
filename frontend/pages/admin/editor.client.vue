@@ -111,14 +111,18 @@ import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import { schema } from '~/src/editor/Schema'
-import type { ImageAttrs } from '~/src/editor/Editor'
 import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
+
+/** Callbacks available to node renderers. */
+export type NodeCallbacks = {
+  /** Notifies that the node should be selected for a node type-specific interaction. */
+  selectNode(node: Node): void,
+}
 
 const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
 const responseToast = useResponseToast()
-const emitter = useGlobalEvents()
 const router = useRouter()
 const route = useRoute()
 
@@ -190,7 +194,7 @@ function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
   executeAction('FormatLink', linkAttrs)
 }
 
-function onImageEdited(imgAttrs: ImageAttrs) {
+function onImageEdited(imgAttrs: Editor.ImageAttrs) {
   executeAction('InsertImage', imgAttrs)
 }
 
@@ -361,19 +365,25 @@ function executeAction(actionID: string, params?: object) {
   }
 }
 
-/**
- * Handle events from node renders.
- */
-// @ts-ignore
-emitter.on('editor.footnoteSelected', (node: Node) => {
-  footnoteModal.value?.open({
-    index: node.attrs.index,
-    text: node.attrs.text,
-  })
-})
-// @ts-ignore
-emitter.on('editor.imageSelected', (node: Node) => {
-  hotlinkImageModal.value!.open(node.attrs as ImageAttrs)
+/** Selects a footnote to edit its attributes. */
+function selectFootnote(node: Node) {
+  footnoteModal.value?.open(node.attrs as Editor.FootnoteAttrs)
+}
+
+/** Selects an image to edit its attributes. */
+function selectImage(node: Node) {
+  hotlinkImageModal.value!.open(node.attrs as Editor.ImageAttrs)
+}
+
+/** Provide callbacks for nodes to notify they should be selected. */
+provide<NodeCallbacks>('nodeCallbacks', {
+  selectNode(node: Node) {
+    if (node.type == schema.nodes.footnote) {
+      selectFootnote(node)
+    } else if (node.type === schema.nodes.image) {
+      selectImage(node)
+    }
+  }
 })
 
 /** Inserts or updates a footnote. */
