@@ -12,7 +12,10 @@
     </RouterLink>
     <!-- Date -->
     <span v-if="articleDate">
-      on {{ articleDate }}
+      on 
+      <UTooltip :text="articleTimeLabel">
+        {{ articleDate }}
+      </UTooltip>
     </span>
     <!-- Category -->
     <span v-if="showCategory">
@@ -40,12 +43,23 @@ const authorSearchURL = computed(() => {
   return '/search?author=' + props.article.authors[0].display_name // TODO support multiple
 })
 
+/** Short article date (day, month, year). */
 const articleDate = computed(() => {
   const date = props.article.publish_time
   if (date) {
     return new Date(date).toDateString() // TODO prettify
   } else {
     return null
+  }
+})
+
+/** Article time. */
+const articleTimeLabel = computed(() => {
+  const date = props.article.publish_time
+  if (date) {
+    return `at ${new Date(date).toLocaleTimeString()}`
+  } else {
+    return ''
   }
 })
 
