@@ -134,7 +134,7 @@ def test_get_category_articles(article_scenario):
     article_names = set([article.filename for article in articles])
 
     # Retrieve them
-    response = client.get(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}?published_only=False", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == len(articles)
@@ -144,7 +144,7 @@ def test_get_category_articles(article_scenario):
     # Test query params
     amount = 3
     skip = 1
-    response = client.get(f"/categories/{article_scenario.category_path[1:]}?articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}?published_only=False&articles_amount={amount}&articles_skip={skip}", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     assert len(category_output.articles) == amount
@@ -165,7 +165,7 @@ def test_get_category_articles(article_scenario):
         assert is_ok_response(response)
     
     # Expect articles to be ordered in reverse
-    response = client.get(f"/categories/{article_scenario.category_path[1:]}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category_path[1:]}?published_only=False", headers=article_scenario.editor_token_header)
     assert is_ok_response(response)
     category_output = CategoryOutput.model_validate(response.json())
     for i, fetched_article in enumerate(category_output.articles):
@@ -186,7 +186,7 @@ def test_category_change_parent(article_scenario):
     category_output = CategoryOutput.model_validate(response.json())
 
     # Attempt to fetch category from old path
-    response = client.get(f"/categories/{article_scenario.category.path[1:]}", headers=article_scenario.editor_token_header)
+    response = client.get(f"/categories/{article_scenario.category.path[1:]}?published_only=False", headers=article_scenario.editor_token_header)
     assert is_not_found(response)
 
     # Get category from new path

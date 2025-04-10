@@ -145,9 +145,9 @@ def get_category_path(db: Session, category: Category) -> str:
 
         return "/".join(path[::-1])
 
-def get_category_articles(db: Session, category: Category, amount: int = None, skip: int = 0) -> list[Article]:
+def get_category_articles(db: Session, category: Category, published_only: bool, amount: int = None, skip: int = 0) -> list[Article]:
     """
-    Returns the sorted articles of a category.
+    Returns the sorted posted articles of a category.
     """
     articles_query = db.query(Article).filter(Article.category_id == category.id)
 
@@ -158,6 +158,10 @@ def get_category_articles(db: Session, category: Category, amount: int = None, s
     elif sort_mode == CategorySortingModeEnum.manual:
         articles_query = articles_query.order_by(Article.category_sorting_index)
 
+    # Filter to published only
+    if published_only:
+        articles_query = articles_query.filter(Article.is_visible, Article.publish_time != None)
+
     # Apply limit and skip
     if amount != None:
         articles_query = articles_query.limit(amount)
@@ -165,12 +169,12 @@ def get_category_articles(db: Session, category: Category, amount: int = None, s
 
     return articles_query.all()
 
-def create_category_output(db: Session, category: Category, articles_amount: int = None, articles_skip: int = 0) -> CategoryOutput:
+def create_category_output(db: Session, category: Category, published_articles_only: bool=False, articles_amount: int = None, articles_skip: int = 0) -> CategoryOutput:
     """
     Creates an output schema for a category.
     """
     
-    articles = [ArticleCrud.create_article_preview(db, article) for article in get_category_articles(db, category, articles_amount, articles_skip)]
+    articles = [ArticleCrud.create_article_preview(db, article) for article in get_category_articles(db, category, published_articles_only, articles_amount, articles_skip)]
     subcategories = [create_category_output(db, subcategory) for subcategory in category.subcategories] # Sorting is handled at SQLAlchemy level
 
     return CategoryOutput(
