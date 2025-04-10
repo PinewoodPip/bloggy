@@ -2,10 +2,6 @@ import { useQuery } from "@tanstack/vue-query"
 
 type TreeNode = SiteFileTree | SiteFile
 
-const IMAGE_EXTENSIONS = new Set([
-  '.jpg', 'jpeg', '.png', '.svg', '.apng', '.gif', '.webp',
-])
-
 /** Provides TreeItem node getter functions for child TreeItem components. */
 export const useSiteFileTree = () => {
   return {
@@ -68,7 +64,7 @@ export const useSiteFileTree = () => {
     /** Returns whether the extension of a file is of a common image kind. */
     isImageFile(node: SiteFile) {
       const path = node.path
-      for (const extension of IMAGE_EXTENSIONS) {
+      for (const extension of CMSUtils.IMAGE_EXTENSIONS) {
         if (path.toLowerCase().endsWith(extension)) {
           return true
         }

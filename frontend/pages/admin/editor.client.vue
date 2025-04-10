@@ -95,6 +95,9 @@
 
   <!-- Upload image modal -->
   <AdminFileUploadModal ref="imageUploadModal" @create="onImageUploaded" />
+
+  <!-- Image selection modal -->
+  <AdminModalFileSelect ref="fileSelectModal" :can-select-files="true" :valid-extensions="CMSUtils.IMAGE_EXTENSIONS" @confirm="onFileSelected" />
 </template>
 
 <script setup lang="ts">
@@ -123,6 +126,7 @@ const editor = ref(useArticleEditor())
 const linkModal = useTemplateRef('linkModal')
 const imageUploadModal = useTemplateRef('imageUploadModal')
 const hotlinkImageModal = useTemplateRef('hotlinkImageModal')
+const imageSelectModal = useTemplateRef('fileSelectModal')
 const footnoteModal = useTemplateRef('footnoteModal')
 
 const settingsMenuVisible = ref(false)
@@ -212,10 +216,12 @@ function onActionUsed(action: Editor.IAction) {
         }
 
         linkModal.value!.open(linkAttrs)
-      } else if (action.def.id == 'HotlinkImage') {
+      } else if (action.def.id === 'HotlinkImage') {
         hotlinkImageModal.value!.open()
-      } else if (action.def.id == 'UploadImage') {
+      } else if (action.def.id === 'UploadImage') {
         imageUploadModal.value!.open()
+      } else if (action.def.id === 'SelectImage') {
+        imageSelectModal.value!.open()
       } else {
         executeAction(action.def.id)
       }
@@ -370,6 +376,7 @@ emitter.on('editor.imageSelected', (node: Node) => {
   hotlinkImageModal.value!.open(node.attrs as ImageAttrs)
 })
 
+/** Inserts or updates a footnote. */
 function onConfirmFootnote(attrs: Editor.FootnoteAttrs) {
   const state = toRaw(editorState.value)
   const view = toRaw(editorView.value)
@@ -382,8 +389,14 @@ function onConfirmFootnote(attrs: Editor.FootnoteAttrs) {
   }
 }
 
+/** Inserts an uploaded image into the document. */
 function onImageUploaded(file: SiteFile) {
-  executeAction('InsertImage', {src: '/files' + file.path})
+  executeAction('InsertImage', {src: CMSUtils.resolveFilePath(file.path)})
+}
+
+/** Inserts a selected image from the CMS into the document. */
+function onFileSelected(path: path) {
+  executeAction('InsertImage', {src: CMSUtils.resolveFilePath(path)})
 }
 
 function getActionContextMenuEntry(actionID: Editor.actionID): object {

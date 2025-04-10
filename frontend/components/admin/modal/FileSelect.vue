@@ -33,6 +33,7 @@ const emit = defineEmits<{
 const props = defineProps<{
   canSelectFiles?: boolean,
   canSelectFolders?: boolean,
+  validExtensions?: Set<fileExtension>,
 }>();
 
 const selectedFilePath = ref('')
@@ -54,7 +55,19 @@ function confirm() {
 /** Updates tracking the selected file. */
 function onFileSelected(node: SiteFileTree | SiteFile) {
   const nodeType = getters.getNodeType(node)
-  if ((nodeType === 'leaf' && props.canSelectFiles) || (nodeType === 'node' && props.canSelectFolders)) {
+
+  // Check node type
+  let isValid = (nodeType === 'leaf' && props.canSelectFiles) || (nodeType === 'node' && props.canSelectFolders)
+  
+  // Check file extension
+  if (props.validExtensions) {
+    const parts = node.path.split('.')
+    const extension = '.' + parts[parts.length - 1]
+    isValid = isValid && (props.validExtensions.has(extension))
+  }
+
+  // Select the file if all checks pass
+  if (isValid) {
     selectedFilePath.value = node.path
   }
 }

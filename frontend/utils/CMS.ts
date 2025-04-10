@@ -2,6 +2,8 @@
  * Utilities for working with the CMS.
  */
 export const CMSUtils = {
+  IMAGE_EXTENSIONS: new Set(['.jpg', 'jpeg', '.png', '.svg', '.apng', '.gif', '.webp']),
+
   /** Resolves a path from the backend to where the resource maps on the frontend. */
   resolveFilePath(path: path) {
     return '/files' + path

@@ -62,16 +62,35 @@ export class UploadImage extends Action {
   }
 }
 
+/** An action to insert an image from the site's CMS. */
+export class SelectImage extends Action {
+  static override ID: string = 'SelectImage'
+
+  constructor() {
+    super({
+      id: SelectImage.ID,
+      name: 'From site files',
+      icon: 'material-symbols:cloud',
+    })
+  }
+
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
+    return null
+  }
+}
+
 /**
  * Action group
  */
 let _imageActions: Action[] = [
   new HotlinkImage(),
   new UploadImage(),
+  new SelectImage(),
 ]
-const alertActionIDs: actionID[] = []
+const imageActionIDs: actionID[] = []
 for (const action of _imageActions) {
-  alertActionIDs.push(action.def.id)
+  imageActionIDs.push(action.def.id)
 }
 let _actionGroup: Group = {
   name: 'Media',
@@ -80,7 +99,7 @@ let _actionGroup: Group = {
       type: 'actionMenu',
       icon: 'material-symbols:image',
       name: 'Insert image',
-      actionIDs: alertActionIDs,
+      actionIDs: imageActionIDs,
     } as GroupActionMenu,
   ],
 }
