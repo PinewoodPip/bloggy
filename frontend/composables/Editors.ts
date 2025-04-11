@@ -49,6 +49,8 @@ export const useArticleEditor = () => {
 
   // Media actions
   editor.registerAction(new MediaActions.InsertImage())
+  editor.registerAction(new MediaActions.InsertEmbed())
+  editor.registerAction(new MediaActions.RequestEmbed())
   for (const action of MediaActions.imageActions) {
     editor.registerAction(action)
   }

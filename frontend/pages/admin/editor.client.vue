@@ -98,6 +98,9 @@
 
   <!-- Image selection modal -->
   <AdminModalFileSelect ref="fileSelectModal" :can-select-files="true" :valid-extensions="CMSUtils.IMAGE_EXTENSIONS" @confirm="onFileSelected" />
+
+  <!-- Embed insertion modal -->
+  <EditorModalEmbed ref="embedEditorModal" @confirm="onEmbedEdited" />
 </template>
 
 <script setup lang="ts">
@@ -132,6 +135,7 @@ const imageUploadModal = useTemplateRef('imageUploadModal')
 const hotlinkImageModal = useTemplateRef('hotlinkImageModal')
 const imageSelectModal = useTemplateRef('fileSelectModal')
 const footnoteModal = useTemplateRef('footnoteModal')
+const embedEditorModal = useTemplateRef('embedEditorModal')
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
@@ -226,6 +230,8 @@ function onActionUsed(action: Editor.IAction) {
         imageUploadModal.value!.open()
       } else if (action.def.id === 'SelectImage') {
         imageSelectModal.value!.open()
+      } else if (action.def.id === 'RequestEmbed') {
+        embedEditorModal.value!.open()
       } else {
         executeAction(action.def.id)
       }
@@ -375,6 +381,11 @@ function selectImage(node: Node) {
   hotlinkImageModal.value!.open(node.attrs as Editor.ImageAttrs)
 }
 
+/** Selects an embed node to edit its attributes. */
+function selectEmbed(node: Node) {
+  embedEditorModal.value!.open(node.attrs as Editor.EmbedAttrs)
+}
+
 /** Provide callbacks for nodes to notify they should be selected. */
 provide<NodeCallbacks>('nodeCallbacks', {
   selectNode(node: Node) {
@@ -382,6 +393,8 @@ provide<NodeCallbacks>('nodeCallbacks', {
       selectFootnote(node)
     } else if (node.type === schema.nodes.image) {
       selectImage(node)
+    } else if (node.type === schema.nodes.embed) {
+      selectEmbed(node)
     }
   }
 })
@@ -407,6 +420,11 @@ function onImageUploaded(file: SiteFile) {
 /** Inserts a selected image from the CMS into the document. */
 function onFileSelected(path: path) {
   executeAction('InsertImage', {src: CMSUtils.resolveFilePath(path)})
+}
+
+/** Inserts an embed into the document. */
+function onEmbedEdited(attrs: Editor.EmbedAttrs) {
+  executeAction('InsertEmbed', attrs)
 }
 
 function getActionContextMenuEntry(actionID: Editor.actionID): object {

@@ -15,6 +15,7 @@ export type alertType = 'note' | 'tip' | 'important' | 'caution' | 'warning'
 export type alignmentType = 'left' | 'right' | 'center' | 'justify'
 export type LinkAttrs = {href: string, title?: string}
 export type ImageAttrs = {src: string, alt?: string}
+export type EmbedAttrs = {type: string, contentID: string}
 export type FootnoteAttrs = {index: integer, text: string}
 
 /** Action descriptor. */

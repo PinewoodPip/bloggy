@@ -70,6 +70,37 @@ nodes = nodes.addToEnd('footnote', {
   }
 })
 
+// Add embed node
+nodes = nodes.addToEnd('embed', {
+  inline: false,
+  group: "block",
+  content: '',
+  attrs: {
+    type: {default: ''},
+    contentID: {default: ''},
+  },
+  defining: false,
+  draggable: true,
+  atom: true,
+
+  // Note: since the editor never (de)serializes to/from HTML, these are basically unused
+  parseDOM: [{tag: "div[embed-type]", getAttrs(dom) {
+    return {
+      type: (dom as HTMLElement).getAttribute("embed-type"),
+      contentID: (dom as HTMLElement).innerHTML,
+    }
+  }}],
+  toDOM(node) {
+    const div = document.createElement('div')
+    div.innerHTML = node.attrs.contentID
+    div.setAttribute('embed-type', node.attrs.type)
+    return {
+      dom: div,
+      domElement: div,
+    }
+  }
+})
+
 const marks: {[markType: string]: MarkSpec} = {
   strong: BasicSchema.spec.marks.get('strong') as MarkSpec,
   link: BasicSchema.spec.marks.get('link') as MarkSpec,

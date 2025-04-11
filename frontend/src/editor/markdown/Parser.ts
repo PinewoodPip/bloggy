@@ -9,6 +9,7 @@ import { plugin as UnderlinePlugin } from './plugins/underline'
 import { alert as AlertPlugin } from "@mdit/plugin-alert";
 import { footnote as FootnotePlugin } from "@mdit/plugin-footnote";
 import { attrs as AttributesPlugin } from "@mdit/plugin-attrs";
+import { container as ContainerPlugin } from "@mdit/plugin-container";
 import type Token from 'markdown-it/lib/token.mjs'
 
 // Extend CommonMark parser
@@ -17,6 +18,10 @@ md.use(UnderlinePlugin)
 md.use(AlertPlugin)
 md.use(FootnotePlugin)
 md.use(AttributesPlugin)
+// For embed node
+md.use(ContainerPlugin, {
+  name: 'embed',
+})
 export const Markdown = md
 
 /** From prosemirror-markdown */
@@ -26,6 +31,20 @@ function listIsTight(tokens: readonly Token[], i: number) {
   return false
 }
 
+/** Extracts attributes added by the mkit-attrs plugin. */
+function extractBlockAttributes(tok: Token, tokens: Token[], i: integer): object {
+  const attrs = tok.attrs
+  const nodeAttrs: {[key: string]: string} = {}
+  if (attrs) {
+    // Token attribute key and values are stored as pairs
+    for (const pair of attrs) {
+      nodeAttrs[pair[0]] = pair[1]
+    }
+  }
+  console.log(nodeAttrs)
+  return nodeAttrs
+}
+
 const _DocumentParser = new MarkdownParser(schema, md, {
   // Nodes
   blockquote: {block: "blockquote"},
@@ -33,17 +52,7 @@ const _DocumentParser = new MarkdownParser(schema, md, {
     return ({type: tok.markup})
   }},
   alert_title: {block: "blockquote", noCloseToken: true},
-  paragraph: {block: "paragraph", getAttrs: (tok, tokens, i) => {
-    const attrs = tok.attrs
-    const nodeAttrs: {[key: string]: string} = {}
-    if (attrs) {
-      // Token attribute key and values are stored as pairs
-      for (const pair of attrs) {
-        nodeAttrs[pair[0]] = pair[1]
-      }
-    }
-    return nodeAttrs
-  }},
+  paragraph: {block: "paragraph", getAttrs: extractBlockAttributes},
 
   // Footnotes are split into multiple parts by the plugin; we only care about the ref as we store all required info there
   footnote_ref: {node: "footnote", noCloseToken: true, getAttrs: (tok, tokens, i) => {
@@ -72,6 +81,7 @@ const _DocumentParser = new MarkdownParser(schema, md, {
     alt: tok.children![0] && tok.children![0].content || null
   })},
   hardbreak: {node: "hard_break"},
+  container_embed: {block: "embed", getAttrs: extractBlockAttributes},
 
   // Marks
   em: {mark: "em"},

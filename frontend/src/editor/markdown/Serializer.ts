@@ -52,4 +52,11 @@ _DocumentSerializer.nodes['paragraph'] = (state, node) => {
   state.text(` {align=${node.attrs.align}}\n\n`)
 }
 
+// Serialize embed nodes
+_DocumentSerializer.nodes['embed'] = (state, node) => {
+  // Uses mkit-plugin's container + attributes plugins
+  state.text(`::: embed {type=${node.attrs.type} contentID=${node.attrs.contentID}}\n`)
+  state.text(`:::\n\n`)
+}
+
 export const DocumentSerializer = _DocumentSerializer;

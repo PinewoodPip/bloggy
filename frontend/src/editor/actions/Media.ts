@@ -2,8 +2,8 @@
  * Implements actions for inserting media nodes, such as images.
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
-import type { actionID } from '../Editor'
-import type { Group, GroupActionMenu } from '../Toolbar'
+import type { actionID, EmbedAttrs } from '../Editor'
+import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
 import { schema } from '../Schema'
@@ -80,6 +80,45 @@ export class SelectImage extends Action {
   }
 }
 
+/** Action to insert external content embeds. */
+export class InsertEmbed extends Action {
+  static override ID: string = 'InsertEmbed'
+
+  constructor() {
+    super({
+      id: InsertEmbed.ID,
+      name: `Insert embed`,
+      icon: 'material-symbols:featured-video-outline',
+    })
+  }
+
+  execute(state: EditorState, params: EmbedAttrs): Transaction | Promise<Transaction> | null {
+    const embedNode = schema.nodes['embed']
+    const embed = embedNode.create(params)
+    let tr = state.tr
+    tr.replaceSelectionWith(embed)
+    return tr
+  }
+}
+
+/** Action to request an embed insert. */
+export class RequestEmbed extends Action {
+  static override ID: string = 'RequestEmbed'
+
+  constructor() {
+    super({
+      id: RequestEmbed.ID,
+      name: 'Insert embed',
+      icon: 'material-symbols:featured-video-outline',
+    })
+  }
+
+  execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    // This action doesn't directly edit the document; it is intended to be chained into InsertEmbed after going through some form in the UI.
+    return null
+  }
+}
+
 /**
  * Action group
  */
@@ -101,6 +140,10 @@ let _actionGroup: Group = {
       name: 'Insert image',
       actionIDs: imageActionIDs,
     } as GroupActionMenu,
+    {
+      type: 'action',
+      actionID: RequestEmbed.ID,
+    } as GroupAction,
   ],
 }
 export const actionGroup = _actionGroup
