@@ -71,6 +71,7 @@ export type SocialNetworkOutput = {
 
 export type SiteConfigUpdate = {
   site_name?: string,
+  theme?: string,
   favicon_path?: string,
   logo_path?: string,
   navigation?: NavigationUpdate,
@@ -79,6 +80,7 @@ export type SiteConfigUpdate = {
 
 export type SiteConfig = {
   site_name: string,
+  theme: string,
   favicon?: SiteFile,
   logo?: SiteFile,
   navigation: Navigation,

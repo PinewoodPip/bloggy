@@ -14,9 +14,11 @@ const emit = defineEmits<{
 }>();
 
 const props = defineProps<{
-  options: object[],
-  trackBy: string,
-  optionLabelKey: string,
+  options: object[] | string[],
+  /** Determines the ID field when options is an object array. */
+  trackBy?: string,
+  /** Determines the label field when options is an object array. */
+  optionLabelKey?: string,
   showLabels?: boolean,
   searchable?: boolean,
   multiple?: boolean,
