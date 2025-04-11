@@ -135,6 +135,7 @@ def create_configuration_output(db: Session, config: SiteConfig) -> ConfigOutput
     favicon = FileCrud.create_file_output(db, config.favicon) if config.favicon else None
     return ConfigOutput(
         site_name=config.site_name,
+        theme=config.theme,
         logo=logo,
         favicon=favicon,
         navigation=create_navigation_output(db, config.navigation),

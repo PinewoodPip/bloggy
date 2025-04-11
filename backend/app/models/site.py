@@ -17,6 +17,7 @@ class SiteConfig(Base):
 
     lock = Column(Integer, index=True, primary_key=True, unique=True)
     site_name = Column(String)
+    theme = Column(String, default="light")
     logo_file_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     favicon_file_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     navigation = Column(JSON)

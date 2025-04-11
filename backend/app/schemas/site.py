@@ -33,6 +33,7 @@ class ConfigUpdate(BaseModel):
     Schema for updating the site config.
     """
     site_name: Optional[str] = None
+    theme: Optional[str] = None
     favicon_path: Optional[str] = None
     logo_path: Optional[str] = None
     navigation: Optional[NavigationUpdate] = None
@@ -43,6 +44,7 @@ class ConfigOutput(BaseModel):
     Schema for global site configuration.
     """
     site_name: str
+    theme: str
     logo: FileOutput | None
     favicon: FileOutput | None
 
