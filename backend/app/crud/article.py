@@ -11,8 +11,10 @@ import crud.category as CategoryCrud
 import crud.utils as CrudUtils
 from datetime import datetime
 import warnings
+import re
 
 PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags"])
+SPLIT_CATEGORY_ARTICLE_PATH_REGEX = re.compile(r"(.+)\/([^\/]+)$") # Splits a path into category path and article filename.
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
     """
@@ -132,6 +134,19 @@ def get_article_by_path(db: Session, category_path: str, article_url: str) -> Ar
     article = db.query(Article).filter(Article.filename == article_url, Article.category_id == category.id).first() # Must have same filename and be within the category
     if not article:
         raise ValueError("There is no article at the path")
+    return article
+
+def get_article_by_full_path(db: Session, path: str) -> Article:
+    """
+    Returns an article by its full path.
+    """
+    match = SPLIT_CATEGORY_ARTICLE_PATH_REGEX.match(path)
+    article = None
+    if match:
+        category_path, filename = match.groups()
+        article = get_article_by_path(db, category_path, filename)
+    if not article:
+        raise ValueError("Invalid path")
     return article
 
 def get_article(db: Session, article_id: int) -> Article:

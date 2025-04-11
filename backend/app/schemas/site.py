@@ -38,6 +38,7 @@ class ConfigUpdate(BaseModel):
     logo_path: Optional[str] = None
     navigation: Optional[NavigationUpdate] = None
     social_networks: Optional[list[str]] = None
+    sidebar_document_path: Optional[str] = None
 
 class ConfigOutput(BaseModel):
     """
@@ -47,6 +48,7 @@ class ConfigOutput(BaseModel):
     theme: str
     logo: FileOutput | None
     favicon: FileOutput | None
+    sidebar_document_path: str | None
 
     navigation: NavigationOutput
     """The site's navigation schema."""

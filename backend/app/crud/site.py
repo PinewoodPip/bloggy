@@ -51,6 +51,11 @@ def update_config(db: Session, config_update: ConfigUpdate) -> SiteConfig:
             db.rollback()
             raise e
         
+    # Patch sidebar document
+    if config_update.sidebar_document_path:
+        article = ArticleCrud.get_article_by_full_path(db, config_update.sidebar_document_path)
+        config.sidebar_document = article
+        
     # Update enabled social networks
     if config_update.social_networks != None:
         enabled_networks = set(config_update.social_networks)
@@ -106,6 +111,7 @@ def try_create_config(db: Session) -> SiteConfig:
     if not get_config(db):
         config = SiteConfig(
             site_name="Bloggy site",
+            theme="light",
             navigation={
                 "root_nodes": [],
             }
@@ -133,11 +139,13 @@ def create_configuration_output(db: Session, config: SiteConfig) -> ConfigOutput
     """
     logo = FileCrud.create_file_output(db, config.logo) if config.logo else None
     favicon = FileCrud.create_file_output(db, config.favicon) if config.favicon else None
+    sidebar_path = ArticleCrud.get_article_path(db, config.sidebar_document) if config.sidebar_document else None
     return ConfigOutput(
         site_name=config.site_name,
         theme=config.theme,
         logo=logo,
         favicon=favicon,
+        sidebar_document_path=sidebar_path,
         navigation=create_navigation_output(db, config.navigation),
         social_networks={
             network.id: create_social_network_output(db, network) for network in get_social_networks(db)

@@ -128,3 +128,27 @@ def test_social_networks(user_scenario):
         "social_networks": ["invalid"],
     })
     assert is_bad_request(response, "invalid")
+
+def test_patch_sidebar(article_scenario):
+    """
+    Tests patching the site sidebar.
+    """
+    scenario = article_scenario
+
+    # Patch sidebar
+    response = client.patch("/site/config", headers=scenario.admin_token_header, json=ConfigUpdate(
+        sidebar_document_path=scenario.article_path,
+    ).model_dump(exclude_none=True))
+    assert is_ok_response(response)
+
+    # Refetch config
+    response = client.get("/site/config", headers=scenario.admin_token_header)
+    assert is_ok_response(response)
+    site = ConfigOutput.model_validate(response.json())
+    assert site.sidebar_document_path == scenario.article_path
+    
+    # Fetch sidebar
+    response = client.get("/site/sidebar", headers=scenario.admin_token_header)
+    assert is_ok_response(response)
+    article = ArticleOutput.model_validate(response.json())
+    assert article.id == scenario.article.id

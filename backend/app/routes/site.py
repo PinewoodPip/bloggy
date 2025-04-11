@@ -7,8 +7,10 @@ from models.user import User
 from core.config import get_db
 from core.utils import get_current_user, get_current_user_optional, get_elastic_search
 import schemas.site as SiteSchemas
+import schemas.article as ArticleSchemas
 import schemas.navigation as NavigationSchemas
 import crud.site as SiteCrud
+import crud.article as ArticleCrud
 
 router = APIRouter()
 
@@ -37,6 +39,19 @@ async def patch_config(config_update: SiteSchemas.ConfigUpdate, db: Session=Depe
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.get("/sidebar", response_model=ArticleSchemas.ArticleOutput)
+async def get_sidebar(db: Session=Depends(get_db)):
+    """
+    Returns the site's sidebar document.
+    """
+    try:
+        config = SiteCrud.get_config(db)
+        if not config.sidebar_document:
+            return HTTPException(status_code=404)
+        return ArticleCrud.create_article_output(db, config.sidebar_document)
+    except ValueError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.get(
     "/favicon",
     response_class=Response, # Necessary for Swagger to not show an an extra "application/json" return type

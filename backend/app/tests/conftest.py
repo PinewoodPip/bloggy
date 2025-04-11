@@ -28,6 +28,8 @@ def db_session():
     config.logo_file_id = None
     config.favicon_file_id = None
     config.navigation = {"root_nodes": []}
+    config.theme = "light"
+    config.sidebar_document = None
     db.commit()
 
     # Remove all users except default admin
