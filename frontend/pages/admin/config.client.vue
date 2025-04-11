@@ -10,6 +10,9 @@
 
         <!-- Favicon -->
         <FormGroupSiteFile v-model="configUpdate.favicon_path" label="Favicon" hint="Icon shown by the browser tab." icon="material-symbols:star" />
+        
+        <!-- Sidebar -->
+        <FormGroupArticle v-model="configUpdate.sidebar_document_path" type="article" label="Sidebar document" hint="Contents of the site's sidebar." icon="material-symbols:thumbnail-bar" />
       </div>
       <div class="flexcol flex-grow">
         <FormGroupSiteImage v-model="configUpdate.logo_path" label="Logo" />
@@ -74,6 +77,7 @@ function initializeModel() {
   configUpdate.logo_path = config.value?.logo?.path
   configUpdate.favicon_path = config.value?.favicon?.path
   configUpdate.theme = config.value?.theme
+  configUpdate.sidebar_document_path = config.value?.sidebar_document_path
   for (const network in config.value?.social_networks) {
     enabledNetworks[network] = config.value.social_networks[network].can_share
   }
