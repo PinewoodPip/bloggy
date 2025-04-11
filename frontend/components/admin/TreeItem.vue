@@ -137,9 +137,3 @@ const hasChildren = computed(() => {
 })
 
 </script>
-
-<style lang="css" scoped>
-.test {
-  box-shadow: -2px 0 #000;
-}
-</style>

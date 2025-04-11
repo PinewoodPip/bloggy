@@ -43,7 +43,7 @@ const { data: category, status: categoryStatus, suspense: categorySuspense, refe
       skip = (page.value.currentPage - 1) * limit
     }
     const categoryPath = '/' + (route.params.category_path as string[]).join('/')
-    return await categoryService.getCategory(categoryPath, limit, skip)
+    return await categoryService.getCategory(categoryPath, true, limit, skip)
   },
   retry: (count, err) => {
     if ((err as AxiosError).status === 404) {

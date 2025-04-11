@@ -57,7 +57,7 @@ export const useContentTree = () => {
   const query = useQuery({
     queryKey: ["contentCategories"],
     queryFn: async () => {
-      const tree = await categoryService.getCategory('/')
+      const tree = await categoryService.getCategory('/', false)
       return tree
     },
   })
