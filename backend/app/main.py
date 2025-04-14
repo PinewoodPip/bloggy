@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from core.lifespan import lifespan
 from core.config import engine
 from core.config import Base
-from routes import user, category, article, file, search, site
+from routes import user, category, article, file, search, site, comment
 
 # Importing models will have SQLAlchemy recognize them for creation & migration
 from models.user import *
@@ -31,6 +31,7 @@ Base.metadata.create_all(bind=engine)
 app.include_router(user.router, prefix="/users", tags=["Users"])
 app.include_router(category.router, prefix="/categories", tags=["Categories"])
 app.include_router(article.router, prefix="/articles", tags=["Articles"])
+app.include_router(comment.router, prefix="/comments", tags=["Comment"])
 app.include_router(file.router, prefix="/files", tags=["Files"])
 app.include_router(search.router, prefix="/search", tags=["Search"])
 app.include_router(site.router, prefix="/site", tags=["Site"])

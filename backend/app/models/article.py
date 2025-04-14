@@ -10,6 +10,7 @@ import enum
 if typing.TYPE_CHECKING:
     from models.category import Category
     from models.user import Editor
+    from models.comment import Comment
 
 class ArticleViewEnum(str, enum.Enum): # TODO move to schema?
     single_page = "single_page",
@@ -61,5 +62,5 @@ class Article(Base):
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")
     authors: Mapped[list["Editor"]] = relationship(secondary="article_authors", cascade="all", back_populates="articles")
+    comments: Mapped[list["Comment"]] = relationship("Comment", order_by="Comment.post_time", cascade="delete, delete-orphan", back_populates="article")
     tags: Mapped[list["Tag"]] = relationship(secondary="article_tags", cascade="all", back_populates="articles")
-

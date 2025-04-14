@@ -12,6 +12,7 @@ import crud.article as ArticleCrud
 import crud.category as CategoryCrud
 import crud.file as FileCrud
 import crud.site as SiteCrud
+import crud.comment as CommentCrud
 
 @pytest.fixture(scope="function", autouse=True)
 def db_session():
@@ -50,6 +51,10 @@ def db_session():
     files = FileCrud.get_all(db)
     for file in files:
         FileCrud.delete_file(db, file)
+
+    # Delete all comments
+    for comment in CommentCrud.get_all(db):
+        CommentCrud.delete_comment(db, comment)
 
     db.close()
 

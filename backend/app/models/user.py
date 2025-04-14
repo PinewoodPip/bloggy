@@ -5,6 +5,9 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 from models.article import Article
 from core.config import Base
+import typing
+if typing.TYPE_CHECKING:
+    from models.comment import Comment
 
 class Credentials(Base):
     __tablename__ = "credentials"
@@ -27,6 +30,7 @@ class User(Base):
 
     # Relations
     credentials: Mapped["Credentials"] = relationship("Credentials", back_populates="user")
+    comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="author", cascade="delete, delete-orphan")
     editor: Mapped["Editor"] = relationship("Editor", back_populates="user", cascade="all")
     admin: Mapped["Admin"] = relationship("Admin", back_populates="user", cascade="all")
     uploaded_files = relationship("File", back_populates="uploader")

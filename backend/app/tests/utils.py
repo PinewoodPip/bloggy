@@ -146,6 +146,9 @@ def create_random_article(db: Session, category_path: str) -> ArticleOutput:
         text="A document",
         summary="A test document",
     ), UserCrud.get_by_username(db, author.username).editor)
+    ArticleCrud.update_article(db, article, ArticleUpdate(
+        can_comment=True,
+    ))
     return ArticleCrud.create_article_output(db, article)
 
 def create_random_article_post(db: Session, category_path: str, minutes_offset: int) -> ArticleOutput:
