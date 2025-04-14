@@ -1,7 +1,11 @@
 """
-    Common utility methods for tests, mainly to generate dummy data and entities.
+Common utility methods for tests, mainly to generate dummy data and entities.
 """
+from fastapi import Response
+import httpx
+from pydantic import BaseModel
 from sqlalchemy.orm import Session, joinedload, subqueryload
+from asserts import is_ok_response
 from core.config import get_db, engine
 from main import app
 from fastapi.testclient import TestClient
@@ -12,7 +16,7 @@ from schemas.article import ArticleInput, ArticleOutput, ArticleUpdate
 from schemas.file import FileOutput, FileInput
 from models.user import User, Editor, Admin
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Type, TypeVar
 import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.article as ArticleCrud
@@ -21,6 +25,8 @@ from datetime import datetime, timedelta, timezone
 import base64
 import random
 import string
+
+T = TypeVar("T", bound=BaseModel)
 
 class RandomEditor(UserOutput):
     """
@@ -40,6 +46,40 @@ def random_password() -> str:
 
 def random_email() -> str:
     return f"{random_lower_string()}@{random_lower_string()}.com"
+
+class ClientWrapper:
+    """
+    A wrapper for the starlette test client that supports auto-validating response schemas.
+    """
+    def __init__(self, test_client: httpx.Client, token: str):
+        self.test_client = test_client
+        self.token = token
+
+    def get(self, path: str) -> Response:
+        """Sends a GET request."""
+        return self.test_client.get(path, headers=self.token)
+    
+    def get_and_validate(self, path: str, model: Type[T]) -> T:
+        """Sends a GET request and validates the output schema."""
+        response = self.get(path)
+        assert is_ok_response(response)
+        return model.model_validate(response.json())
+
+    def post(self, path: str, body: BaseModel | dict) -> Response:
+        """Sends a POST request."""
+        if isinstance(body, BaseModel):
+            body = body.model_dump(exclude_unset=True)
+        return self.test_client.post(path, headers=self.token, json=body)
+    
+    def patch(self, path: str, body: BaseModel | dict) -> Response:
+        """Sends a PATCH request."""
+        if isinstance(body, BaseModel):
+            body = body.model_dump(exclude_unset=True)
+        return self.test_client.patch(path, headers=self.token, json=body)
+
+    def delete(self, path: str) -> Response:
+        """Sends a DELETE request."""
+        return self.test_client.delete(path, headers=self.token,)
 
 def create_random_user_input() -> UserInput:
     username = random_lower_string()
