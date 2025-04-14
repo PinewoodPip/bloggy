@@ -10,12 +10,12 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from core.security import get_HTTPBearer, get_optional_HTTPBearer
 from core.config import CONFIG, get_db
-from crud.user import User
+from crud.user import User, get_by_username
 
 def get_current_user(db: Session=Depends(get_db), credentials: HTTPAuthorizationCredentials=Depends(get_HTTPBearer)) -> User:
     """
-        Returns the user associated to a JWT token.
-        Credits to Diego Hernandez.
+    Returns the user associated to a JWT token.
+    Credits to Diego Hernandez.
     """
     token = credentials.credentials
     try:
@@ -26,8 +26,10 @@ def get_current_user(db: Session=Depends(get_db), credentials: HTTPAuthorization
     except (JWTError, ValidationError) as e:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials")
 
-    user = db.get(User, token_data.sub)
-    if not user:
+    # Fetch user
+    try:
+        user = get_by_username(db, token_data.sub)
+    except ValueError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     
     # Ensure the token matches the current one in the DB

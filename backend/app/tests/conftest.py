@@ -35,7 +35,7 @@ def db_session():
     # Remove all users except default admin
     users = UserCrud.get_all(db, None)
     for user in users:
-        if user.username != CONFIG.ADMIN_USERNAME:
+        if UserCrud.get_username(user) != CONFIG.ADMIN_USERNAME:
             UserCrud.delete_user(db, user)
 
     # Delete all categories

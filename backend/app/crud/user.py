@@ -2,7 +2,7 @@
     CRUD methods for Users table.
 """
 from sqlalchemy.orm import Session
-from models.user import User, Editor, Admin
+from models.user import Credentials, User, Editor, Admin
 from schemas.user import UserInput, UserUpdate, UserRole, UserOutput, UserLogin, TokenPayload
 from core.security import get_password_hash, verify_password, create_access_token
 from core.config import CONFIG
@@ -10,17 +10,16 @@ from fastapi import HTTPException, status
 
 def create_admin(db: Session, username: str, password: str) -> Admin:
     """
-        Creates an admin account.
+    Creates an admin account.
     """
-    user = User(
-        username=username,
-        hashed_password=get_password_hash(password),
-    )
+    user = User()
+    credentials = try_create_credentials(db, user)
+    credentials.username = username
+    credentials.hashed_password = get_password_hash(password)
     db.add(user)
 
-    admin = Admin(
-        username=username,
-    )
+    admin = Admin()
+    admin.user = user
     db.add(admin)
 
     db.commit()
@@ -52,28 +51,28 @@ def create_editor_by_user(db: Session, creator_user: User, user_input: UserInput
 
 def create_editor(db: Session, user_input: UserInput) -> User:
     """
-        Creates an editor account.
+    Creates an editor account.
     """
     # Check if username is unique
-    existing_user_by_username = db.query(User).filter(User.username == user_input.username).first()
+    existing_user_by_username = db.query(Credentials).filter(Credentials.username == user_input.username).first()
     if existing_user_by_username:
         raise ValueError("An account with that username already exists")
 
     # Create user
     try:
-        user = User(
-            username=user_input.username,
-            hashed_password=get_password_hash(user_input.password),
-        )
+        user = User()
+        credentials = try_create_credentials(db, user)
+        credentials.username = user_input.username,
+        credentials.hashed_password = get_password_hash(user_input.password),
         db.add(user)
 
         # Create corresponding editor table entry
         editor = Editor(
-            username=user_input.username,
             display_name=user_input.display_name,
             contact_email=user_input.contact_email,
             biography=user_input.biography,
         )
+        editor.user = user
         db.add(editor)
 
         db.commit()
@@ -84,6 +83,16 @@ def create_editor(db: Session, user_input: UserInput) -> User:
         raise RuntimeError(str(e))
 
     return user
+
+def try_create_credentials(db: Session, user: User) -> Credentials:
+    """
+    Creates a credentials entry for a user account, if it doesn't already have them.
+    """
+    if not user.credentials:
+        credentials = Credentials()
+        user.credentials = credentials
+        db.add(credentials)
+    return user.credentials
 
 def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
     """
@@ -106,12 +115,20 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
     if "contact_email" in update_dict and user.editor:
         user.editor.contact_email = update_dict["contact_email"]
     
+    # Update username
+    if user_update.username and user_update.username != user.credentials.username:
+        if not username_is_taken(db, user_update.username):
+            user.credentials.username = user_update.username
+        else:
+            raise ValueError("Username is already taken")
+    
     # Update password
     if user_update.password:
-        user.hashed_password = get_password_hash(user_update.password)
+        user.credentials.hashed_password = get_password_hash(user_update.password)
 
     db.commit()
     db.refresh(user)
+    db.refresh(user.credentials)
 
     return user
 
@@ -156,11 +173,11 @@ def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     except ValueError as e:
         raise ValueError("Invalid credentials")
 
-    if not user or not verify_password(login_input.password, user.hashed_password):
+    if not user or not verify_password(login_input.password, user.credentials.hashed_password):
         raise ValueError("Invalid credentials")
     
     # Create token and associate it to the user
-    token = create_access_token(user.username)
+    token = create_access_token(get_username(user))
     user.current_token = token
     db.commit()
     
@@ -181,7 +198,7 @@ def create_user_output(user: User) -> UserOutput:
     """
     role = get_role(user)
 
-    output = UserOutput(username=user.username, role=role)
+    output = UserOutput(username=get_username(user), role=role)
 
     # Add editor fields
     if role == UserRole.editor:
@@ -196,14 +213,30 @@ def get_by_username(db: Session, username: str) -> User:
     """
         Returns a user account by their username.
     """
-    user = db.query(User).filter(User.username == username).first()
-    if not user:
+    credentials = db.query(Credentials).filter(Credentials.username == username).first()
+    if not credentials:
         raise ValueError("User not found")
-    return user
+    return credentials.user
+
+def username_is_taken(db: Session, username: str) -> bool:
+    """
+    Returns whether a username is already in use by some account.
+    """
+    try:
+        get_by_username(db, username)
+        return True
+    except:
+        return False
+
+def get_username(user: User) -> str | None:
+    """
+    Returns the username of an account, if any.
+    """
+    return user.credentials.username
 
 # Returns an editor by their username
-def get_editor(db: Session, username: str) -> Editor|None:
-    return db.query(Editor).filter(Editor.username == username).first()
+def get_editor(db: Session, username: str) -> Editor | None:
+    return get_by_username(db, username).editor
 
 # Get a user's role
 def get_role(user: User) -> UserRole:

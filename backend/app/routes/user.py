@@ -86,7 +86,7 @@ async def update_user(username: str, user_update: UserUpdate, db: Session = Depe
         userToEdit = UserCrud.get_by_username(db, username)
 
         # Only admins can edit accounts that aren't theirs
-        if not current_user.admin and userToEdit.username != current_user.username:
+        if not current_user.admin and UserCrud.get_username(userToEdit) != UserCrud.get_username(current_user):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only admins can edit other users's accounts")
 
         user = UserCrud.update_user(db, userToEdit, user_update)

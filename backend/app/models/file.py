@@ -18,6 +18,6 @@ class File(Base):
     id = Column(Integer, index=True, primary_key=True, unique=True)
     path = Column(String, index=True, unique=True)
     content = Column(LargeBinary)
-    uploader_id = Column(String, ForeignKey("users.username"))
+    uploader_id = Column(Integer, ForeignKey("users.id"))
 
     uploader: Mapped["User"] = relationship("User", back_populates="uploaded_files", cascade="all")

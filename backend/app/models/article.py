@@ -21,7 +21,7 @@ article_authors = Table(
     "article_authors",
     Base.metadata,
     Column("article_id", ForeignKey("articles.id")),
-    Column("author_username", ForeignKey("editors.username")),
+    Column("author_id", ForeignKey("editors.user_id")),
 )
 
 article_tags = Table(
