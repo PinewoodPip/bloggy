@@ -310,16 +310,16 @@ function onMetadataUpdated(article: Article) {
   })
 }
 
-function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keybind | null) {
+function onKeybindRebound(itemID: Toolbar.actionGroupItemIdentifier, keybind: Editor.keybind | null) {
   // Clear keybind of the previous action bound to it
   if (keybind) {
-    const previousAction = editor.value.getActionForKeybind(keybind)
+    const previousAction = editor.value.getItemForKeybind(keybind)
     if (previousAction) {
-      editor.value.setActionKeybind(previousAction.id, null)
+      editor.value.setItemKeybind(previousAction.id, null)
     }
   }
   // Set new keybind
-  editor.value.setActionKeybind(actionID, keybind)
+  editor.value.setItemKeybind(itemID, keybind)
 
   // Persist settings
   editor.value.savePreferences("ArticleEditor")
@@ -350,7 +350,7 @@ const editorState = computed(() => {
 
 /** Returns the action bound to a key combination. */
 function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
-  return editor.value.getActionForKeybind(keyCombo)
+  return editor.value.getItemForKeybind(keyCombo)
 }
 
 /** Returns whether a key combo is bound to any action. */
@@ -461,7 +461,7 @@ const contextMenuItems = computed(() => {
   for (const item of ClipboardActions.actionGroup.items) {
     clipboardItems.push(getActionContextMenuEntry(item))
   }
-  
+
   items.push(clipboardItems)
   return items
 })

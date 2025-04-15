@@ -1,4 +1,4 @@
-<!-- Button for displaying and executing toolbar callback items. -->
+<!-- Button for displaying and executing toolbar callback and action items. -->
 <template>
   <UTooltip>
     <IconButton :icon="item.def.icon" :class="btnClass" class="btn-smp rounded-sm" @pointerdown.prevent @click="useTool" />
@@ -32,7 +32,7 @@ function useTool() {
 }
 
 const keybindLabel = computed(() => {
-  const keybind = editor.value.getActionKeybind(props.item.id)
+  const keybind = editor.value.getItemKeybind(props.item.id)
   return keybind ? keybindStringifier.stringify(keybind) : null
 })
 

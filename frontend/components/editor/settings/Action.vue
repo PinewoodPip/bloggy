@@ -1,8 +1,8 @@
 <!-- Setting entry for an action; allows changing its keybind and visibility. -->
 <template>
   <div class="flex items-center">
-    <UIcon class="size-5 mr-3" :class="nameClass" :name="action.def.icon"/>
-    <span :class="nameClass">{{ action.def.name }}</span>
+    <UIcon class="size-5 mr-3" :class="nameClass" :name="item.def.icon"/>
+    <span :class="nameClass">{{ itemNameLabel }}</span>
     <span v-if="!isVisibleInToolbar" class="italic ml-1" :class="nameClass">(hidden)</span>
 
     <HorizontalFill/>
@@ -31,36 +31,42 @@
 
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
+import * as Toolbar from '~/src/editor/Toolbar'
 
 const keybindStringifier = useKeybindStringifier()
 
 const props = defineProps<{
-  action: Editor.IAction,
+  item: Toolbar.GroupItem,
   isVisibleInToolbar: boolean,
   canReset?: boolean,
   keybind: Editor.keybind | null,
 }>()
 
 const emit = defineEmits<{
-  rebind: [Editor.actionID],
-  toggleVisibility: [Editor.actionID, boolean]
-  resetToDefault: [Editor.actionID]
+  rebind: [Toolbar.GroupItem],
+  toggleVisibility: [Toolbar.GroupItem, boolean]
+  resetToDefault: [Toolbar.GroupItem]
 }>()
 
 function rebind() {
-  emit('rebind', props.action.def.id)
+  emit('rebind', props.item)
 }
 
 function toggleVisibility() {
-  emit('toggleVisibility', props.action.def.id, !props.isVisibleInToolbar)
+  emit('toggleVisibility', props.item, !props.isVisibleInToolbar)
 }
 
 function resetToDefault() {
-  emit('resetToDefault', props.action.def.id)
+  emit('resetToDefault', props.item)
 }
 
 const keybindStr = computed(() => {
   return props.keybind ? keybindStringifier.stringify(props.keybind) : null
+})
+
+const itemNameLabel = computed(() => {
+  const def = props.item.def;
+  return def.longName || def.name // Prefer longer names as items from submenus tend to rely on parent item for context, which is not visible in the settings menu
 })
 
 const nameClass = computed(() => {

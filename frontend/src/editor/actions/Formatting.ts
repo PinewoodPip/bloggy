@@ -170,6 +170,7 @@ for (const alignType of ['right', 'left', 'center', 'justify']) {
     type: 'action',
     def: {
       name: StringUtils.capitalize(alignType),
+      longName: `Align ${alignType}`,
       icon: SetAlignment.ICONS[alignType],
     },
     id: action.id,

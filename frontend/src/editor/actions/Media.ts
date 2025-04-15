@@ -62,6 +62,7 @@ let _actionGroup: Group = {
           id: 'media.image.hotlink',
           def: {
             name: 'From link',
+            longName: 'Insert image from link',
             icon: 'material-symbols:link',
           } 
         } as GroupCallback,
@@ -80,6 +81,7 @@ let _actionGroup: Group = {
           id: 'media.image.from_cms',
           def: {
             name: 'From site files',
+            longName: 'Insert image from site',
             icon: 'material-symbols:cloud',
           } 
         } as GroupCallback,

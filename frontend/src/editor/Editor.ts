@@ -6,7 +6,7 @@ import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { schema } from '~/src/editor/Schema'
-import { Toolbar, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
+import { Toolbar, type actionGroupItemIdentifier, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
@@ -90,13 +90,13 @@ export class Editor {
   }
 
   /** Returns the keybind for an action. */
-  getActionKeybind(id: actionID): keybind | null {
+  getItemKeybind(id: actionID): keybind | null {
     const customKeybind = this.customActionBindings[id]
     return customKeybind ? customKeybind : null
   }
 
   /** Sets the custom keybind for an action. Use null to clear a binding. */
-  setActionKeybind(actionID: actionID, combo: keybind | null | undefined) {
+  setItemKeybind(actionID: actionID, combo: keybind | null | undefined) {
     // Clear previous binding
     const previousBinding = this.customActionBindings[actionID]
     if (previousBinding) {
@@ -115,9 +115,16 @@ export class Editor {
   }
 
   /** Returns the action associated to a keybind. */
-  getActionForKeybind(keyCombo: keybind): IAction | null {
+  getItemForKeybind(keyCombo: keybind): IAction | null {
     const customBindingAction = this.customBindingToAction[keyCombo]
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
+  }
+
+  /** Returns the default keybind for a toolbar item. */
+  getDefaultItemKeybind(item: GroupItem | actionGroupItemIdentifier) : keybind | null {
+    const actionID = typeof(item) === 'object' ? item.id : item // ID overload.
+    const action = this.actions[actionID] ? this.getAction(actionID) : null
+    return action ? action.getDefaultKeyCombo() : null
   }
 
   /** Serializes a document to a Markdown-like string. */
@@ -163,7 +170,7 @@ export class Editor {
       // Apply keybinds
       for (const actionID in parsedSaveData.keybinds) {
         const keybind = parsedSaveData.keybinds[actionID]
-        this.setActionKeybind(actionID, keybind)
+        this.setItemKeybind(actionID, keybind)
       }
 
       // Apply toolbar preferences

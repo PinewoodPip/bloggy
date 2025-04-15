@@ -16,6 +16,8 @@ export interface GroupItem {
 /** User-friendly metadata for a toolbar item. */
 export interface ItemDef {
   name: string,
+  /** A longer, more descriptive name for use where the item's context is unclear. */
+  longName?: string,
   icon: string,
 }
 

@@ -70,7 +70,7 @@ export const useArticleEditor = () => {
   for (const action of Object.values(editor.actions)) {
     const actionID = action.id
     const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
-    editor.setActionKeybind(actionID, defaultKeybind)
+    editor.setItemKeybind(actionID, defaultKeybind)
   }
 
   return editor
