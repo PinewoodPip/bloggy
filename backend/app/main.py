@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 from core.lifespan import lifespan
 from core.config import engine
 from core.config import Base
@@ -35,3 +36,7 @@ app.include_router(comment.router, prefix="/comments", tags=["Comment"])
 app.include_router(file.router, prefix="/files", tags=["Files"])
 app.include_router(search.router, prefix="/search", tags=["Search"])
 app.include_router(site.router, prefix="/site", tags=["Site"])
+
+# Run uvicorn server if the app is ran directly (ex. via debugger)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
