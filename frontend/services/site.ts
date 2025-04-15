@@ -96,22 +96,14 @@ class SiteService extends Service {
 
   /** Fetches the site's global config. */
   async getSiteConfig(): Promise<SiteConfig> {
-    try {
-      const response = await this.get('/site/config')
-      return response.data
-    } catch (error) {
-      throw error
-    }
+    const response = await this.get('/site/config')
+    return response.data
   }
 
   /** Updates the site's global config. */
   async updateSiteConfig(config: SiteConfigUpdate): Promise<SiteConfig> {
-    try {
-      const response = await this.patch('/site/config', config)
-      return response.data
-    } catch (error) {
-      throw error
-    }
+    const response = await this.patch('/site/config', config)
+    return response.data
   }
 
   /** Fetches the site's sidebar document. */

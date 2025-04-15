@@ -8,6 +8,10 @@ export default defineNuxtConfig({
     dataValue: "theme", // Sets data-theme attribute in <html> tag
     classSuffix: "",
   },
+  imports: {
+    // Auto-import API response/request types from service classes
+    dirs: ['services']
+  },
   // Expose env variables to vue components and compasables
   runtimeConfig: {
     public: {

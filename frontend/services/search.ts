@@ -1,7 +1,16 @@
 /**
  * Utility methods for /search/ API routes.
  */
+import type { ArticlePreview } from './article'
 import Service from './service'
+
+export type ArticleSearchResults = {
+  results: ArticlePreview[],
+}
+
+export type ArticleLatestPosts = ArticleSearchResults & {
+  total_articles: integer,
+}
 
 type SearchQuery = {
   text?: string,
@@ -19,12 +28,8 @@ class SearchService extends Service {
 
   /** Searches articles by title, content & authors. */
   async searchArticles(query: SearchQuery): Promise<ArticleSearchResults> {
-    try {
-      const response = await this.get('/search/articles', query)
-      return response.data
-    } catch (error) {
-      throw error
-    }
+    const response = await this.get('/search/articles', query)
+    return response.data
   }
   
   /** Fetches the latest published articles on the site. */

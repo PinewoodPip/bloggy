@@ -47,6 +47,11 @@
 import { useQuery } from '@tanstack/vue-query'
 import type { TreeItemGetters } from '~/components/admin/TreeItem.vue'
 
+interface ContentPanelRelevantSearchItems {
+  CategoryIDs: Set<categoryID>,
+  ArticleIDs: Set<articleID>,
+}
+
 const categoryService = useCategoryService()
 const articleService = useArticleService()
 const responseToast = useResponseToast()

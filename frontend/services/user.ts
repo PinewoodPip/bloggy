@@ -4,6 +4,35 @@
 import Service from "./service"
 import Cookies from "js-cookie"
 
+/** Schema for GET /users/{username} responses. */
+export type User = {
+  username: string,
+  role: userRole,
+
+  // Following fields only present for editor accounts
+  display_name?: string, 
+  contact_email?: string,
+  biography?: string,
+}
+
+/** Schema for POST /users/ requests. */
+export type UserCreationRequest = {
+  username: string,
+  password: string,
+  display_name: string,
+  biography?: string,
+  contact_email?: string,
+}
+
+/** Schema for PATCH /users/ */
+export type UserUpdateRequest = {
+username?: string,
+password?: string,
+display_name?: string,
+biography?: string,
+contact_email?: string|null,
+}
+
 interface AuthTokenPayload {
   /** The username of the token bearer. */
   sub: string,
@@ -17,38 +46,28 @@ class UserService extends Service {
 
   /** Sends a login request and stores the auth token and username if successful */
   async login(username: string, password: string) {
-    try {
-      const response = await this.post("/users/login", {
-        "username": username,
-        "password": password,
-      });
+    const response = await this.post("/users/login", {
+      "username": username,
+      "password": password,
+    });
 
-      const data = response.data;
-      const token = data.token;
-      if (!token) {
-        throw new Error("Token not found in the response?");
-      }
-
-      // Set auth cookies
-      Cookies.set("auth_token", token, { expires: 3 });
-
-      return response;
-    } catch (error) {
-      throw error;
+    const data = response.data;
+    const token = data.token;
+    if (!token) {
+      throw new Error("Token not found in the response?");
     }
+
+    // Set auth cookies
+    Cookies.set("auth_token", token, { expires: 3 });
+
+    return response;
   }
 
   /** Sends a logout request and clears auth cookies if successful */
   async logout() {
-    try {
-      const response = await this.post("/users/logout");
-
-      this.clearAuth()
-
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.post("/users/logout");
+    this.clearAuth()
+    return response.data;
   }
 
   /** Removes auth cookies */
@@ -58,44 +77,28 @@ class UserService extends Service {
 
   /** Fetches a user account */
   async getUser(username: string): Promise<User> {
-    try {
-      const response = await this.get("/users/" + username);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.get("/users/" + username);
+    return response.data;
   }
 
   /** Fetches all user accounts. Requires auth. */
   async getAll(role?: userRole): Promise<User[]> {
-    try {
-      const response = await this.get("/users/", {
-        role: role,
-      });
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.get("/users/", {
+      role: role,
+    });
+    return response.data;
   }
 
   /** Creates an editor account. */
   async createUser(userData: UserCreationRequest): Promise<User> {
-    try {
-      const response = await this.post("/users/", userData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.post("/users/", userData);
+    return response.data;
   }
 
   /** Updates a user's data. */
   async updateUser(username:string, userData: UserUpdateRequest): Promise<User> {
-    try {
-      const response = await this.patch("/users/" + username, userData);
-      return response.data;
-    } catch (error) {
-      throw error;
-    }
+    const response = await this.patch("/users/" + username, userData);
+    return response.data;
   }
 
   /** Returns whether auth cookies are present. Does not validate them. */
@@ -108,7 +111,6 @@ class UserService extends Service {
     const cookie = Cookies.get("auth_token")
     if (!cookie) return null;
     const payload = this.parseJwt(cookie)
-    console.log(payload)
     return (payload as AuthTokenPayload).sub
   }
 
