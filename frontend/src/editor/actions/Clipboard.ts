@@ -8,14 +8,10 @@ import { schema } from '../Schema'
 import { Action } from './Action'
 
 export class Copy extends Action {
-  static override ID: string = 'ClipboardCopy'
+  static ID: string = 'ClipboardCopy'
 
   constructor() {
-    super({
-      id: Copy.ID,
-      name: 'Copy',
-      icon: 'i-material-symbols-content-copy',
-    })
+    super(Copy.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -31,14 +27,10 @@ export class Copy extends Action {
 }
 
 export class Paste extends Action {
-  static override ID: string = 'ClipboardPaste'
+  static ID: string = 'ClipboardPaste'
 
   constructor() {
-    super({
-      id: Paste.ID,
-      name: 'Paste',
-      icon: 'i-material-symbols-content-paste-go',
-    })
+    super(Paste.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -85,7 +77,21 @@ export class Paste extends Action {
 export const actionGroup: Group = {
   name: 'Clipboard',
   items: [
-    {type: 'action', id: Copy.ID} as GroupAction,
-    {type: 'action', id: Paste.ID} as GroupAction,
+    {
+      type: 'action',
+      id: Copy.ID,
+      def: {
+        name: 'Copy',
+        icon: 'i-material-symbols-content-copy',
+      },
+    } as GroupAction,
+    {
+      type: 'action',
+      id: Paste.ID,
+      def: {
+        name: 'Paste',
+        icon: 'i-material-symbols-content-paste-go',
+      },
+    } as GroupAction,
   ]
 }

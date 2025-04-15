@@ -6,11 +6,10 @@ import type { Command, EditorState, NodeSelection, Transaction } from 'prosemirr
 import type { ActionDef, IAction, actionID, keybind } from '../Editor'
 
 export abstract class Action implements IAction {
-  static ID: actionID
-  def: ActionDef
+  id: actionID
 
-  constructor(def: ActionDef) {
-    this.def = def
+  constructor(id: string) {
+    this.id = id
   }
 
   abstract execute(state: EditorState, params?: object): Transaction | Promise<Transaction> | null

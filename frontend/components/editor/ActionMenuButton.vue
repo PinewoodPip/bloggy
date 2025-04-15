@@ -33,10 +33,9 @@ const menuItems = computed(() => {
   const items = []
   for (const subitem of props.menu.subitems) {
     if (toolbar.value.isItemVisible(subitem.id)) {
-      const itemDef = editor.value.getItemDef(subitem)
       items.push({
-        label: itemDef.name,
-        icon: itemDef.icon,
+        label: subitem.def.name,
+        icon: subitem.def.icon,
         click: () => {
           emit('useAction', subitem)
         }

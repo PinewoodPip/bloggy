@@ -10,6 +10,7 @@ export type actionGroupItemIdentifier = actionID | string
 export interface GroupItem {
   type: actionGroupItemType,
   id: string,
+  def: ItemDef,
 }
 
 /** User-friendly metadata for a toolbar item. */
@@ -21,7 +22,6 @@ export interface ItemDef {
 /** Represents an item that should trigger a callback to the editor. */
 export interface GroupCallback extends GroupItem {
   type: 'callback',
-  def: ItemDef,
 }
 
 /** Represents a single action within a group. */
@@ -33,7 +33,6 @@ export interface GroupAction extends GroupItem {
 /** Groups up items into a single toolbar item that opens a menu containing each item. */
 export interface GroupActionMenu extends GroupItem {
   type: 'actionMenu',
-  def: ItemDef,
   subitems: GroupItem[],
 }
 

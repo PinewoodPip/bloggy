@@ -8,14 +8,10 @@ import type { Group, GroupAction } from '../Toolbar'
 import { Action } from './Action'
 
 export class Undo extends Action {
-  static override ID: string = 'Undo'
+  static ID: string = 'Undo'
 
   constructor() {
-    super({
-      id: Undo.ID,
-      name: 'Undo',
-      icon: 'i-heroicons-arrow-uturn-left-solid',
-    })
+    super(Undo.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -28,14 +24,10 @@ export class Undo extends Action {
 }
 
 export class Redo extends Action {
-  static override ID: string = 'Redo'
+  static ID: string = 'Redo'
 
   constructor() {
-    super({
-      id: Redo.ID,
-      name: 'Redo',
-      icon: 'i-heroicons-arrow-uturn-right-solid',
-    })
+    super(Redo.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -50,7 +42,21 @@ export class Redo extends Action {
 export const actionGroup: Group = {
   name: 'History',
   items: [
-    {type: 'action', id: Undo.ID} as GroupAction,
-    {type: 'action', id: Redo.ID} as GroupAction,
+    {
+      type: 'action',
+      id: Undo.ID,
+      def: {
+        name: 'Undo',
+        icon: 'i-heroicons-arrow-uturn-left-solid',
+      },
+    } as GroupAction,
+    {
+      type: 'action',
+      id: Redo.ID,
+      def: {
+        name: 'Redo',
+        icon: 'i-heroicons-arrow-uturn-right-solid',
+      },
+    } as GroupAction,
   ]
 }

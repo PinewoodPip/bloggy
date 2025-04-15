@@ -9,14 +9,10 @@ import { schema } from '../Schema'
 import { Action } from './Action'
 
 export class FormatBold extends Action {
-  static override ID = 'FormatBold'
+  static ID = 'FormatBold'
 
   constructor() {
-    super({
-      id: FormatBold.ID,
-      name: 'Toggle Bold',
-      icon: 'i-heroicons-bold',
-    })
+    super(FormatBold.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -34,14 +30,10 @@ export class FormatBold extends Action {
 }
 
 export class FormatItalic extends Action {
-  static override ID = 'FormatItalic'
+  static ID = 'FormatItalic'
 
   constructor() {
-    super({
-      id: FormatItalic.ID,
-      name: 'Toggle Italics',
-      icon: 'i-heroicons-italic',
-    })
+    super(FormatItalic.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -59,14 +51,10 @@ export class FormatItalic extends Action {
 }
 
 export class FormatUnderline extends Action {
-  static override ID = 'FormatUnderline'
+  static ID = 'FormatUnderline'
 
   constructor() {
-    super({
-      id: FormatUnderline.ID,
-      name: 'Toggle Underline',
-      icon: 'i-heroicons-underline',
-    })
+    super(FormatUnderline.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -84,14 +72,10 @@ export class FormatUnderline extends Action {
 }
 
 export class FormatInlineCode extends Action {
-  static override ID = 'FormatInlineCode'
+  static ID = 'FormatInlineCode'
 
   constructor() {
-    super({
-      id: FormatInlineCode.ID,
-      name: 'Toggle Inline Code',
-      icon: 'i-material-symbols-code-rounded',
-    })
+    super(FormatInlineCode.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -109,14 +93,10 @@ export class FormatInlineCode extends Action {
 }
 
 export class FormatLink extends Action {
-  static override ID = 'FormatLink'
+  static ID = 'FormatLink'
 
   constructor() {
-    super({
-      id: FormatLink.ID,
-      name: 'Set Link',
-      icon: 'material-symbols:link',
-    })
+    super(FormatLink.ID)
   }
 
   execute(state: EditorState, params: {href: string, title: string}): Transaction | Promise<Transaction> | null {
@@ -149,7 +129,6 @@ export class FormatLink extends Action {
 }
 
 export class SetAlignment extends Action {
-  static override ID = 'SetAlignment'
   /* Extend as necessary. */
   static ICONS: {[key: string]: string} = {
     'left': 'material-symbols:format-align-left',
@@ -161,11 +140,7 @@ export class SetAlignment extends Action {
   private type: alignmentType
 
   constructor(alignment: alignmentType) {
-    super({
-      id: `SetAlignment.${alignment}`,
-      name: StringUtils.capitalize(alignment),
-      icon: SetAlignment.ICONS[alignment],
-    })
+    super(`SetAlignment.${alignment}`)
     this.type = alignment
   }
 
@@ -193,17 +168,49 @@ for (const alignType of ['right', 'left', 'center', 'justify']) {
   _alignmentActions.push(action)
   _alignmentActionItems.push({
     type: 'action',
-    id: action.def.id,
+    def: {
+      name: StringUtils.capitalize(alignType),
+      icon: SetAlignment.ICONS[alignType],
+    },
+    id: action.id,
   })
 }
 export const alignmentActions = _alignmentActions
 export const actionGroup: Group = {
   name: 'Formatting',
   items: [
-    {type: 'action', id: FormatBold.ID} as GroupAction,
-    {type: 'action', id: FormatItalic.ID} as GroupAction,
-    {type: 'action', id: FormatUnderline.ID} as GroupAction,
-    {type: 'action', id: FormatInlineCode.ID} as GroupAction,
+    {
+      type: 'action',
+      id: FormatBold.ID,
+      def: {
+        name: 'Toggle Bold',
+        icon: 'i-heroicons-bold',
+      },
+    } as GroupAction,
+    {
+      type: 'action',
+      id: FormatItalic.ID,
+      def: {
+        name: 'Toggle Italics',
+        icon: 'i-heroicons-italic',
+      },
+    } as GroupAction,
+    {
+      type: 'action',
+      id: FormatUnderline.ID,
+      def: {
+        name: 'Toggle Underline',
+        icon: 'i-heroicons-underline',
+      },
+    } as GroupAction,
+    {
+      type: 'action',
+      id: FormatInlineCode.ID,
+      def: {
+        name: 'Toggle Inline Code',
+        icon: 'i-material-symbols-code-rounded',
+      },
+    } as GroupAction,
     {
       type: 'actionMenu',
       id: 'formatting.alignment.menu',
@@ -213,6 +220,13 @@ export const actionGroup: Group = {
       },
       subitems: _alignmentActionItems,
     } as GroupActionMenu,
-    {type: 'action', id: FormatLink.ID} as GroupAction,
+    {
+      type: 'action',
+      id: FormatLink.ID,
+      def: {
+        name: 'Set Link',
+        icon: 'material-symbols:link',
+      },
+    } as GroupAction,
   ]
 }

@@ -9,14 +9,10 @@ import { Action } from './Action'
 import { schema } from '../Schema'
 
 export class InsertImage extends Action {
-  static override ID: string = 'InsertImage'
+  static ID: string = 'InsertImage'
 
   constructor() {
-    super({
-      id: 'InsertImage',
-      name: 'Insert Image',
-      icon: 'material-symbols:image',
-    })
+    super('InsertImage')
   }
 
   execute(state: EditorState, params: {href: string, alt?: string}): Transaction | Promise<Transaction> | null {
@@ -30,14 +26,10 @@ export class InsertImage extends Action {
 
 /** Action to insert external content embeds. */
 export class InsertEmbed extends Action {
-  static override ID: string = 'InsertEmbed'
+  static ID: string = 'InsertEmbed'
 
   constructor() {
-    super({
-      id: InsertEmbed.ID,
-      name: `Insert embed`,
-      icon: 'material-symbols:featured-video-outline',
-    })
+    super(InsertEmbed.ID)
   }
 
   execute(state: EditorState, params: EmbedAttrs): Transaction | Promise<Transaction> | null {

@@ -116,6 +116,7 @@ import type { AxiosError } from 'axios'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import { schema } from '~/src/editor/Schema'
 import { Markdown } from '~/src/editor/markdown/Parser'
+import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as cheerio from 'cheerio';
 
 /** Callbacks available to node renderers. */
@@ -204,14 +205,14 @@ function onImageEdited(imgAttrs: Editor.ImageAttrs) {
 }
 
 /** Execute action commands */
-function onActionUsed(item: Toolbar.GroupItem) {
+function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
   if (editorRef.value) {
+    const itemID = typeof item === 'string' ? item : item.id // String overload.
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
     
     if (state) {
-      const itemID = item.id || item.def.id
       if (itemID == 'FormatLink') {
         const nodeRange = ProseMirrorUtils.getNodeRange(state)
         const node = nodeRange.$from.node()
@@ -314,7 +315,7 @@ function onKeybindRebound(actionID: Editor.actionID, keybind: Editor.keybind | n
   if (keybind) {
     const previousAction = editor.value.getActionForKeybind(keybind)
     if (previousAction) {
-      editor.value.setActionKeybind(previousAction.def.id, null)
+      editor.value.setActionKeybind(previousAction.id, null)
     }
   }
   // Set new keybind
@@ -429,12 +430,11 @@ function onEmbedEdited(attrs: Editor.EmbedAttrs) {
   executeAction('InsertEmbed', attrs)
 }
 
-function getActionContextMenuEntry(actionID: Editor.actionID): object {
-  const action = editor.value.getAction(actionID)
+function getActionContextMenuEntry(item: Toolbar.GroupItem): object {
   return {
-    label: action.def.name,
-    icon: action.def.icon,
-    click: () => {executeAction(action.def.id)},
+    label: item.def.name,
+    icon: item.def.icon,
+    click: () => {executeAction(item.id)},
   }
 }
 
@@ -455,13 +455,14 @@ function onTitleFieldFocusOut() {
 /** Options shown in the context menu. */
 const contextMenuItems = computed(() => {
   const items: object[][] = []
+
   // Add clipboard actions
-  items.push(
-    [
-      getActionContextMenuEntry('ClipboardCopy'),
-      getActionContextMenuEntry('ClipboardPaste'),
-    ],
-  )
+  const clipboardItems = []
+  for (const item of ClipboardActions.actionGroup.items) {
+    clipboardItems.push(getActionContextMenuEntry(item))
+  }
+  
+  items.push(clipboardItems)
   return items
 })
 
@@ -514,10 +515,7 @@ const shortcutEntries = useArbitraryKeyshortcuts(
   (keys) => {
     const action = getKeyComboAction(keys)
     if (action) {
-      onActionUsed({
-        type: 'action',
-        id: action.def.id,
-      })
+      onActionUsed(action.id)
     }
   },
   (keys) => {

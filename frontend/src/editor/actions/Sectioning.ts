@@ -10,16 +10,10 @@ import { Action } from './Action'
 import { schema } from '../Schema'
 
 export class SetHeading extends Action {
-  static override ID: string = 'SetHeading'
-
   private level: integer
 
   constructor(level: integer) {
-    super({
-      id: `SetHeading.ID.${level}`,
-      name: `Set Heading ${level}`,
-      icon: 'i-material-symbols-h-mobiledata-badge-outline', // TODO better icon
-    })
+    super(`SetHeading.ID.${level}`)
 
     this.level = level
   }
@@ -53,14 +47,10 @@ export class SetHeading extends Action {
 }
 
 export class InsertHorizontalRule extends Action {
-  static override ID: string = 'InsertHorizontalRule'
+  static ID: string = 'InsertHorizontalRule'
 
   constructor() {
-    super({
-      id: InsertHorizontalRule.ID,
-      name: 'Insert Horizontal Rule',
-      icon: 'i-material-symbols-horizontal-rule',
-    })
+    super(InsertHorizontalRule.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -75,14 +65,10 @@ export class InsertHorizontalRule extends Action {
 }
 
 export class MakeQuote extends Action {
-  static override ID: string = 'MakeQuote'
+  static ID: string = 'MakeQuote'
 
   constructor() {
-    super({
-      id: MakeQuote.ID,
-      name: 'Insert Quote',
-      icon: 'i-material-symbols-format-quote',
-    })
+    super(MakeQuote.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -107,7 +93,11 @@ for (let i = 1; i <= 6; ++i) {
   _headingActions.push(action)
   _headingActionItems.push({
     type: 'action',
-    id: action.def.id,
+    id: action.id,
+    def: {
+      name: `Set Heading ${i}`,
+      icon: 'i-material-symbols-h-mobiledata-badge-outline', // TODO better icon
+    },
   })
 }
 let _actionGroup: Group = {
@@ -125,10 +115,18 @@ let _actionGroup: Group = {
     {
       type: 'action',
       id: InsertHorizontalRule.ID,
+      def: {
+        name: 'Insert Horizontal Rule',
+        icon: 'i-material-symbols-horizontal-rule',
+      },
     } as GroupAction,
     {
       type: 'action',
       id: MakeQuote.ID,
+      def: {        
+        name: 'Insert Quote',
+        icon: 'i-material-symbols-format-quote',
+      },
     } as GroupAction,
   ],
 }

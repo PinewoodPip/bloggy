@@ -30,7 +30,7 @@ export interface ActionDef {
  * which can be executed to edit the document or editor view.
  */
 export interface IAction {
-  def: ActionDef,
+  id: actionID,
 
   /** Runs the action's effect. */
   execute(state: EditorState, params?: object): Transaction | Promise<Transaction> | null,
@@ -58,7 +58,7 @@ export class Editor {
 
   /** Registers an editor action. */
   registerAction(action: Action) {
-    this.actions[action.def.id] = action
+    this.actions[action.id] = action
   }
 
   /** Returns a registered action by its ID. */
@@ -87,15 +87,6 @@ export class Editor {
       }
     }
     return false
-  }
-
-  /** Returns the definition for a toolbar item. */
-  getItemDef(item: GroupItem): ItemDef {
-    if (item.type === 'action') {
-      return this.getAction(item.id).def
-    } else {
-      return item.def
-    }
   }
 
   /** Returns the keybind for an action. */

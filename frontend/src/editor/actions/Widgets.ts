@@ -11,14 +11,10 @@ import { Action } from './Action'
 import { schema } from '../Schema'
 
 export class InsertCodeBlock extends Action {
-  static override ID: string = 'InsertCodeBlock'
+  static ID: string = 'InsertCodeBlock'
 
   constructor() {
-    super({
-      id: 'InsertCodeBlock',
-      name: 'Toggle Code Block',
-      icon: 'material-symbols:code-blocks-outline',
-    })
+    super('InsertCodeBlock')
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -30,16 +26,12 @@ export class InsertCodeBlock extends Action {
 }
 
 export class InsertAlert extends Action {
-  static override ID: string = 'InsertAlert'
+  static ID: string = 'InsertAlert'
 
-  protected alertType: alertType
+  alertType: alertType
 
   constructor(type: alertType) {
-    super({
-      id: `InsertAlert.${type}`,
-      name: `Toggle ${type} note`,
-      icon: 'material-symbols:lightbulb-2-outline', // TODO different icon per type
-    })
+    super(`InsertAlert.${type}`)
     this.alertType = type
   }
 
@@ -85,14 +77,10 @@ export class InsertAlert extends Action {
 }
 
 export class InsertFootnote extends Action {
-  static override ID: string = 'InsertFootnote'
+  static ID: string = 'InsertFootnote'
 
   constructor() {
-    super({
-      id: 'InsertFootnote',
-      name: 'Insert Footnote',
-      icon: 'material-symbols:edit-note',
-    })
+    super('InsertFootnote')
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -125,7 +113,7 @@ export class InsertFootnote extends Action {
  * Action group
  */
 // Create alert actions
-let _alertActions: Action[] = [
+let _alertActions: InsertAlert[] = [
   new InsertAlert('note'),
   new InsertAlert('tip'),
   new InsertAlert('important'),
@@ -136,7 +124,11 @@ const alertActionIDs: GroupItem[] = []
 for (const action of _alertActions) {
   alertActionIDs.push({
     type: 'action',
-    id: action.def.id,
+    id: action.id,
+    def: {
+      name: `Toggle ${action.alertType} note`,
+      icon: 'material-symbols:lightbulb-2-outline', // TODO different icon per type
+    },
   } as GroupAction)
 }
 let _actionGroup: Group = {
@@ -145,6 +137,10 @@ let _actionGroup: Group = {
     {
       type: 'action',
       id: InsertCodeBlock.ID,
+      def: {
+        name: 'Toggle Code Block',
+        icon: 'material-symbols:code-blocks-outline',
+      },
     } as GroupAction,
     {
       type: 'actionMenu',
@@ -158,6 +154,10 @@ let _actionGroup: Group = {
     {
       type: 'action',
       id: InsertFootnote.ID,
+      def: {
+        name: 'Insert Footnote',
+        icon: 'material-symbols:edit-note',
+      },
     } as GroupAction,
   ],
 }

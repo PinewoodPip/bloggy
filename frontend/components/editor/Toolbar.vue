@@ -23,7 +23,6 @@
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
-import ActionButton from './ActionButton.vue'
 import CallbackButton from './CallbackButton.vue'
 import ActionMenuButton from './ActionMenuButton.vue'
 
@@ -81,26 +80,20 @@ function getVisibleGroupItems(group: Toolbar.Group) {
 
 // Component, props and event getters for the dynamic toolbar item component
 function getGroupItemComponent(item: Toolbar.GroupItem) {
-  if (item.type === 'action') {
-    return ActionButton
-  } else if (item.type === 'actionMenu') {
+  if (item.type === 'actionMenu') {
     return ActionMenuButton
-  } else if (item.type === 'callback') {
+  } else if (item.type === 'callback' || item.type === 'action') {
     return CallbackButton
   } else {
     throw "Unimplemented group item: " + item.type
   }
 }
 function getGroupItemComponentProps(item: Toolbar.GroupItem) {
-  if (item.type === 'action') {
-    return {
-      action: editor.value.getAction((item as Toolbar.GroupAction).id),
-    }
-  } else if (item.type === 'actionMenu') {
+   if (item.type === 'actionMenu') {
     return {
       menu: item as Toolbar.GroupActionMenu,
     }
-  } else if (item.type === 'callback') {
+  } else if (item.type === 'callback' || item.type === 'action') {
     return {
       item: item,
     }
@@ -109,15 +102,11 @@ function getGroupItemComponentProps(item: Toolbar.GroupItem) {
   }
 }
 function getGroupItemComponentEvents(item: Toolbar.GroupItem) {
-  if (item.type === 'action') {
-    return {
-      use: useAction,
-    }
-  } else if (item.type === 'actionMenu') {
+  if (item.type === 'actionMenu') {
     return {
       useAction: useAction,
     }
-  } else if (item.type === 'callback') {
+  } else if (item.type === 'callback' || item.type === 'action') {
     return {
       use: useAction,
     }

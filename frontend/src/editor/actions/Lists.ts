@@ -34,14 +34,10 @@ function toggleList(nodeType: NodeType, state: EditorState): Command {
 }
 
 export class ToggleBulletList extends Action {
-  static override ID: string = 'ToggleBulletList'
+  static ID: string = 'ToggleBulletList'
 
   constructor() {
-    super({
-      id: 'ToggleBulletList',
-      name: 'Toggle Bullet List',
-      icon: 'material-symbols:format-list-bulleted',
-    })
+    super('ToggleBulletList')
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -54,14 +50,10 @@ export class ToggleBulletList extends Action {
 }
 
 export class ToggleNumberedList extends Action {
-  static override ID: string = 'ToggleNumberedList'
+  static ID: string = 'ToggleNumberedList'
 
   constructor() {
-    super({
-      id: ToggleNumberedList.ID,
-      name: 'Toggle Numbered List',
-      icon: 'material-symbols:format-list-numbered',
-    })
+    super(ToggleNumberedList.ID)
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
@@ -90,10 +82,18 @@ let _actionGroup: Group = {
         {
           type: 'action',
           id: ToggleBulletList.ID,
+          def: {
+            name: 'Toggle Bullet List',
+            icon: 'material-symbols:format-list-bulleted',
+          },
         },
         {
           type: 'action',
           id: ToggleNumberedList.ID,
+          def: {
+            name: 'Toggle Numbered List',
+            icon: 'material-symbols:format-list-numbered',
+          },
         },
       ],
     } as GroupActionMenu,
