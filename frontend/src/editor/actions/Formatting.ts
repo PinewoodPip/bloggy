@@ -4,7 +4,7 @@
 import { type EditorState, type Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
+import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
 import { schema } from '../Schema'
 import { Action } from './Action'
 
@@ -186,27 +186,33 @@ export class SetAlignment extends Action {
 /**
  * Action group
  */
+const _alignmentActionItems: GroupItem[] = []
 const _alignmentActions: Action[] = []
-const alignmentActionIDs: actionID[] = []
 for (const alignType of ['right', 'left', 'center', 'justify']) {
   const action = new SetAlignment(alignType as alignmentType)
   _alignmentActions.push(action)
-  alignmentActionIDs.push(action.def.id)
+  _alignmentActionItems.push({
+    type: 'action',
+    id: action.def.id,
+  })
 }
 export const alignmentActions = _alignmentActions
 export const actionGroup: Group = {
   name: 'Formatting',
   items: [
-    {type: 'action', actionID: FormatBold.ID} as GroupAction,
-    {type: 'action', actionID: FormatItalic.ID} as GroupAction,
-    {type: 'action', actionID: FormatUnderline.ID} as GroupAction,
-    {type: 'action', actionID: FormatInlineCode.ID} as GroupAction,
+    {type: 'action', id: FormatBold.ID} as GroupAction,
+    {type: 'action', id: FormatItalic.ID} as GroupAction,
+    {type: 'action', id: FormatUnderline.ID} as GroupAction,
+    {type: 'action', id: FormatInlineCode.ID} as GroupAction,
     {
       type: 'actionMenu',
-      icon: 'material-symbols:format-align-left',
-      name: 'Set Alignment',
-      actionIDs: alignmentActionIDs,
+      id: 'formatting.alignment.menu',
+      def: {
+        icon: 'material-symbols:format-align-left',
+        name: 'Set Alignment',
+      },
+      subitems: _alignmentActionItems,
     } as GroupActionMenu,
-    {type: 'action', actionID: FormatLink.ID} as GroupAction,
+    {type: 'action', id: FormatLink.ID} as GroupAction,
   ]
 }

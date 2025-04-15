@@ -1,9 +1,9 @@
 <!-- Button for displaying and executing editor actions. -->
 <template>
   <!-- Tooltip needs to be hidden while the menu is open, as otherwise it would show when hovering over the menu -->
-  <UTooltip :text="!menuVisible ? menu.name : undefined">
+  <UTooltip :text="!menuVisible ? menu.def.name : undefined">
     <UDropdown v-model:open="menuVisible" :items="menuItems" :popper="{ placement: 'bottom-start' }" >
-      <IconButton :icon="menu.icon" :class="btnClass" class="btn-smp rounded-sm"  @click.prevent="toggleMenu" />
+      <IconButton :icon="menu.def.icon" :class="btnClass" class="btn-smp rounded-sm"  @click.prevent="toggleMenu" />
     </UDropdown>
   </UTooltip>
 </template>
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  useAction: [Editor.IAction],
+  useAction: [Toolbar.GroupItem],
 }>()
 
 const menuVisible = ref(false)
@@ -31,14 +31,14 @@ function toggleMenu() {
 /** NuxtUI dropdown menu items. */
 const menuItems = computed(() => {
   const items = []
-  for (const actionID of props.menu.actionIDs) {
-    if (toolbar.value.isActionVisibleInToolbar(actionID)) {
-      const action = editor.value.getAction(actionID)
+  for (const subitem of props.menu.subitems) {
+    if (toolbar.value.isItemVisible(subitem.id)) {
+      const itemDef = editor.value.getItemDef(subitem)
       items.push({
-        label: action.def.name,
-        icon: action.def.icon,
+        label: itemDef.name,
+        icon: itemDef.icon,
         click: () => {
-          emit('useAction', action)
+          emit('useAction', subitem)
         }
       })
     }
@@ -48,8 +48,8 @@ const menuItems = computed(() => {
 
 /** The button is highlighted if any action is active. */
 const btnClass = computed(() => {
-  const isActive = editorState.value && props.menu.actionIDs.find((actionID) => {
-    return editor.value.getAction(actionID).isActive(editorState.value)
+  const isActive = editorState.value && props.menu.subitems.find((subitem) => {
+    return editor.value.isItemActive(editorState.value, subitem)
   })
   return {
     'btn-secondary': !isActive,

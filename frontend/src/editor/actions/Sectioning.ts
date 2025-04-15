@@ -5,7 +5,7 @@
 import { setBlockType, wrapIn } from 'prosemirror-commands'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
+import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -101,28 +101,34 @@ export class MakeQuote extends Action {
  */
 // Creating heading actions
 const _headingActions: Action[] = []
-const headingActionIDs: actionID[] = []
+const _headingActionItems: GroupItem[] = []
 for (let i = 1; i <= 6; ++i) {
   const action = new SetHeading(i)
   _headingActions.push(action)
-  headingActionIDs.push(action.def.id)
+  _headingActionItems.push({
+    type: 'action',
+    id: action.def.id,
+  })
 }
 let _actionGroup: Group = {
   name: 'Sectioning',
   items: [
     {
       type: 'actionMenu',
-      icon: 'i-material-symbols-h-mobiledata-badge-outline',
-      name: 'Set Heading',
-      actionIDs: headingActionIDs,
+      id: 'sectioning.heading.menu',
+      def: {
+        icon: 'i-material-symbols-h-mobiledata-badge-outline',
+        name: 'Set Heading',
+      },
+      subitems: _headingActionItems,
     } as GroupActionMenu,
     {
       type: 'action',
-      actionID: InsertHorizontalRule.ID,
+      id: InsertHorizontalRule.ID,
     } as GroupAction,
     {
       type: 'action',
-      actionID: MakeQuote.ID,
+      id: MakeQuote.ID,
     } as GroupAction,
   ],
 }

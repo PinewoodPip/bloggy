@@ -76,18 +76,26 @@ export class ToggleNumberedList extends Action {
 /**
  * Action group
  */
-const headingActionIDs: actionID[] = [
-  ToggleBulletList.ID,
-  ToggleNumberedList.ID,
-]
 let _actionGroup: Group = {
   name: 'Lists',
   items: [
     {
       type: 'actionMenu',
-      icon: 'material-symbols:format-list-bulleted',
-      name: 'Toggle List',
-      actionIDs: headingActionIDs,
+      id: 'lists.menu',
+      def: {
+        icon: 'material-symbols:format-list-bulleted',
+        name: 'Toggle List',
+      },
+      subitems: [
+        {
+          type: 'action',
+          id: ToggleBulletList.ID,
+        },
+        {
+          type: 'action',
+          id: ToggleNumberedList.ID,
+        },
+      ],
     } as GroupActionMenu,
   ],
 }

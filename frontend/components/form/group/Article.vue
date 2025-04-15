@@ -1,7 +1,7 @@
 <!-- A form component for selecting articles & categories from the site's CMS. -->
 <template>
   <UFormGroup :required="required">
-    <FormInputField class="select-none" v-model="selectedItemPath" :placeholder="placeholderLabel" :icon="icon" type="text" @click.prevent="onClick" readonly />
+    <FormInputField class="select-none" v-model="selectedItemPath" :placeholder="placeholderLabel" :icon="icon" type="text" @click.prevent="onClick" @keyup.enter.prevent="onClick" readonly />
 
     <!-- Article selection modal -->
     <AdminModalArticleSelect ref="articleSelectModal" :can-select-categories="type === 'category'" :can-select-articles="type === 'article'" @confirm="onItemSelected" />

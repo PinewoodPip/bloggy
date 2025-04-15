@@ -18,6 +18,7 @@ export const useArticleEditor = () => {
   const toolbar = editor.getToolbar()
 
   // Add default actions and groups
+
   // History actions
   editor.registerAction(new HistoryActions.Undo())
   editor.registerAction(new HistoryActions.Redo())
@@ -50,10 +51,6 @@ export const useArticleEditor = () => {
   // Media actions
   editor.registerAction(new MediaActions.InsertImage())
   editor.registerAction(new MediaActions.InsertEmbed())
-  editor.registerAction(new MediaActions.RequestEmbed())
-  for (const action of MediaActions.imageActions) {
-    editor.registerAction(action)
-  }
   toolbar.registerToolbarGroup(MediaActions.actionGroup)
 
   // List actions

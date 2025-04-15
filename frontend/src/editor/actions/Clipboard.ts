@@ -44,6 +44,7 @@ export class Paste extends Action {
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
     try {
       // Read clipboard
+      // @ts-ignore
       return navigator.clipboard.read().then((items) => {
         for (const clipboardItem of items) {
           for (const type of clipboardItem.types) {
@@ -84,7 +85,7 @@ export class Paste extends Action {
 export const actionGroup: Group = {
   name: 'Clipboard',
   items: [
-    {type: 'action', actionID: Copy.ID} as GroupAction,
-    {type: 'action', actionID: Paste.ID} as GroupAction,
+    {type: 'action', id: Copy.ID} as GroupAction,
+    {type: 'action', id: Paste.ID} as GroupAction,
   ]
 }

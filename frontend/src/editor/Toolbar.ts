@@ -3,24 +3,38 @@
  */
 import type { actionID } from "./Editor"
 
-export type actionGroupItemType = 'action'|'actionMenu'
+export type actionGroupItemType = 'callback'|'action'|'actionMenu'
+export type actionGroupItemIdentifier = actionID | string
 
+/** Represents an item in a toolbar group. */
 export interface GroupItem {
   type: actionGroupItemType,
+  id: string,
+}
+
+/** User-friendly metadata for a toolbar item. */
+export interface ItemDef {
+  name: string,
+  icon: string,
+}
+
+/** Represents an item that should trigger a callback to the editor. */
+export interface GroupCallback extends GroupItem {
+  type: 'callback',
+  def: ItemDef,
 }
 
 /** Represents a single action within a group. */
 export interface GroupAction extends GroupItem {
   type: 'action',
-  actionID: string,
+  id: actionID,
 }
 
-/** Groups up actions into a single toolbar item that opens a menu containing each action. */
+/** Groups up items into a single toolbar item that opens a menu containing each item. */
 export interface GroupActionMenu extends GroupItem {
   type: 'actionMenu',
-  name: string,
-  icon: string,
-  actionIDs: string[],
+  def: ItemDef,
+  subitems: GroupItem[],
 }
 
 /** Groups multiple related toolbar items. */
@@ -30,37 +44,37 @@ export interface Group {
 }
 
 export class Toolbar {
-  private toolbarGroups: Group[] = []
+  private itemGroups: Group[] = []
 
   /** Actions that should not be shown in the toolbar. */
-  private hiddenActions: Set<actionID> = new Set()
+  private hiddenItems: Set<actionGroupItemIdentifier> = new Set()
   
   /** Returns all action groups in order of registration. */
   getToolbarGroups(): Group[] {
-    return this.toolbarGroups
+    return this.itemGroups
   }
 
   /** Registers an action group. Will be the last in the list. */
   registerToolbarGroup(group: Group) {
-    this.toolbarGroups.push(group)
+    this.itemGroups.push(group)
   }
 
   /** Returns whether an action should appear in the toolbar. */
-  isActionVisibleInToolbar(actionID: actionID) {
-    return !this.hiddenActions.has(actionID)
+  isItemVisible(itemID: actionGroupItemIdentifier) {
+    return !this.hiddenItems.has(itemID)
   }
 
-  /** Returns the actions that should be hidden from the user. */
-  getHiddenActions() : Set<actionID> {
-    return this.hiddenActions
+  /** Returns the items that should be hidden from the user. */
+  getHiddenItems() : Set<actionGroupItemIdentifier> {
+    return this.hiddenItems
   }
 
-  /** Sets whether an action should appear in the toolbar. */
-  setActionVisibleInToolbar(actionID: actionID, visible: boolean) {
+  /** Sets whether an item should appear in the toolbar. */
+  setItemVisible(itemID: actionGroupItemIdentifier, visible: boolean) {
     if (!visible) {
-      this.hiddenActions.add(actionID)
+      this.hiddenItems.add(itemID)
     } else {
-      this.hiddenActions.delete(actionID)
+      this.hiddenItems.delete(itemID)
     }
   }
 }

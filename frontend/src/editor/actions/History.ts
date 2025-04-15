@@ -50,7 +50,7 @@ export class Redo extends Action {
 export const actionGroup: Group = {
   name: 'History',
   items: [
-    {type: 'action', actionID: Undo.ID} as GroupAction,
-    {type: 'action', actionID: Redo.ID} as GroupAction,
+    {type: 'action', id: Undo.ID} as GroupAction,
+    {type: 'action', id: Redo.ID} as GroupAction,
   ]
 }

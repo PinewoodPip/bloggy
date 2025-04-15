@@ -12,7 +12,7 @@
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsAction v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" :is-visible-in-toolbar="toolbar.isActionVisibleInToolbar(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
+          <EditorSettingsAction v-for="actionID in getGroupActions(group)" :action="editor.getAction(actionID)" :keybind="editor.getActionKeybind(actionID)" :canReset="!isKeybindDefault(actionID)" :is-visible-in-toolbar="toolbar.isItemVisible(actionID)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
         </div>
       </div>
     </template>
@@ -79,9 +79,9 @@ function getGroupActions(group: Toolbar.Group): Editor.actionID[] {
   const actions: Editor.actionID[] = []
   for (const item of group.items) {
     if (item.type === 'action') {
-      actions.push((item as Toolbar.GroupAction).actionID)
+      actions.push((item as Toolbar.GroupAction).id)
     } else if (item.type === 'actionMenu') {
-      for (const actionID of (item as Toolbar.GroupActionMenu).actionIDs) {
+      for (const actionID of (item as Toolbar.GroupActionMenu).subitems) {
         actions.push(actionID)
       }
     }
@@ -109,7 +109,7 @@ function onResetKeybind(actionID: Editor.actionID) {
 
 /** Sets visibility and saves preferences. */
 function onToggleActionVisibility(actionID: Editor.actionID, visible: boolean) {
-  toolbar.value.setActionVisibleInToolbar(actionID, visible)
+  toolbar.value.setItemVisible(actionID, visible)
   editor.value.savePreferences("ArticleEditor")
 }
 

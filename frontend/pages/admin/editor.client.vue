@@ -108,6 +108,7 @@ import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState } from 'prosemirror-state'
 import { Node } from 'prosemirror-model'
 import type { EditorView } from 'prosemirror-view'
+import type * as Toolbar from '~/src/editor/Toolbar'
 import * as Editor from '~/src/editor/Editor'
 import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
@@ -203,14 +204,15 @@ function onImageEdited(imgAttrs: Editor.ImageAttrs) {
 }
 
 /** Execute action commands */
-function onActionUsed(action: Editor.IAction) {
+function onActionUsed(item: Toolbar.GroupItem) {
   if (editorRef.value) {
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
     
     if (state) {
-      if (action.def.id == 'FormatLink') {
+      const itemID = item.id || item.def.id
+      if (itemID == 'FormatLink') {
         const nodeRange = ProseMirrorUtils.getNodeRange(state)
         const node = nodeRange.$from.node()
 
@@ -224,16 +226,16 @@ function onActionUsed(action: Editor.IAction) {
         }
 
         linkModal.value!.open(linkAttrs)
-      } else if (action.def.id === 'HotlinkImage') {
+      } else if (itemID === 'media.image.hotlink') {
         hotlinkImageModal.value!.open()
-      } else if (action.def.id === 'UploadImage') {
+      } else if (itemID === 'media.image.upload') {
         imageUploadModal.value!.open()
-      } else if (action.def.id === 'SelectImage') {
+      } else if (itemID === 'media.image.from_cms') {
         imageSelectModal.value!.open()
-      } else if (action.def.id === 'RequestEmbed') {
+      } else if (itemID === 'media.embed.request') {
         embedEditorModal.value!.open()
-      } else {
-        executeAction(action.def.id)
+      } else if (editor.value.getAction(itemID)) {
+        executeAction(itemID)
       }
     }
   }
@@ -512,7 +514,10 @@ const shortcutEntries = useArbitraryKeyshortcuts(
   (keys) => {
     const action = getKeyComboAction(keys)
     if (action) {
-      onActionUsed(action)
+      onActionUsed({
+        type: 'action',
+        id: action.def.id,
+      })
     }
   },
   (keys) => {

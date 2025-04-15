@@ -3,7 +3,7 @@
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
 import type { actionID, EmbedAttrs } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu } from '../Toolbar'
+import type { Group, GroupAction, GroupActionMenu, GroupCallback, GroupItem } from '../Toolbar'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
 import { schema } from '../Schema'
@@ -28,58 +28,6 @@ export class InsertImage extends Action {
   }
 }
 
-export class HotlinkImage extends Action {
-  static override ID: string = 'HotlinkImage'
-
-  constructor() {
-    super({
-      id: 'HotlinkImage',
-      name: 'From link',
-      icon: 'material-symbols:link',
-    })
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
-    return null
-  }
-}
-
-export class UploadImage extends Action {
-  static override ID: string = 'UploadImage'
-
-  constructor() {
-    super({
-      id: 'UploadImage',
-      name: 'Upload image',
-      icon: 'material-symbols:image-arrow-up-rounded',
-    })
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
-    return null
-  }
-}
-
-/** An action to insert an image from the site's CMS. */
-export class SelectImage extends Action {
-  static override ID: string = 'SelectImage'
-
-  constructor() {
-    super({
-      id: SelectImage.ID,
-      name: 'From site files',
-      icon: 'material-symbols:cloud',
-    })
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    // This action doesn't directly edit the document; it is intended to be chained into InsertImage after going through some form in the UI.
-    return null
-  }
-}
-
 /** Action to insert external content embeds. */
 export class InsertEmbed extends Action {
   static override ID: string = 'InsertEmbed'
@@ -101,50 +49,59 @@ export class InsertEmbed extends Action {
   }
 }
 
-/** Action to request an embed insert. */
-export class RequestEmbed extends Action {
-  static override ID: string = 'RequestEmbed'
-
-  constructor() {
-    super({
-      id: RequestEmbed.ID,
-      name: 'Insert embed',
-      icon: 'material-symbols:featured-video-outline',
-    })
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    // This action doesn't directly edit the document; it is intended to be chained into InsertEmbed after going through some form in the UI.
-    return null
-  }
-}
-
 /**
  * Action group
  */
-let _imageActions: Action[] = [
-  new HotlinkImage(),
-  new UploadImage(),
-  new SelectImage(),
-]
-const imageActionIDs: actionID[] = []
-for (const action of _imageActions) {
-  imageActionIDs.push(action.def.id)
-}
 let _actionGroup: Group = {
   name: 'Media',
   items: [
+    /** Image items. */
     {
       type: 'actionMenu',
-      icon: 'material-symbols:image',
-      name: 'Insert image',
-      actionIDs: imageActionIDs,
+      id: 'media.image.menu',
+      def: {
+        icon: 'material-symbols:image',
+        name: 'Insert image',
+      },
+      subitems: [
+        /** Callback to insert an image from a URL. */
+        {
+          type: 'callback',
+          id: 'media.image.hotlink',
+          def: {
+            name: 'From link',
+            icon: 'material-symbols:link',
+          } 
+        } as GroupCallback,
+        /** Callback to upload an image to the site's CMS. */
+        {
+          type: 'callback',
+          id: 'media.image.upload',
+          def: {
+            name: 'Upload image',
+            icon: 'material-symbols:image-arrow-up-rounded',
+          } 
+        } as GroupCallback,
+        /** Callback to insert an image from the site's CMS. */
+        {
+          type: 'callback',
+          id: 'media.image.from_cms',
+          def: {
+            name: 'From site files',
+            icon: 'material-symbols:cloud',
+          } 
+        } as GroupCallback,
+      ],
     } as GroupActionMenu,
+    /** Callback to request an embed insert. */
     {
-      type: 'action',
-      actionID: RequestEmbed.ID,
-    } as GroupAction,
+      type: 'callback',
+      id: 'media.embed.request',
+      def: {
+        name: 'Insert embed',
+        icon: 'material-symbols:featured-video-outline',
+      }
+    } as GroupCallback,
   ],
 }
 export const actionGroup = _actionGroup
-export const imageActions = _imageActions

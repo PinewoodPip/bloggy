@@ -6,7 +6,7 @@ import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { schema } from '~/src/editor/Schema'
-import { Toolbar } from './Toolbar'
+import { Toolbar, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
@@ -74,6 +74,30 @@ export class Editor {
     return this.toolbar
   }
 
+  /** Returns whether a toolbar item is currently being used. */
+  isItemActive(state: EditorState, item: GroupItem): boolean {
+    if (item.type === 'action') {
+      return this.getAction(item.id).isActive(state)
+    } else if (item.type === 'actionMenu') {
+      // Menus are active if any subitem is
+      for (const subitem of (item as GroupActionMenu).subitems) {
+        if (this.isItemActive(state, subitem)) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  /** Returns the definition for a toolbar item. */
+  getItemDef(item: GroupItem): ItemDef {
+    if (item.type === 'action') {
+      return this.getAction(item.id).def
+    } else {
+      return item.def
+    }
+  }
+
   /** Returns the keybind for an action. */
   getActionKeybind(id: actionID): keybind | null {
     const customKeybind = this.customActionBindings[id]
@@ -130,7 +154,7 @@ export class Editor {
   savePreferences(storageKey: string) {
     const saveData = {
       keybinds: this.customActionBindings,
-      hiddenActions: [...this.toolbar.getHiddenActions().values()],
+      hiddenActions: [...this.toolbar.getHiddenItems().values()],
     }
     window.localStorage.setItem(storageKey, JSON.stringify(saveData))
   }
@@ -153,7 +177,7 @@ export class Editor {
 
       // Apply toolbar preferences
       for (const actionID of parsedSaveData.hiddenActions || []) {
-        this.toolbar.setActionVisibleInToolbar(actionID, false)
+        this.toolbar.setItemVisible(actionID, false)
       }
     }
   }

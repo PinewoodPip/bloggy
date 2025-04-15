@@ -24,12 +24,13 @@
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
 import ActionButton from './ActionButton.vue'
+import CallbackButton from './CallbackButton.vue'
 import ActionMenuButton from './ActionMenuButton.vue'
 
 const { editor, toolbar } = useEditorInjects()
 
 const emit = defineEmits<{
-  actionUse: [Editor.IAction]
+  actionUse: [Toolbar.GroupItem]
 }>()
 
 const headerRef = useTemplateRef('header')
@@ -37,7 +38,8 @@ const headerParentRef = useTemplateRef('parent')
 
 const floating = ref(false)
 
-function useAction(action: Editor.IAction) {
+function useAction(action: Toolbar.GroupItem) {
+  console.log('use', action)
   emit('actionUse', action)
 }
 
@@ -59,12 +61,13 @@ function getVisibleGroupItems(group: Toolbar.Group) {
   const items: Toolbar.GroupItem[] = []
   for (const item of group.items) {
     let visible = false
-    if (item.type === 'action') {
-      visible = toolbar.value.isActionVisibleInToolbar((item as Toolbar.GroupAction).actionID)
+    if (item.type === 'action' || item.type === 'callback') {
+      visible = toolbar.value.isItemVisible(item.id)
     } else if (item.type === 'actionMenu') {
-      const menuActions = (item as Toolbar.GroupActionMenu).actionIDs
-      visible = ArrayUtils.anyInArray(menuActions, (actionID) => {
-        return toolbar.value.isActionVisibleInToolbar(actionID)
+      // Menu is visible if any of its subitems is
+      const menuActions = (item as Toolbar.GroupActionMenu).subitems
+      visible = ArrayUtils.anyInArray(menuActions, (item) => {
+        return toolbar.value.isItemVisible(item.id)
       })
     } else {
       throw 'Unsupported item type ' + item.type
@@ -82,6 +85,8 @@ function getGroupItemComponent(item: Toolbar.GroupItem) {
     return ActionButton
   } else if (item.type === 'actionMenu') {
     return ActionMenuButton
+  } else if (item.type === 'callback') {
+    return CallbackButton
   } else {
     throw "Unimplemented group item: " + item.type
   }
@@ -89,11 +94,15 @@ function getGroupItemComponent(item: Toolbar.GroupItem) {
 function getGroupItemComponentProps(item: Toolbar.GroupItem) {
   if (item.type === 'action') {
     return {
-      action: editor.value.getAction((item as Toolbar.GroupAction).actionID),
+      action: editor.value.getAction((item as Toolbar.GroupAction).id),
     }
   } else if (item.type === 'actionMenu') {
     return {
       menu: item as Toolbar.GroupActionMenu,
+    }
+  } else if (item.type === 'callback') {
+    return {
+      item: item,
     }
   } else {
     throw "Unimplemented group item: " + item.type
@@ -107,6 +116,10 @@ function getGroupItemComponentEvents(item: Toolbar.GroupItem) {
   } else if (item.type === 'actionMenu') {
     return {
       useAction: useAction,
+    }
+  } else if (item.type === 'callback') {
+    return {
+      use: useAction,
     }
   } else {
     throw "Unimplemented group item: " + item.type
