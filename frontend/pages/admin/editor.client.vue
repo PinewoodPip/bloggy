@@ -54,7 +54,7 @@
     </div>
 
     <!-- Toolbar; only rendered once editor is initialized -->
-    <EditorToolbar v-if="editorState" @action-use="onActionUsed"/>
+    <EditorToolbar v-if="editorDocument?.editorState" @action-use="onActionUsed"/>
 
     <!-- Content area -->
     <div class="flex gap-x-2">
@@ -64,17 +64,10 @@
       </div>
 
       <!-- Document -->
-      <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
-        <ProsemirrorAdapterProvider v-if="articleData">
-          <EditorDocument ref="documentRef" :initial-content="articleData.content" />
-        </ProsemirrorAdapterProvider>
-        <LoadingSpinner v-else />
-      </div>
+      <EditorDocument v-if="articleData" ref="document" :initial-content="articleData.content" />
+      <LoadingSpinner v-else />
     </div>
   </UContainer>
-
-  <!-- Context menu -->
-  <ContextMenu v-model="contextMenuOpen" :items="contextMenuItems" />
 
   <!-- Settings menu modal -->
   <UModal v-model="settingsMenuVisible" :overlay="true">
@@ -83,66 +76,42 @@
 
   <!-- Metadata modal -->
   <AdminContentArticleEditModal v-if="articleData" v-model="documentPropertiesVisible" :article="articleData" :category-path="articleData.category_path" @update="onMetadataUpdated" />
-
-  <!-- Footnote modal -->
-  <EditorModalFootnote ref="footnoteModal" @confirm="onConfirmFootnote" />
-
-  <!-- Link modal -->
-  <EditorModalLink ref="linkModal" @confirm="onLinkEdited" />
-
-  <!-- Hotlink image modal -->
-  <EditorModalHotlinkImage ref="hotlinkImageModal" @confirm="onImageEdited" />
-
-  <!-- Upload image modal -->
-  <AdminFileUploadModal ref="imageUploadModal" @create="onImageUploaded" />
-
-  <!-- Image selection modal -->
-  <AdminModalFileSelect ref="fileSelectModal" :can-select-files="true" :valid-extensions="CMSUtils.IMAGE_EXTENSIONS" @confirm="onFileSelected" />
-
-  <!-- Embed insertion modal -->
-  <EditorModalEmbed ref="embedEditorModal" @confirm="onEmbedEdited" />
 </template>
 
 <script setup lang="ts">
-import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
-import { EditorState } from 'prosemirror-state'
-import { Node } from 'prosemirror-model'
-import type { EditorView } from 'prosemirror-view'
 import type * as Toolbar from '~/src/editor/Toolbar'
 import * as Editor from '~/src/editor/Editor'
-import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
-import * as WidgetActions from '~/src/editor/actions/Widgets'
-import { schema } from '~/src/editor/Schema'
 import { Markdown } from '~/src/editor/markdown/Parser'
-import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as cheerio from 'cheerio';
 
-/** Callbacks available to node renderers. */
-export type NodeCallbacks = {
-  /** Notifies that the node should be selected for a node type-specific interaction. */
-  selectNode(node: Node): void,
-}
-
-const editorRef = useTemplateRef('documentRef')
 const articleService = useArticleService()
 const responseToast = useResponseToast()
 const router = useRouter()
 const route = useRoute()
 
 const editor = ref(useArticleEditor())
-const linkModal = useTemplateRef('linkModal')
-const imageUploadModal = useTemplateRef('imageUploadModal')
-const hotlinkImageModal = useTemplateRef('hotlinkImageModal')
-const imageSelectModal = useTemplateRef('fileSelectModal')
-const footnoteModal = useTemplateRef('footnoteModal')
-const embedEditorModal = useTemplateRef('embedEditorModal')
+
+const editorDocument = useTemplateRef('document')
+
+// @ts-ignore
+provide<Ref<Editor.Editor>>('editor', editor)
+
+const editorView = computed(() => {
+  return editorDocument.value?.editorView
+})
+const editorState = computed(() => {
+  return editorDocument.value?.editorState
+})
+
+// Expose editor state to all child components
+provide('editorView', editorView)
+provide('editorState', editorState)
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
 const sidebarVisible = ref(true)
-const contextMenuOpen = ref(false)
 
 const articleMetadata = reactive({
   title: '',
@@ -196,50 +165,8 @@ const viewDropdownItems = [
 /** Max amount of characters to use for auto-generated summaries. */
 const MAX_SUMMARY_LENGTH = 250
 
-function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
-  executeAction('FormatLink', linkAttrs)
-}
-
-function onImageEdited(imgAttrs: Editor.ImageAttrs) {
-  executeAction('InsertImage', imgAttrs)
-}
-
-/** Execute action commands */
 function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
-  if (editorRef.value) {
-    const itemID = typeof item === 'string' ? item : item.id // String overload.
-    const editorRaw = toRaw(editorRef.value)
-    const view = toRaw(editorRaw.editorView)
-    const state = view?.state
-    
-    if (state) {
-      if (itemID == 'FormatLink') {
-        const nodeRange = ProseMirrorUtils.getNodeRange(state)
-        const node = nodeRange.$from.node()
-
-        // Search for a link within the node
-        let linkAttrs: Editor.LinkAttrs | undefined = undefined
-        for (const mark of node.marks) {
-          if (mark.type == schema.marks.link) {
-            linkAttrs = mark.attrs as Editor.LinkAttrs
-            break
-          }
-        }
-
-        linkModal.value!.open(linkAttrs)
-      } else if (itemID === 'media.image.hotlink') {
-        hotlinkImageModal.value!.open()
-      } else if (itemID === 'media.image.upload') {
-        imageUploadModal.value!.open()
-      } else if (itemID === 'media.image.from_cms') {
-        imageSelectModal.value!.open()
-      } else if (itemID === 'media.embed.request') {
-        embedEditorModal.value!.open()
-      } else if (editor.value.getAction(itemID)) {
-        executeAction(itemID)
-      }
-    }
-  }
+  editorDocument.value?.onActionUsed(item)
 }
 
 function openFileMenu() {
@@ -260,7 +187,7 @@ function saveDocument() {
   validateMetadata()
 
   // Serialize the document and PATCH the article
-  const state = toRaw(editorRef.value!.editorState!)
+  const state = toRaw(editorDocument.value!.editorState!)
   const markdownStr = editor.value.serializeDocument(state)
 
   // Extract text without markdown markers
@@ -325,118 +252,10 @@ function onKeybindRebound(itemID: Toolbar.actionGroupItemIdentifier, keybind: Ed
   editor.value.savePreferences("ArticleEditor")
 }
 
-function onContextMenu() {
-  contextMenuOpen.value = true
-}
-
-/** Load the user's editor preferences when editor initializes */
+/** Load the user's editor preferences when editor initializes. */
 watchEffect(() => {
   editor.value.loadPreferences("ArticleEditor")
 })
-
-/** ProseMirror EditorView. */
-const editorView = computed(() => {
-  const editorRaw = toRaw(editorRef.value)
-  const view = toRaw(editorRaw?.editorView) as EditorView
-  return view
-})
-
-/** ProseMirror EditorState. */
-const editorState = computed(() => {
-  const editorRaw = toRaw(editorRef.value)
-  const state = toRaw(editorRaw?.editorState) as EditorState
-  return state
-})
-
-/** Returns the action bound to a key combination. */
-function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
-  return editor.value.getItemForKeybind(keyCombo)
-}
-
-/** Returns whether a key combo is bound to any action. */
-function isKeyComboBound(keyCombo: Editor.actionID) {
-  return getKeyComboAction(keyCombo) !== null
-}
-
-/** Executes an action over the current selection. */
-function executeAction(actionID: string, params?: object) {
-  const action = editor.value.getAction(actionID)
-  const editorRaw = toRaw(editorRef.value)
-  const view = toRaw(editorRaw!.editorView)
-  const state = toRaw(view?.state!)
-
-  // Run action and apply transaction
-  let transaction = action.execute(state, params)
-  if (transaction) {
-    Promise.resolve(transaction).then((a) => {
-      toRaw(toRaw(editorRef.value)!.editorView)?.dispatch(a)
-    })
-  }
-}
-
-/** Selects a footnote to edit its attributes. */
-function selectFootnote(node: Node) {
-  footnoteModal.value?.open(node.attrs as Editor.FootnoteAttrs)
-}
-
-/** Selects an image to edit its attributes. */
-function selectImage(node: Node) {
-  hotlinkImageModal.value!.open(node.attrs as Editor.ImageAttrs)
-}
-
-/** Selects an embed node to edit its attributes. */
-function selectEmbed(node: Node) {
-  embedEditorModal.value!.open(node.attrs as Editor.EmbedAttrs)
-}
-
-/** Provide callbacks for nodes to notify they should be selected. */
-provide<NodeCallbacks>('nodeCallbacks', {
-  selectNode(node: Node) {
-    if (node.type == schema.nodes.footnote) {
-      selectFootnote(node)
-    } else if (node.type === schema.nodes.image) {
-      selectImage(node)
-    } else if (node.type === schema.nodes.embed) {
-      selectEmbed(node)
-    }
-  }
-})
-
-/** Inserts or updates a footnote. */
-function onConfirmFootnote(attrs: Editor.FootnoteAttrs) {
-  const state = toRaw(editorState.value)
-  const view = toRaw(editorView.value)
-
-  // Execute action
-  const action = editor.value.getAction('InsertFootnote') as WidgetActions.InsertFootnote
-  let tr = action.updateFootnote(state, attrs.index, attrs.text)
-  if (tr) {
-    view.dispatch(tr)
-  }
-}
-
-/** Inserts an uploaded image into the document. */
-function onImageUploaded(file: SiteFile) {
-  executeAction('InsertImage', {src: CMSUtils.resolveFilePath(file.path)})
-}
-
-/** Inserts a selected image from the CMS into the document. */
-function onFileSelected(path: path) {
-  executeAction('InsertImage', {src: CMSUtils.resolveFilePath(path)})
-}
-
-/** Inserts an embed into the document. */
-function onEmbedEdited(attrs: Editor.EmbedAttrs) {
-  executeAction('InsertEmbed', attrs)
-}
-
-function getActionContextMenuEntry(item: Toolbar.GroupItem): object {
-  return {
-    label: item.def.name,
-    icon: item.def.icon,
-    click: () => {executeAction(item.id)},
-  }
-}
 
 /** 
  * Validates the metadata values and resets them if they're not valid.
@@ -451,20 +270,6 @@ function validateMetadata() {
 function onTitleFieldFocusOut() {
   validateMetadata()
 }
-
-/** Options shown in the context menu. */
-const contextMenuItems = computed(() => {
-  const items: object[][] = []
-
-  // Add clipboard actions
-  const clipboardItems = []
-  for (const item of ClipboardActions.actionGroup.items) {
-    clipboardItems.push(getActionContextMenuEntry(item))
-  }
-
-  items.push(clipboardItems)
-  return items
-})
 
 /** Query for fetching article metadata and initial content */
 const { data: articleData, status: articleDataStatus, refetch: refetchArticleMetadata } = useQuery({
@@ -503,27 +308,6 @@ const { mutate: requestPatchArticle, status: patchArticleStatus } = useMutation(
     responseToast.showError('Failed to save article', err)
   }
 })
-
-// Expose editor state to all child components
-// @ts-ignore
-provide<Ref<Editor.Editor>>('editor', editor)
-provide('editorView', editorView)
-provide('editorState', editorState)
-
-// TODO would be clearer to reader if this used an object
-const shortcutEntries = useArbitraryKeyshortcuts(
-  (keys) => {
-    const action = getKeyComboAction(keys)
-    if (action) {
-      onActionUsed(action.id)
-    }
-  },
-  (keys) => {
-    return isKeyComboBound(keys)
-  },
-)
-// @ts-ignore The type used is not exported from Nuxt UI.
-defineShortcuts(shortcutEntries)
 
 </script>
 

@@ -1,7 +1,7 @@
 <!-- Wrapper around ProsemirrorAdapterProvider and a readonly Document that only renders client-side. -->
 <template>
   <ProsemirrorAdapterProvider>
-    <EditorDocument :initial-content="initialContent" :readonly="true" />
+    <EditorProseMirrorWrapper :initial-content="initialContent" :readonly="true" />
   </ProsemirrorAdapterProvider>
 </template>
 

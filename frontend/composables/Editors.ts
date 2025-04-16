@@ -10,6 +10,7 @@ import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as ListActions from '~/src/editor/actions/Lists'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import * as MediaActions from '~/src/editor/actions/Media'
+import type { EditorView } from 'prosemirror-view';
 
 /** Creates an article editor model. */
 export const useArticleEditor = () => {
@@ -84,6 +85,6 @@ export const useEditorInjects = () => {
     return editor.value!.getToolbar()
   })
   const editorState = inject<Ref<EditorState>>('editorState')!
-
-  return {editor, editorState, toolbar}
+  const editorView = inject<Ref<EditorView>>('editorView')!
+  return {editor, toolbar, editorState, editorView}
 }

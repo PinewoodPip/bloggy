@@ -38,7 +38,6 @@ const headerParentRef = useTemplateRef('parent')
 const floating = ref(false)
 
 function useAction(action: Toolbar.GroupItem) {
-  console.log('use', action)
   emit('actionUse', action)
 }
 

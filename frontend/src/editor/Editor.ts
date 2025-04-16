@@ -7,6 +7,7 @@ import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { schema } from '~/src/editor/Schema'
 import { Toolbar, type actionGroupItemIdentifier, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
+import type { EditorView } from 'prosemirror-view'
 
 export type actionID = string
 /** In the format "{modifier}_{key}" */
@@ -67,6 +68,19 @@ export class Editor {
       throw 'Action not registered: ' + id
     }
     return this.actions[id]
+  }
+
+  /** Executes an action over the current selection. */
+  executeAction(view: EditorView, actionID: string, params?: object) {
+    const action = this.getAction(actionID)
+
+    // Run action and apply transaction
+    let transaction = action.execute(view.state, params)
+    if (transaction) {
+      Promise.resolve(transaction).then((a) => {
+        view.dispatch(a)
+      })
+    }
   }
 
   /** Returns the toolbar model. */
