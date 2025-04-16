@@ -6,7 +6,7 @@
 
     <template #form>
       <!-- TODO avatar -->
-      <AvatarIcon class="size-24 mx-auto"/>
+      <AdminEditableAvatar v-model="avatarPath" class="size-24 mx-auto"/>
 
       <!-- Form fields -->
       <!-- Username -->
@@ -64,6 +64,7 @@ const passwordConfirmation = ref("")
 const displayName = ref("")
 const contactEmail = ref("")
 const biography = ref("")
+const avatarPath = ref('')
 
 /** Sends a POST/PATCH to create/update the user */
 function confirm() {
@@ -83,6 +84,7 @@ function confirm() {
       display_name: displayName.value !== oldData.display_name ? displayName.value : undefined,
       contact_email: newEmail,
       biography: biography.value !== oldData.biography ? biography.value : undefined,
+      avatar_file_path: avatarPath.value ? avatarPath.value : undefined,
     })
   } else {
     requestCreateAccount({
@@ -105,6 +107,7 @@ function resetFields() {
     passwordConfirmation.value = ''
     contactEmail.value = user.contact_email ?? ''
     biography.value = user.biography ?? ''
+    avatarPath.value = user.avatar_file_path ?? ''
   } else {
     username.value = ''
     displayName.value = ''

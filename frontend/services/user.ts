@@ -15,6 +15,8 @@ export type User = {
   display_name?: string, 
   contact_email?: string,
   biography?: string,
+  /** Not necessarily a site file path - might be an arbitrary URL. */
+  avatar_file_path?: string,
 }
 
 /** Schema for POST /users/ requests. */
@@ -28,11 +30,12 @@ export type UserCreationRequest = {
 
 /** Schema for PATCH /users/ */
 export type UserUpdateRequest = {
-username?: string,
-password?: string,
-display_name?: string,
-biography?: string,
-contact_email?: string|null,
+  username?: string,
+  password?: string,
+  display_name?: string,
+  biography?: string,
+  contact_email?: string | null,
+  avatar_file_path?: path,
 }
 
 interface AuthTokenPayload {
