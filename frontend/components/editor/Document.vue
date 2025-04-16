@@ -7,25 +7,25 @@
   </div>
   
   <!-- Context menu -->
-  <ContextMenu v-model="contextMenuOpen" :items="contextMenuItems" />
+  <EditorDocumentContextMenu ref="contextMenu" @useAction="onContextMenuActionUsed" />
 
   <!-- Widgets -->
   <EditorWidgetsManager ref="widgets" />
 </template>
 
 <script setup lang="ts">
+import EditorDocumentContextMenu from '~/components/editor/DocumentContextMenu.vue'
 import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState } from 'prosemirror-state'
 import { Node } from 'prosemirror-model'
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
 import type { EditorView } from 'prosemirror-view'
-import ContextMenu from '~/components/context-menu/ContextMenu.vue'
-import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const widgets = useTemplateRef('widgets')
+const contextMenu = useTemplateRef('contextMenu')
 const { editor, toolbar } = useEditorInjects()
 
 const props = defineProps<{
@@ -37,8 +37,6 @@ export type NodeCallbacks = {
   /** Notifies that the node should be selected for a node type-specific interaction. */
   selectNode(node: Node): void,
 }
-
-const contextMenuOpen = ref(false)
 
 /** Executes an action over the current selection. */
 function executeAction(actionID: string, params?: object) {
@@ -66,7 +64,12 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
 }
 
 function onContextMenu() {
-  contextMenuOpen.value = true
+  contextMenu.value!.open()
+}
+
+/** Execute actions issued from context menu. */
+function onContextMenuActionUsed(actionID: Toolbar.actionGroupItemIdentifier) {
+  onActionUsed(actionID)
 }
 
 /** ProseMirror EditorView. */
@@ -89,29 +92,6 @@ defineExpose({
   editorState,
   onActionUsed,
 })
-
-/** Options shown in the context menu. */
-const contextMenuItems = computed(() => {
-  const items: object[][] = []
-
-  // Add clipboard actions
-  const clipboardItems = []
-  for (const item of ClipboardActions.actionGroup.items) {
-    clipboardItems.push(getActionContextMenuEntry(item))
-  }
-
-  items.push(clipboardItems)
-  return items
-})
-
-// TODO move
-function getActionContextMenuEntry(item: Toolbar.GroupItem): object {
-  return {
-    label: item.def.name,
-    icon: item.def.icon,
-    click: () => {executeAction(item.id)},
-  }
-}
 
 /** Returns the action bound to a key combination. */
 function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {

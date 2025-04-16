@@ -147,7 +147,6 @@ export class Editor {
 
     // Insert footnote content required by the footnotes plugin
     const footnotes = ProseMirrorUtils.findNodes(state, schema.nodes['footnote'])
-    console.log(footnotes)
     for (const footnote of footnotes) {
       const node = footnote.node
       let text: string = node.attrs.text
