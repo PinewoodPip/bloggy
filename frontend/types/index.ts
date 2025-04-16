@@ -3,7 +3,6 @@ export { }
 
 declare global {
   type integer = number
-  type userRole = "admin"|"editor"
   /** ISO 8601 date */
   type dateISOString = string
   type base64String = string

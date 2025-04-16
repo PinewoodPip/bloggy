@@ -4,6 +4,8 @@
 import Service from "./service"
 import Cookies from "js-cookie"
 
+export type userRole = 'admin'|'editor'|'reader'
+
 /** Schema for GET /users/{username} responses. */
 export type User = {
   username: string,

@@ -4,15 +4,15 @@
 import { useQuery, type UseQueryReturnType } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 
-const userService = useUserService()
-const responseToast = useResponseToast()
-const router = useRouter()
 
 /**
  * Query to get the user data of the authenticated user.
  * Will redirect to login page if the credentials are found to have expired.
  */
 export const useLoggedInUser = () => {
+  const userService = useUserService()
+  const responseToast = useResponseToast()
+  const router = useRouter()
   const query = useQuery({
     queryKey: ["loggedInUser"],
     queryFn: async () => {
@@ -34,6 +34,7 @@ export const useLoggedInUser = () => {
 
 /** A query that fetches all editor accounts. */
 export const useEditors = () => {
+  const userService = useUserService()
   const query = useQuery({
     queryKey: ['editor'],
     queryFn: async () => {
