@@ -4,7 +4,7 @@
     <!-- Avatar and name, linking to a filter search -->
     <RouterLink :to="authorSearchURL">
       <span class="flex items-center">
-        <AvatarIcon class="size-4 mr-1"/>
+        <UserAvatar class="size-4 mr-1" :user="article.authors[0]" />
         <span class="underline">
           {{ article.authors[0].display_name }}
         </span>

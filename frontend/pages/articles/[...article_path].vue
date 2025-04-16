@@ -35,7 +35,7 @@
             <div v-if="author" class="card bg-base-100 w-fit shadow-sm p-3">
               <div class="flex items-center gap-x-2">
                 <!-- Avatar -->
-                <AvatarIcon class="size-24" />
+                <UserAvatar class="size-24" :user="author" />
 
                 <!-- Name, bio and call to action -->
                 <div class="flexcol gap-y-1">
@@ -72,6 +72,7 @@
 import { SiteArticleCommentList } from '#components'
 import { useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
+import AvatarIcon from '~/components/AvatarIcon.vue'
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()

@@ -18,8 +18,7 @@
 
     <!-- User info -->
     <div class="flex px-2 pt-2"> <!-- No bottom padding as the sidebar already has enough -->
-      <!-- TODO -->
-      <AvatarIcon class="size-24"/>
+      <UserAvatar v-if="user" class="size-24" :user="user" />
       <div class="flexcol p-2">
         <p>{{ user ? user.username : "..." }}</p>
         <p>{{ user ? (user.display_name || user.role) : "..." }}</p> <!-- TODO capitalize role -->

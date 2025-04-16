@@ -2,7 +2,7 @@
   <div class="flex flex-grow gap-x-3">
     <!-- Avatar -->
     <div>
-      <AvatarIcon class="size-10" />
+      <UserAvatar class="size-10" :user="comment.author" />
     </div>
 
     <!-- Comment -->
