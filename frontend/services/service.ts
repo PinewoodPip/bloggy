@@ -44,6 +44,11 @@ class Service {
   protected put(route: string, payload?: any): Promise<AxiosResponse<any, any>> {
     return this.axios.put(route, payload, this.getConfig())
   }
+  
+  /** Sends a DELETE request. */
+  protected delete(route: string): Promise<AxiosResponse<any, any>> {
+    return this.axios.delete(route, this.getConfig())
+  }
 
   /** Returns the headers to use for requests */
   protected getConfig(): AxiosRequestConfig {

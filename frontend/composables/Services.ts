@@ -4,6 +4,7 @@ import ArticleService from "~/services/article"
 import FileService from "~/services/file"
 import SearchService from "~/services/search"
 import SiteService from "~/services/site"
+import CommentService from "~/services/comment"
 import type Service from "~/services/service"
 
 // Cached service instances;
@@ -37,4 +38,7 @@ export const useSearchService = () => {
 }
 export const useSiteService = () => {
   return useService("Site", SiteService) as SiteService
+}
+export const useCommentService = () => {
+  return useService("Comment", CommentService) as CommentService
 }

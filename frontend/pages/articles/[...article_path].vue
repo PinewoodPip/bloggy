@@ -2,7 +2,7 @@
   <SitePage>
     <template #content>
       <!-- Article area -->
-      <div v-if="article" class="flexcol">
+      <div v-if="article" class="flexcol gap-y-2">
         <!-- Article -->
         <div class="large-content-block">
           <!-- Breadcrumbs -->
@@ -50,7 +50,6 @@
 
             <hr class="faint-hr" />
 
-            <!-- TODO share buttons -->
             <p>Share this article</p>
             <div class="flex gap-2 flex-wrap">
               <share-network v-for="network in socialNetworks" :network="network.name.toLowerCase()" :url="socialMediaSharingURL" v-slot="{ share }">
@@ -61,12 +60,16 @@
             </div>
           </div>
         </div>
+
+        <!-- Comments -->
+        <SiteArticleCommentList v-if="article.can_comment" />
       </div>
     </template>
   </SitePage>
 </template>
 
 <script setup lang="ts">
+import { SiteArticleCommentList } from '#components'
 import { useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 
