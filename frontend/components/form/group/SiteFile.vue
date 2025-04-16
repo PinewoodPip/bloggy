@@ -4,7 +4,7 @@
     <FormInputField class="select-none" v-model="selectedFile" placeholder="Select file..." :icon="icon" type="text" @click.prevent="onClick" readonly />
 
     <!-- File selection modal -->
-    <AdminModalFileSelect ref="fileSelectModal" @confirm="onFileSelected" />
+    <AdminModalFileSelect ref="fileSelectModal" @confirm="onFileSelected" :can-select-files="true" />
   </UFormGroup>
 </template>
 
