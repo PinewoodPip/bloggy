@@ -3,6 +3,7 @@
 """
 from sqlalchemy.orm import Session
 from models.user import Credentials, User, Editor, Admin
+from models.file import File
 from schemas.user import UserInput, UserUpdate, UserRole, UserOutput, UserLogin, TokenPayload
 from core.security import get_password_hash, verify_password, create_access_token
 from core.config import CONFIG
@@ -98,8 +99,10 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
     """
         Updates a user's data.
     """
+    role = get_role(user)
+
     # Admins do not have the following fields
-    if user.admin and (user_update.biography or user_update.contact_email or user_update.display_name):
+    if role == UserRole.admin and (user_update.biography or user_update.contact_email or user_update.display_name):
         raise ValueError("Cannot set editor fields for an admin account")
 
     # Set fields whose names match the table fields
@@ -112,7 +115,7 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
             setattr(user.admin, k, v)
 
     # Update email, which may be nulled
-    if "contact_email" in update_dict and user.editor:
+    if "contact_email" in update_dict and role == UserRole.editor:
         user.editor.contact_email = update_dict["contact_email"]
     
     # Update username
@@ -125,6 +128,14 @@ def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
     # Update password
     if user_update.password:
         user.credentials.hashed_password = get_password_hash(user_update.password)
+
+    # Update avatar
+    if user_update.avatar_file_path and role == UserRole.editor:
+        file = db.query(File).filter(File.path == user_update.avatar_file_path).first() # TODO use FileCrud, solve circular import
+        if file:
+            user.editor.avatar = file
+        else:
+            raise ValueError("Invalid avatar file path")
 
     db.commit()
     db.refresh(user)
@@ -206,6 +217,8 @@ def create_user_output(user: User) -> UserOutput:
         output.contact_email = editor.contact_email
         output.biography = editor.biography
         output.display_name = editor.display_name
+        if editor.avatar:
+            output.avatar_file_path = editor.avatar.path 
 
     return output
 

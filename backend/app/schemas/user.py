@@ -70,6 +70,7 @@ class UserOutput(BaseModel):
     display_name: Optional[str] = None
     contact_email: Optional[str] = None
     biography: Optional[str] = None
+    avatar_file_path: Optional[str] = None
 
 class UserLoginOutput(UserOutput):
     token: str
@@ -80,3 +81,4 @@ class UserUpdate(BaseModel):
     biography: Optional[str] = None
     contact_email: Optional[str] = None
     display_name: Optional[str] = None
+    avatar_file_path: Optional[str] = None

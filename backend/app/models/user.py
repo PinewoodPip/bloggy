@@ -8,6 +8,7 @@ from core.config import Base
 import typing
 if typing.TYPE_CHECKING:
     from models.comment import Comment
+    from models.file import File
 
 class Credentials(Base):
     __tablename__ = "credentials"
@@ -49,6 +50,7 @@ class Editor(Base):
     
     # Links back to user
     user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True, unique=True, nullable=False)
+    avatar_file_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     
     display_name = Column(String)
     contact_email = Column(String, nullable=True, default=None) # TODO custom validator
@@ -57,3 +59,4 @@ class Editor(Base):
     # Relations
     user: Mapped["User"] = relationship("User", back_populates="editor", cascade="all", single_parent=True)
     articles: Mapped[list[Article]] = relationship(secondary="article_authors", back_populates="authors")
+    avatar: Mapped["File"] = relationship("File", cascade="all")
