@@ -30,7 +30,7 @@
         <div class="collapse-title font-semibold">{{ repliesLabel }}</div>
         <div class="collapse-content">
           <!-- Will propagate events -->
-          <SiteArticleComment v-for="reply in comment.replies" :comment="reply" @delete="(ev) => emit('delete', ev)" @reply="(ev) => emit('reply', ev)" />
+          <SiteArticleComment v-for="reply in comment.replies" :key="comment.id" :comment="reply" @delete="(ev) => emit('delete', ev)" @reply="(ev) => emit('reply', ev)" />
         </div>
       </div>
     </div>

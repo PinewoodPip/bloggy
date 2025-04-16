@@ -10,7 +10,7 @@
 
     <!-- Comments -->
     <div class="flexcol">
-      <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" @delete="onCommentDeleted" @reply="onReplyRequested" />
+      <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" :key="comment.id" @delete="onCommentDeleted" @reply="onReplyRequested" />
     </div>
   </div>
   <LoadingSpinner v-else />
