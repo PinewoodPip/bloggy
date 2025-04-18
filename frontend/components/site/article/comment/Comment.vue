@@ -9,7 +9,7 @@
     <div class="flexcol gap-y-2 flex-grow">
       <!-- Header -->
       <div class="flex gap-x-2">
-        <span class="font-bold">{{ comment.author.display_name }}</span>
+        <span class="font-bold">{{ authorNameLabel }}</span>
         <span>Posted on {{ commentDate }}</span>
       </div>
 
@@ -63,7 +63,11 @@ function deleteComment() {
 }
 
 const canDelete = computed(() => {
-  return user.data.value && (user.data.value.username == props.comment.author.username || user.data.value.role !== 'reader')
+  return user.data.value && (isOwnComment.value || user.data.value.role !== 'reader')
+})
+
+const isOwnComment = computed(() => {
+  return user.data.value && user.data.value.id == props.comment.author.id
 })
 
 const canReply = computed(() => {
@@ -82,6 +86,10 @@ const commentDate = computed(() => {
 const repliesLabel = computed(() => {
   const amount = props.comment.replies.length
   return `${amount} ${amount !== 1 ? 'replies' : 'reply'}`
+})
+
+const authorNameLabel = computed(() => {
+  return isOwnComment.value ? 'You' : props.comment.author.display_name
 })
 
 /** Mutation for deleting a comment. */
