@@ -32,6 +32,7 @@ const responseToast = useResponseToast()
 const editorDocument = useTemplateRef('document')
 const articlePath = useArticlePath()
 const editor = ref(useCommentEditor())
+useEditorProvides(editor, editorDocument)
 
 const props = defineProps<{
   parentComment: ArticleComment | null,
@@ -70,12 +71,6 @@ const editorView = computed(() => {
 const editorState = computed(() => {
   return editorDocument.value?.editorState
 })
-
-// Expose editor state to all child components
-// @ts-ignore
-provide<Ref<Editor.Editor>>('editor', editor)
-provide('editorView', editorView)
-provide('editorState', editorState)
 
 /** Mutation for uploading the comment. */
 const { mutate: requestPost, status: postStatus } = useMutation({

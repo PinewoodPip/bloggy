@@ -92,8 +92,8 @@ const router = useRouter()
 const route = useRoute()
 
 const editor = ref(useArticleEditor())
-
 const editorDocument = useTemplateRef('document')
+useEditorProvides(editor, editorDocument)
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
@@ -242,19 +242,6 @@ function onKeybindRebound(itemID: Toolbar.actionGroupItemIdentifier, keybind: Ed
 watchEffect(() => {
   editor.value.loadPreferences("ArticleEditor")
 })
-
-const editorView = computed(() => {
-  return editorDocument.value?.editorView
-})
-const editorState = computed(() => {
-  return editorDocument.value?.editorState
-})
-
-// Expose editor state to all child components
-// @ts-ignore
-provide<Ref<Editor.Editor>>('editor', editor)
-provide('editorView', editorView)
-provide('editorState', editorState)
 
 /** 
  * Validates the metadata values and resets them if they're not valid.
