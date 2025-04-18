@@ -136,6 +136,8 @@ def get_tree_output(db: Session) -> FileTreeOutput:
     files = get_all(db)
     paths_dict = {file.path: file for file in files}
     processed = _get_file_tree_dict(paths_dict)
+    if len(processed) == 0:
+        processed[""] = {}
 
     new_dict = FileTreeOutput(folder_name="/", path="", files=[], subfolders={})
     build_tree_output(db, new_dict, processed[""]) # Start from "/""
