@@ -47,7 +47,7 @@ async def get_sidebar(db: Session=Depends(get_db)):
     try:
         config = SiteCrud.get_config(db)
         if not config.sidebar_document:
-            return HTTPException(status_code=404)
+            raise HTTPException(status_code=404)
         return ArticleCrud.create_article_output(db, config.sidebar_document)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
