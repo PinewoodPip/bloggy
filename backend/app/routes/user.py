@@ -2,7 +2,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from core.config import get_db
-from schemas.user import UserInput, UserOutput, UserLogin, UserLoginOutput, UserUpdate
+from schemas.user import UserInput, UserOAuthLogin, UserOutput, UserLogin, UserLoginOutput, UserUpdate
 from core.utils import get_current_user, get_current_user_optional
 from models.user import User
 import crud.user as UserCrud
@@ -12,7 +12,7 @@ router = APIRouter()
 @router.post("/login", response_model=UserLoginOutput)
 async def login(login_input: UserLogin, db: Session=Depends(get_db)):
     """
-        Authenticates a user and generates a JWT token for them.
+    Authenticates a user and generates a JWT token for them.
     """
     try:
         user, token = UserCrud.authenticate(db, login_input)
@@ -20,10 +20,21 @@ async def login(login_input: UserLogin, db: Session=Depends(get_db)):
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
+@router.post("/googleLogin", response_model=UserLoginOutput)
+async def login_with_google(credentials: UserOAuthLogin, db: Session=Depends(get_db)):
+    """
+    Authenticates a user using a Google OAuth token.
+    """
+    try:
+        user = UserCrud.authenticate_with_google(db, credentials.credentials)
+        return UserLoginOutput(token=credentials.credentials, **UserCrud.create_user_output(user).model_dump())
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
 @router.post("/logout", response_model=str)
 async def logout(db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
-        Invalidates a JWT token for a user.
+    Invalidates a JWT token for a user.
     """
     try:
         UserCrud.deauthenticate(db, current_user)
@@ -46,7 +57,7 @@ async def add_user(user_input: UserInput, db: Session=Depends(get_db), current_u
 @router.get("/{username}", response_model=UserOutput)
 async def get_user_by_username(username: str, db: Session=Depends(get_db), current_user: User=Depends(get_current_user_optional)):
     """
-        Returns a user's data by their username.
+    Returns a user's data by their username.
     """
     try:
         user = UserCrud.get_by_username(db, username)
@@ -65,8 +76,8 @@ async def get_user_by_username(username: str, db: Session=Depends(get_db), curre
 @router.get("/", response_model=list[UserOutput])
 async def get_users(role: Optional[UserCrud.UserRole] = None, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
-        Returns all user accounts.
-        Admin accounts are only returned for admins.
+    Returns all user accounts.
+    Admin accounts are only returned for admins.
     """
     role_filter = set([role]) if role else set()
     if not current_user.admin: # If the auth user is not admin, only return editor accounts
@@ -97,9 +108,9 @@ async def update_user(username: str, user_update: UserUpdate, db: Session = Depe
 @router.delete("/{username}", response_model=str)
 async def delete_user(username: str, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
-        Deletes a user account.
-        The auth user must be an admin.
-        Fails if the account to be deleted is the last remaining admin account.
+    Deletes a user account.
+    The auth user must be an admin.
+    Fails if the account to be deleted is the last remaining admin account.
     """
     if not current_user.admin:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only admins can delete accounts")

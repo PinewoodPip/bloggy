@@ -29,6 +29,9 @@ class AppConfig():
     ES_USERNAME: str
     ES_PASSWORD: str
 
+    GOOGLE_CLIENT_URL: str
+    """Google Cloud app URL for OAuth."""
+
     def __init__(self):
         for field in fields(AppConfig): # Assign fields
             value = os.getenv(field.name)

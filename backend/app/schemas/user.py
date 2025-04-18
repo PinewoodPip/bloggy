@@ -11,6 +11,7 @@ DIGIT_PATTERN = re.compile(r".*\d.*") # Matches whole string if there is any dig
 class UserRole(enum.Enum):
     admin = "admin"
     editor = "editor"
+    reader = "reader"
 
 # Input user for login
 class UserLogin(BaseModel):
@@ -34,6 +35,10 @@ class UserLogin(BaseModel):
         if not DIGIT_PATTERN.search(v):
             raise ValueError("Password must have 1+ digit characters")
         return v
+
+class UserOAuthLogin(BaseModel):
+    credentials: str
+    """JWT token."""
 
 # JSON payload containing access token
 class Token(BaseModel):
@@ -63,7 +68,8 @@ class UserInput(UserLogin):
 
 # TODO split into 2 schemas?
 class UserOutput(BaseModel):
-    username: str
+    id: int
+    username: Optional[str] = None
     role: UserRole
 
     # Following fields are only present for editors

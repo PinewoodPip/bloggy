@@ -1,11 +1,12 @@
 """
-    CRUD methods for Users table.
+CRUD methods for Users table.
 """
+from typing import Any
 from sqlalchemy.orm import Session
-from models.user import Credentials, User, Editor, Admin
+from models.user import Credentials, Reader, User, Editor, Admin
 from models.file import File
 from schemas.user import UserInput, UserUpdate, UserRole, UserOutput, UserLogin, TokenPayload
-from core.security import get_password_hash, verify_password, create_access_token
+from core.security import get_password_hash, verify_password, create_access_token, decode_google_jwt_token
 from core.config import CONFIG
 from fastapi import HTTPException, status
 
@@ -31,7 +32,7 @@ def create_admin(db: Session, username: str, password: str) -> Admin:
 
 def create_default_admin(db: Session):
     """
-        Creates an admin account with the default credentials, if an account with the default username doesn't exist.
+    Creates an admin account with the default credentials, if an account with the default username doesn't exist.
     """
     try:
         admin = get_by_username(db, CONFIG.ADMIN_USERNAME)
@@ -41,8 +42,8 @@ def create_default_admin(db: Session):
 
 def create_editor_by_user(db: Session, creator_user: User, user_input: UserInput) -> User:
     """
-        Creates an editor account on the behalf of creator_user,
-        if they have the privileges to create accounts.
+    Creates an editor account on the behalf of creator_user,
+    if they have the privileges to create accounts.
     """
     # Only admins can create accounts
     if not creator_user.admin:
@@ -85,6 +86,31 @@ def create_editor(db: Session, user_input: UserInput) -> User:
 
     return user
 
+def create_reader(db: Session, oauth_id: str) -> User:
+    """
+    Creates an account for a reader using oauth authentication.
+    """
+    # Create user
+    try:
+        user = User()
+        credentials = try_create_credentials(db, user)
+        credentials.oauth_id = oauth_id
+        db.add(user)
+
+        # Create corresponding reader table entry
+        editor = Reader()
+        editor.user = user
+        db.add(editor)
+
+        db.commit()
+        db.refresh(user)
+        db.refresh(editor)
+    except Exception as e:
+        db.rollback()
+        raise RuntimeError(str(e))
+
+    return user
+
 def try_create_credentials(db: Session, user: User) -> Credentials:
     """
     Creates a credentials entry for a user account, if it doesn't already have them.
@@ -97,7 +123,7 @@ def try_create_credentials(db: Session, user: User) -> Credentials:
 
 def update_user(db: Session, user: User, user_update: UserUpdate) -> User:
     """
-        Updates a user's data.
+    Updates a user's data.
     """
     role = get_role(user)
 
@@ -161,7 +187,7 @@ def get_all(db: Session, roles: set[UserRole]|None) -> list[User]:
 
 def delete_user(db: Session, user: User):
     """
-        Deletes a user account.
+    Deletes a user account.
     """
     # Ensure the app never loses all admins
     if user.admin and db.query(Admin).count() == 1:
@@ -173,8 +199,8 @@ def delete_user(db: Session, user: User):
 
 def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     """
-        Creates a JWT token for a user given their credentials.
-        Returns the user and their token.
+    Creates a JWT token for a user given their credentials.
+    Returns the user and their token.
     """
     # Verify credentials
     # The error message is the same for either failure (username or password mismatch)
@@ -194,9 +220,22 @@ def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     
     return user, token
 
+def authenticate_with_google(db: Session, credentials: str) -> User:
+    """Logs-in with a Google identity token and creates an account for the user if necessary."""
+    payload = decode_google_jwt_token(credentials)
+
+    # Fetch or create account
+    user_id = payload["sub"]
+    try:
+        user = get_by_oauth(db, user_id)
+    except ValueError:
+        user = create_reader(db, user_id)
+
+    return user
+
 def deauthenticate(db: Session, user: User):
     """
-        Invalidates a JWT token for a user.
+    Invalidates a JWT token for a user.
     """
     if user.current_token == None:
         raise ValueError("User has no token")
@@ -205,11 +244,11 @@ def deauthenticate(db: Session, user: User):
 
 def create_user_output(user: User) -> UserOutput:
     """
-        Creates a UserOutput response for a user.
+    Creates a UserOutput response for a user.
     """
     role = get_role(user)
 
-    output = UserOutput(username=get_username(user), role=role)
+    output = UserOutput(id=user.id, username=get_username(user), role=role)
 
     # Add editor fields
     if role == UserRole.editor:
@@ -218,15 +257,26 @@ def create_user_output(user: User) -> UserOutput:
         output.biography = editor.biography
         output.display_name = editor.display_name
         if editor.avatar:
-            output.avatar_file_path = editor.avatar.path 
+            output.avatar_file_path = editor.avatar.path
+    elif role == UserRole.reader:
+        output.display_name = "A reader"
 
     return output
 
 def get_by_username(db: Session, username: str) -> User:
     """
-        Returns a user account by their username.
+    Returns a user account by their username.
     """
-    credentials = db.query(Credentials).filter(Credentials.username == username).first()
+    credentials = db.query(Credentials).filter(Credentials.username == username).first() or db.query(Credentials).filter(Credentials.oauth_id == username).first()
+    if not credentials:
+        raise ValueError("User not found")
+    return credentials.user
+
+def get_by_oauth(db: Session, oauth_id: str) -> User:
+    """
+    Returns a user by their oauth ID.
+    """
+    credentials = db.query(Credentials).filter(Credentials.oauth_id == oauth_id).first()
     if not credentials:
         raise ValueError("User not found")
     return credentials.user
@@ -247,15 +297,17 @@ def get_username(user: User) -> str | None:
     """
     return user.credentials.username
 
-# Returns an editor by their username
 def get_editor(db: Session, username: str) -> Editor | None:
+    """Returns an editor by their username"""
     return get_by_username(db, username).editor
 
-# Get a user's role
 def get_role(user: User) -> UserRole:
+    """Returns a user's role."""
     if user.editor:
         return UserRole.editor
     elif user.admin:
         return UserRole.admin
+    elif user.reader:
+        return UserRole.reader
     
     raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="User has no role")

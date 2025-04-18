@@ -12,3 +12,4 @@ ruff
 coverage
 bcrypt
 elasticsearch
+pyjwt

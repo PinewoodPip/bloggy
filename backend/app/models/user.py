@@ -16,7 +16,8 @@ class Credentials(Base):
     id = Column(Integer, index=True, primary_key=True) 
     username = Column(String, index=True, unique=True, nullable=True)
     hashed_password = Column(String, nullable=True)
-    # TODO 2fa, oAuth token
+    oauth_id = Column(String, nullable=True)
+    # TODO 2fa
 
     # Relations
     user: Mapped["User"] = relationship("User", back_populates="credentials", cascade="delete, delete-orphan", single_parent=True)
@@ -34,6 +35,7 @@ class User(Base):
     comments: Mapped[list["Comment"]] = relationship("Comment", back_populates="author", cascade="delete, delete-orphan")
     editor: Mapped["Editor"] = relationship("Editor", back_populates="user", cascade="all")
     admin: Mapped["Admin"] = relationship("Admin", back_populates="user", cascade="all")
+    reader: Mapped["Reader"] = relationship("Reader", back_populates="user", cascade="all")
     uploaded_files = relationship("File", back_populates="uploader")
 
 class Admin(Base):
@@ -60,3 +62,10 @@ class Editor(Base):
     user: Mapped["User"] = relationship("User", back_populates="editor", cascade="all", single_parent=True)
     articles: Mapped[list[Article]] = relationship(secondary="article_authors", back_populates="authors")
     avatar: Mapped["File"] = relationship("File", cascade="all")
+
+class Reader(Base):
+    __tablename__ = "readers"
+
+    user_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE", onupdate="CASCADE"), primary_key=True, unique=True, nullable=False)
+
+    user: Mapped["User"] = relationship("User", back_populates="reader", cascade="all", single_parent=True)

@@ -139,3 +139,4 @@ frontend/.docker.env
 # IDE preferences
 .vscode/settings.json
 backend/app/.coverage
+backend/.vscode/launch.json
