@@ -44,9 +44,12 @@ interface AuthTokenPayload {
   /** The username of the token bearer. */
   sub: string,
   expires: integer,
+  iss: string,
 }
 
 class UserService extends Service {
+  GOOGLE_JWT_ISSUER = 'https://accounts.google.com'
+
   constructor(api_url: string) {
     super(api_url)
   }
@@ -129,6 +132,14 @@ class UserService extends Service {
     if (!cookie) return null;
     const payload = this.parseJwt(cookie)
     return (payload as AuthTokenPayload).sub
+  }
+
+  /** Returns whether the user is currently logged-in as a reader. */
+  isReader(): boolean {
+    const cookie = Cookies.get("auth_token")
+    if (!cookie) return false;
+    const payload = this.parseJwt(cookie) as AuthTokenPayload
+    return payload.iss === this.GOOGLE_JWT_ISSUER
   }
 
   /**
