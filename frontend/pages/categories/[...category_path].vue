@@ -1,5 +1,5 @@
 <template>
-  <SitePaginatedPage ref="paginatedPage" :articles="articles" :total-articles="totalArticles" @page-change="onPageChanged">
+  <SitePaginatedPage ref="paginatedPage" :title="pageTitle" :articles="articles" :total-articles="totalArticles" @page-change="onPageChanged">
     <!-- Page description -->
     <template v-if="category" #pageDescription>
       <!-- Category header and description -->
@@ -15,6 +15,7 @@ import type { AxiosError } from 'axios'
 
 const categoryService = useCategoryService()
 const responseToast = useResponseToast()
+const siteMeta = useSiteMeta()
 const router = useRouter()
 const route = useRoute()
 const page = useTemplateRef('paginatedPage')
@@ -30,6 +31,15 @@ const articles = computed(() => {
 
 const totalArticles = computed(() => {
   return category.value ? category.value.total_articles : 0
+})
+
+/** Page tab title. */
+const pageTitle = computed(() => {
+  if (category.value) {
+    return `${category.value.name}${siteMeta.value.titleSuffix}`
+  } else {
+    return siteMeta.value.siteName
+  }
 })
 
 /** Query for fetching category data and articles. */

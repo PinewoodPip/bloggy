@@ -1,5 +1,5 @@
 <template>
-  <SitePage>
+  <SitePage :title="pageTitle">
     <template #content>
       <!-- Article area -->
       <div v-if="article" class="flexcol gap-y-2">
@@ -76,6 +76,7 @@ import AvatarIcon from '~/components/AvatarIcon.vue'
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const siteMeta = useSiteMeta()
 const { enabledNetworks: socialNetworks } = useSocialNetworks()
 const router = useRouter()
 const route = useRoute()
@@ -96,6 +97,15 @@ const socialMediaSharingURL = computed(() => {
 
 onMounted(() => {
   mounted.value = true
+})
+
+/** Page tab title. */
+const pageTitle = computed(() => {
+  if (article.value) {
+    return `${article.value.title}${siteMeta.value.titleSuffix}`
+  } else {
+    return siteMeta.value.siteName
+  }
 })
 
 /** Query for fetching the article */

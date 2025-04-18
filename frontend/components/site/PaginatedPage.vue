@@ -1,6 +1,6 @@
 <!-- Page layout for paginated articles. -->
 <template>
-  <SitePage>
+  <SitePage :title="title">
     <template #content>
       <div ref="contentTop" class="flexcol">
         <div class="flexcol gap-y-3">
@@ -46,6 +46,8 @@ const ARTICLES_PER_PAGE = 5
 const MAX_NEIGHBOUR_PAGE_BUTTONS = 3
 
 const props = defineProps<{
+  /** Page tab/head title. */
+  title: string,
   articles: ArticlePreview[],
   totalArticles: integer,
 }>();

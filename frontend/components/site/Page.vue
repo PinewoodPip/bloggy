@@ -30,8 +30,16 @@
 
 const runtimeConfig = useRuntimeConfig()
 
+const props = defineProps<{
+  title: string,
+}>()
+
 const logoPath = computed(() => {
   return runtimeConfig.public.apiUrl + 'site/logo'
+})
+
+useHead({
+  title: computed(() => props.title),
 })
 
 </script>

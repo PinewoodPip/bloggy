@@ -11,3 +11,15 @@ export const useSiteConfig = () => {
     staleTime: 60 * 60 * 1000, // 1 hour cache
   })
 }
+
+/** Creates a computed for the site's metadata. */
+export const useSiteMeta = () => {
+  const siteConfig = useSiteConfig()
+  return computed(() => {
+    const siteName = siteConfig.data.value ? siteConfig.data.value.site_name : ''
+    return {
+      siteName: siteName,
+      titleSuffix: ` - ${siteName}`
+    }
+  })
+}

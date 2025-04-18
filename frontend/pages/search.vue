@@ -1,5 +1,5 @@
 <template>
-  <SitePage>
+  <SitePage :title="pageTitle">
     <template #content>
       <!-- Search results -->
       <div class="flexcol gap-y-3">
@@ -29,6 +29,7 @@ import { SiteBreadcrumbs } from '#components'
 import { useQuery } from '@tanstack/vue-query'
 
 const SearchService = useSearchService()
+const siteMeta = useSiteMeta()
 const route = useRoute()
 
 /** The text being searched. */
@@ -67,6 +68,11 @@ const breadcrumbs = computed(() => {
       url: route.fullPath,
     },
   ]
+})
+
+/** Page tab title. */
+const pageTitle = computed(() => {
+  return `${searchQueryLabel.value}${siteMeta.value.titleSuffix}`
 })
 
 /** Concatenates all search query params into a user-friendly string. */
