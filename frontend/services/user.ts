@@ -3,11 +3,13 @@
  */
 import Service from "./service"
 import Cookies from "js-cookie"
+import { googleLogout } from "vue3-google-login"
 
 export type userRole = 'admin'|'editor'|'reader'
 
 /** Schema for GET /users/{username} responses. */
 export type User = {
+  id: integer,
   username: string,
   role: userRole,
 
@@ -68,10 +70,20 @@ class UserService extends Service {
     return response;
   }
 
+  /** Sends a login request via Google identity services. */
+  async googleLogin(credentials: string) {
+    const response = await this.post("/users/googleLogin", {
+      "credentials": credentials,
+    });
+    Cookies.set("auth_token", response.data.token);
+    return response
+  }
+
   /** Sends a logout request and clears auth cookies if successful */
   async logout() {
     const response = await this.post("/users/logout");
     this.clearAuth()
+    googleLogout() // Also log out from Google to avoid dead-loop from auto-sign-in
     return response.data;
   }
 

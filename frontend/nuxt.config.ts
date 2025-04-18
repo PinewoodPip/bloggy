@@ -17,7 +17,13 @@ export default defineNuxtConfig({
     public: {
       apiUrl: '',
       serverApiUrl: '',
+      googleClientUrl: '',
     }
+  },
+  app: {
+    head: {
+      script: [{ hid: "google", src: "https://accounts.google.com/gsi/client", defer: true }],
+    },
   },
   compatibilityDate: "2025-02-11"
 })

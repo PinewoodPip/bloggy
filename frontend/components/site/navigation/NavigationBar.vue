@@ -7,6 +7,9 @@
 
     <!-- Search bar -->
     <SiteSearchBar />
+
+    <!-- Login button -->
+    <SiteGoogleLoginButton />
   </nav>
 </template>
 
