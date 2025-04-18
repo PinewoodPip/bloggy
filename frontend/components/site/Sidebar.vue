@@ -9,6 +9,7 @@
 
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
+import type { AxiosError } from 'axios'
 
 const siteService = useSiteService()
 
@@ -23,7 +24,14 @@ onMounted(() => {
 const { data: sidebar, status: sidebarStatus, suspense: sidebarSuspense } = useQuery({
   queryKey: ['sidebarDocument'],
   queryFn: async () => {
-    return await siteService.getSidebar()
+    try {
+      return await siteService.getSidebar()
+    } catch (err) {
+      // Sidebar not set in the site config
+      if ((err as AxiosError).status == 404) {
+        return null
+      }
+    }
   },
 })
 await sidebarSuspense(); // Have the server wait for the request to resolve
