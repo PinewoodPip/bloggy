@@ -17,6 +17,8 @@
 
   <!-- Embed insertion modal -->
   <EditorModalEmbed ref="embedEditorModal" @confirm="onEmbedEdited" />
+
+  <EditorWidgetEmojiPanel ref="emojiWidget" @confirm="onEmojiSelected" />
 </template>
 
 <script setup lang="ts">
@@ -32,6 +34,7 @@ const hotlinkImageModal = useTemplateRef('hotlinkImageModal')
 const imageSelectModal = useTemplateRef('fileSelectModal')
 const footnoteModal = useTemplateRef('footnoteModal')
 const embedEditorModal = useTemplateRef('embedEditorModal')
+const emojiWidget = useTemplateRef('emojiWidget')
 
 const { editor, toolbar, editorView, editorState } = useEditorInjects()
 
@@ -74,6 +77,8 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
     imageSelectModal.value!.open()
   } else if (itemID === 'media.embed.request') {
     embedEditorModal.value!.open()
+  } else if (itemID === 'media.emoji.request') {
+    emojiWidget.value!.open()
   }
 }
 
@@ -119,6 +124,10 @@ function onConfirmFootnote(attrs: Editor.FootnoteAttrs) {
 /** Inserts an embed into the document. */
 function onEmbedEdited(attrs: Editor.EmbedAttrs) {
   executeAction('InsertEmbed', attrs)
+}
+
+function onEmojiSelected(emoji: any) {
+  executeAction('InsertText', {text: emoji.native})
 }
 
 /** Executes an action at the current cursor location. */

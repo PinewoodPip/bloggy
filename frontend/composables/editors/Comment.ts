@@ -2,6 +2,7 @@ import * as Editor from '~/src/editor/Editor'
 import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
+import * as MiscActions from '~/src/editor/actions/Misc'
 
 /**
  * An editor setup for writing article comments.
@@ -30,6 +31,9 @@ export const useCommentEditor = () => {
     editor.registerAction(action)
   }
   toolbar.registerToolbarGroup(FormattingActions.actionGroup)
+
+  // Misc actions
+  editor.registerAction(new MiscActions.InsertText())
 
   // Clipboard actions
   editor.registerAction(new ClipboardActions.Copy())

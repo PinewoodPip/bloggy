@@ -10,6 +10,7 @@ import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as ListActions from '~/src/editor/actions/Lists'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import * as MediaActions from '~/src/editor/actions/Media'
+import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view';
 
 /** Creates an article editor model. */
@@ -66,6 +67,9 @@ export const useArticleEditor = () => {
   }
   editor.registerAction(new WidgetActions.InsertFootnote())
   toolbar.registerToolbarGroup(WidgetActions.actionGroup)
+
+  // Misc actions
+  editor.registerAction(new MiscActions.InsertText())
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {

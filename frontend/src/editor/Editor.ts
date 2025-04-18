@@ -70,6 +70,11 @@ export class Editor {
     return this.actions[id]
   }
 
+  /** Returns whether an item ID corresponds to an action. */
+  isAction(id: actionGroupItemIdentifier): boolean {
+    return this.actions[id] !== undefined
+  }
+
   /** Executes an action over the current selection. */
   executeAction(view: EditorView, actionID: string, params?: object) {
     const action = this.getAction(actionID)

@@ -38,6 +38,7 @@
     "axios": "^1.7.9",
     "cheerio": "^1.0.0",
     "daisyui": "^4.12.23",
+    "emoji-mart-vue-fast": "^15.0.4",
     "highlight.js": "^11.11.1",
     "js-cookie": "^3.0.5",
     "jsdom": "^26.0.0",

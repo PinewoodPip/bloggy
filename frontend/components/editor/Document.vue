@@ -54,7 +54,7 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
     const state = view?.state
     
     if (state) {
-      if (editor.value.getAction(itemID)) {
+      if (editor.value.isAction(itemID)) {
         executeAction(itemID)
       } else {
         widgets.value!.onActionUsed(item)

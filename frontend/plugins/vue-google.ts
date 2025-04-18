@@ -3,7 +3,9 @@ import { defineNuxtPlugin } from '#imports'
 
 export default defineNuxtPlugin((nuxt) => {
   const config = useRuntimeConfig()
-  nuxt.vueApp.use(vue3GoogleLogin, {
-    clientId: config.public.googleClientUrl,
-  });
+  if (import.meta.client) {
+    nuxt.vueApp.use(vue3GoogleLogin, {
+      clientId: config.public.googleClientUrl,
+    });
+  }
 })

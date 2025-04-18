@@ -96,6 +96,15 @@ let _actionGroup: Group = {
         icon: 'material-symbols:featured-video-outline',
       }
     } as GroupCallback,
+    /** Callback to insert an emoji. */
+    {
+      type: 'callback',
+      id: 'media.emoji.request',
+      def: {
+        name: 'Insert emoji',
+        icon: 'material-symbols:sentiment-excited-outline',
+      } 
+    } as GroupCallback,
   ],
 }
 export const actionGroup = _actionGroup
