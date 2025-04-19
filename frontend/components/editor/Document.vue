@@ -11,6 +11,9 @@
 
   <!-- Widgets -->
   <EditorWidgetsManager ref="widgets" />
+
+  <!-- Clipboard manager -->
+  <EditorClipboardManager ref="clipboardManager" />
 </template>
 
 <script setup lang="ts">
@@ -26,6 +29,7 @@ import { schema } from '~/src/editor/Schema'
 const editorRef = useTemplateRef('documentRef')
 const widgets = useTemplateRef('widgets')
 const contextMenu = useTemplateRef('contextMenu')
+const clipboardManager = useTemplateRef('clipboardManager')
 const { editor, toolbar } = useEditorInjects()
 
 const props = defineProps<{
@@ -52,13 +56,14 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
-    
     if (state) {
       if (editor.value.isAction(itemID)) {
         executeAction(itemID)
       } else {
         widgets.value!.onActionUsed(item)
       }
+      // Forward event to other handlers
+      clipboardManager.value?.onActionUsed(item)
     }
   }
 }

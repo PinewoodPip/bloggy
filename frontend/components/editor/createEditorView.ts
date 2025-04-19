@@ -75,10 +75,12 @@ export function createEditorView(element: HTMLElement | null, content: Node, nod
     }),
     dispatchTransaction(transaction) {
       // Apply new state and run callback
-      console.log(transaction)
-      let newState = editorView.state.apply(transaction)
-      editorView.updateState(newState)
-      stateUpdateCallback(editorView.state)
+      if (transaction) { // TODO when is this undefined?
+        console.log(transaction)
+        let newState = editorView.state.apply(transaction)
+        editorView.updateState(newState)
+        stateUpdateCallback(editorView.state)
+      }
     },
     editable(state) {
       return editableCallback ? editableCallback(this, state) : true;

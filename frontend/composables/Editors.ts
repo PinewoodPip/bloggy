@@ -46,8 +46,6 @@ export const useArticleEditor = () => {
   toolbar.registerToolbarGroup(SectioningActions.actionGroup)
 
   // Clipboard actions
-  editor.registerAction(new ClipboardActions.Copy())
-  editor.registerAction(new ClipboardActions.Paste())
   toolbar.registerToolbarGroup(ClipboardActions.actionGroup)
 
   // Media actions
