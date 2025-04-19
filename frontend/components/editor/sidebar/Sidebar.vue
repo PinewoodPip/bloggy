@@ -1,5 +1,9 @@
 <!-- Displays the document's structure based on headings. -->
 <template>
+  <div class="flex items-center gap-x-2">
+    <IconButton class="btn-ghost btn-sm" icon="material-symbols:arrow-back-ios-rounded" @click="emit('hide')" />
+    <h2>Table of contents</h2>
+  </div>
   <ul class="menu bg-base-200 rounded-box">
     <EditorSidebarHeading v-for="heading in headings" :heading="heading" />
   </ul>
@@ -12,6 +16,7 @@ const { editorState: state, editorView: view } = useEditorInjects()
 
 const emit = defineEmits<{
   headingSelected: [Heading],
+  hide: [],
 }>();
 
 export type Heading = {
