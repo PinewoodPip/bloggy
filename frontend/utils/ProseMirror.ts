@@ -2,7 +2,7 @@
  * ProseMirror utilities for commands and document traversal.
  */
 import type { Attrs, NodeType, Node, NodeRange } from 'prosemirror-model'
-import { TextSelection, type EditorState } from 'prosemirror-state'
+import { TextSelection, Transaction, type EditorState } from 'prosemirror-state'
 
 export const ProseMirrorUtils = {
   /** Returns a selection over the blocks contained in the cursor selection. */
@@ -10,6 +10,12 @@ export const ProseMirrorUtils = {
     const cursor = state.selection
     let node = cursor.$from.blockRange()
     return node!
+  },
+
+  /** Inserts a node at the cursor's position. */
+  insertAtCursor(tr: Transaction, node: Node): Transaction {
+    tr = tr.insert(tr.selection.from, node)
+    return tr
   },
 
   /** Returns a text selection that spans the word at the cursor's position. */

@@ -1,6 +1,8 @@
 import { Plugin } from 'prosemirror-state'
 import { schema } from '~/src/editor/Schema'
 
+const IMAGE_URL_PATTERN = new RegExp(`https?:\/\/.+\.(jpg|jpeg|svg|png)$`)
+
 /** Plugin that replaces pasted image and embed links with the corresponding nodes. */
 export const useReplacePastesPlugin = () => {
   const embeds = useMediaEmbeds()
@@ -19,11 +21,22 @@ export const useReplacePastesPlugin = () => {
           const contentID = embeds.getContentID(content)
           if (serviceType && contentID) {
             // Add embed node
-            let tr = view.state.tr
-            tr = tr.insert(tr.selection.from, schema.nodes.embed.create({
+            const node = schema.nodes.embed.create({
               contentID: contentID,
               type: serviceType,
-            }))
+            })
+            let tr = ProseMirrorUtils.insertAtCursor(view.state.tr, node)
+            view.dispatch(tr)
+            return true // Prevent original paste
+          }
+
+          // Check if an image URL is being pasted
+          if (IMAGE_URL_PATTERN.test(content)) {
+            // Add image node
+            const node = schema.nodes.image.create({
+              src: content,
+            })
+            let tr = ProseMirrorUtils.insertAtCursor(view.state.tr, node)
             view.dispatch(tr)
             return true // Prevent original paste
           }
