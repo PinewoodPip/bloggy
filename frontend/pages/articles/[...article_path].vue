@@ -2,7 +2,7 @@
   <SitePage :title="pageTitle">
     <template #content>
       <!-- Article area -->
-      <div v-if="article" class="flexcol gap-y-2">
+      <div v-if="article" class="flexcol gap-y-5">
         <!-- Article -->
         <div class="large-content-block">
           <!-- Breadcrumbs -->
@@ -42,7 +42,7 @@
                   <p class="text-lg">{{ author.display_name }}</p>
                   <p>{{ author.biography }}</p>
                   <div class="card-actions">
-                    <button class="btn btn-sm btn-primary">View articles</button>
+                    <button class="btn btn-sm btn-primary" @click="onViewAuthorArticles">View articles</button>
                   </div>
                 </div>
               </div>
@@ -82,6 +82,11 @@ const router = useRouter()
 const route = useRoute()
 
 const mounted = ref(false) // Used to switch from the server-rendered article to the fully-riched client-rendered one
+
+/** Navigates to by-author article search. */
+function onViewAuthorArticles() {
+  router.push(`/search?author=${author.value?.display_name}`)
+}
 
 const author = computed(() => {
   return article.value?.authors[0]
