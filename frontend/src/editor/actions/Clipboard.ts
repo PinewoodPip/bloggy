@@ -20,6 +20,14 @@ export const actionGroup: Group = {
     } as GroupCallback,
     {
       type: 'callback',
+      id: 'ClipboardCut',
+      def: {
+        name: 'Cut',
+        icon: 'material-symbols:content-cut',
+      },
+    } as GroupCallback,
+    {
+      type: 'callback',
       id: 'ClipboardPaste',
       def: {
         name: 'Paste',

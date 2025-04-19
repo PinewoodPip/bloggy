@@ -41,7 +41,6 @@ function extractBlockAttributes(tok: Token, tokens: Token[], i: integer): object
       nodeAttrs[pair[0]] = pair[1]
     }
   }
-  console.log(nodeAttrs)
   return nodeAttrs
 }
 

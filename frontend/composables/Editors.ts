@@ -68,6 +68,7 @@ export const useArticleEditor = () => {
 
   // Misc actions
   editor.registerAction(new MiscActions.InsertText())
+  editor.registerAction(new MiscActions.DeleteSelection())
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {

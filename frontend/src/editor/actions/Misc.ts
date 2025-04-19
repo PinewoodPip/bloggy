@@ -18,3 +18,14 @@ export class InsertText extends Action {
     return state.tr.insertText(params.text) // TODO replace with text node instead?
   }
 }
+
+/** Deletes the current selection. */
+export class DeleteSelection extends Action {
+  constructor() {
+    super('DeleteSelection')
+  }
+
+  override execute(state: EditorState): Transaction | Promise<Transaction> | null {
+    return state.tr.deleteSelection()
+  }
+}

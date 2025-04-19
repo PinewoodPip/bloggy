@@ -34,6 +34,7 @@ export const useCommentEditor = () => {
 
   // Misc actions
   editor.registerAction(new MiscActions.InsertText())
+  editor.registerAction(new MiscActions.DeleteSelection())
 
   // Clipboard actions
   toolbar.registerToolbarGroup(ClipboardActions.actionGroup)
