@@ -67,6 +67,9 @@
       <EditorDocument v-if="articleData" ref="document" :initial-content="articleData.content" />
       <LoadingSpinner v-else />
     </div>
+
+    <!-- Status bar -->
+    <EditorStatusBar class="fixed left-0 bottom-0 w-full" />
   </UContainer>
 
   <!-- Settings menu modal -->

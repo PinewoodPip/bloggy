@@ -18,6 +18,12 @@ export const ProseMirrorUtils = {
     return tr
   },
 
+  /** Counts the words of a node's text, including descendants. */
+  countWords(node: Node): integer {
+    const text = node.textContent
+    return StringUtils.countWords(text)
+  },
+
   /** Sets the selection to that of the node at the position. */
   selectNode(tr: Transaction, pos: integer): Transaction {
     let sel = NodeSelection.create(tr.doc, pos)
