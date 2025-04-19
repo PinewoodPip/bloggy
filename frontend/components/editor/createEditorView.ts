@@ -1,7 +1,7 @@
 import { exampleSetup } from 'prosemirror-example-setup'
 import { keymap } from 'prosemirror-keymap'
 import type { Node } from 'prosemirror-model'
-import type { Plugin } from 'prosemirror-state'
+import { Plugin } from 'prosemirror-state'
 import { EditorState } from 'prosemirror-state'
 import type { NodeViewConstructor } from 'prosemirror-view'
 import { EditorView } from 'prosemirror-view'
@@ -18,6 +18,7 @@ import { createParser } from 'prosemirror-highlight/lowlight'
 const lowlight = createLowlight(common)
 const parser = createParser(lowlight)
 const lowlightPlugin = createHighlightPlugin({ parser })
+const replacePastesPlugin = useReplacePastesPlugin()
 
 /**
  * Creates a ProseMirror EditorView.
@@ -43,6 +44,7 @@ export function createEditorView(element: HTMLElement | null, content: Node, nod
           },
           menuBar: false,
         }),
+        replacePastesPlugin,
         keymap({
           // Ctrl + [ increases indent
           'Mod-[': (state, dispatch) => {

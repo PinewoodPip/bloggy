@@ -18,6 +18,8 @@ const SUPPORTED_EMBEDS: {[service: string]: ServiceEmbedDef} & Object = {
 
 export const useMediaEmbeds = () => {
   return {
+    PLATFORMS: SUPPORTED_EMBEDS,
+
     /** Returns the ID of the service a URL corresponds to, if it's any of the supported ones. */
     getServiceType(url: string) {
       for (const [id, embedService] of Object.entries(SUPPORTED_EMBEDS)) {

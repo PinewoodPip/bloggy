@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
   imports: {
     // Auto-import API response/request types from service classes
-    dirs: ['services', 'composables/editors']
+    dirs: ['services', 'composables/editors', 'composables/editor/plugins']
   },
   // Expose env variables to vue components and compasables
   runtimeConfig: {
