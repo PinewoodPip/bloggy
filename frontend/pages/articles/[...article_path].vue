@@ -62,7 +62,7 @@
         </div>
 
         <!-- Comments -->
-        <SiteArticleCommentList v-if="article.can_comment" />
+        <SiteArticleCommentList id="comments" v-if="article.can_comment" />
       </div>
     </template>
   </SitePage>
