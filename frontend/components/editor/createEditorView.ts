@@ -19,6 +19,7 @@ const lowlight = createLowlight(common)
 const parser = createParser(lowlight)
 const lowlightPlugin = createHighlightPlugin({ parser })
 const replacePastesPlugin = useReplacePastesPlugin()
+const formattingInputRules = useFormattingInputRules()
 
 /**
  * Creates a ProseMirror EditorView.
@@ -44,6 +45,7 @@ export function createEditorView(element: HTMLElement | null, content: Node, nod
           },
           menuBar: false,
         }),
+        formattingInputRules,
         replacePastesPlugin,
         keymap({
           // Ctrl + [ increases indent

@@ -1,7 +1,7 @@
 /**
  * ProseMirror utilities for commands and document traversal.
  */
-import type { Attrs, NodeType, Node, NodeRange } from 'prosemirror-model'
+import type { Attrs, NodeType, Node, NodeRange, ResolvedPos, MarkType } from 'prosemirror-model'
 import { TextSelection, Transaction, type EditorState } from 'prosemirror-state'
 
 export const ProseMirrorUtils = {
@@ -16,6 +16,17 @@ export const ProseMirrorUtils = {
   insertAtCursor(tr: Transaction, node: Node): Transaction {
     tr = tr.insert(tr.selection.from, node)
     return tr
+  },
+
+  /** Inserts a node before the cursor's position. */
+  insertBeforeCursor(tr: Transaction, node: Node): Transaction {
+    tr = tr.insert(tr.selection.from - 1, node)
+    return tr
+  },
+
+  /** Returns whether a position has a mark. */
+  hasMark(pos: ResolvedPos, markType: MarkType): boolean {
+    return pos.marks().find((mark) => mark.type == markType) !== undefined
   },
 
   /** Returns a text selection that spans the word at the cursor's position. */
