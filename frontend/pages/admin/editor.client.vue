@@ -59,8 +59,8 @@
     <!-- Content area -->
     <div class="flex gap-x-2">
       <!-- Sidebar -->
-      <div v-if="sidebarVisible" class="large-content-block">
-        TODO
+      <div v-if="sidebarVisible" class="large-content-block max-w-md">
+        <EditorSidebar @heading-selected="onHeadingSelected" />
       </div>
 
       <!-- Document -->
@@ -85,6 +85,7 @@ import { useMutation, useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
+import type { Heading } from '~/components/editor/sidebar/Sidebar.vue'
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
@@ -214,6 +215,27 @@ function toggleTableOfContents() {
 /** Opens the metadata editor. */
 function editDocumentProperties() {
   documentPropertiesVisible.value = true
+}
+
+/** Selects and scrolls to a heading. */
+function onHeadingSelected(heading: Heading) {
+  const state = editorDocument.value?.editorState!
+  const view = editorDocument.value?.editorView!
+  const domTopPosition = view.coordsAtPos(heading.position).top;
+
+  // Refocus the editor, else the selection will be discarded
+  const dom = view.domAtPos(heading.position)
+  // @ts-ignore
+  dom.node.focus()
+
+  // Select the node
+  const selectionTr = ProseMirrorUtils.selectNode(state.tr, heading.position)
+  view.dispatch(selectionTr)
+
+  // Scroll to the heading
+  document.querySelector('body')?.scrollTo({
+    top: domTopPosition,
+  })
 }
 
 function onMetadataUpdated(article: Article) {
