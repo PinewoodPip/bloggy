@@ -55,30 +55,48 @@ function selectEmbed(node: Node) {
 
 function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
   const itemID = typeof item === 'string' ? item : item.id // String overload.
-  if (itemID == 'FormatLink') {
-    const nodeRange = ProseMirrorUtils.getNodeRange(editorState.value)
-    const node = nodeRange.$from.node()
+  switch (itemID) {
+    case 'FormatLink': {
+      const nodeRange = ProseMirrorUtils.getNodeRange(editorState.value)
+      const node = nodeRange.$from.node()
 
-    // Search for a link within the node
-    let linkAttrs: Editor.LinkAttrs | undefined = undefined
-    for (const mark of node.marks) {
-      if (mark.type == schema.marks.link) {
-        linkAttrs = mark.attrs as Editor.LinkAttrs
-        break
+      // Search for a link within the node
+      let linkAttrs: Editor.LinkAttrs | undefined = undefined
+      for (const mark of node.marks) {
+        if (mark.type == schema.marks.link) {
+          linkAttrs = mark.attrs as Editor.LinkAttrs
+          break
+        }
       }
-    }
 
-    linkModal.value!.open(linkAttrs)
-  } else if (itemID === 'media.image.hotlink') {
-    hotlinkImageModal.value!.open()
-  } else if (itemID === 'media.image.upload') {
-    imageUploadModal.value!.open()
-  } else if (itemID === 'media.image.from_cms') {
-    imageSelectModal.value!.open()
-  } else if (itemID === 'media.embed.request') {
-    embedEditorModal.value!.open()
-  } else if (itemID === 'media.emoji.request') {
-    emojiWidget.value!.open()
+      linkModal.value!.open(linkAttrs)
+      break
+    }
+    case 'media.image.upload': {
+      imageUploadModal.value!.open()
+      break
+    }
+    case 'media.image.hotlink': {
+      hotlinkImageModal.value!.open()
+      break
+    }
+    case 'media.image.from_cms': {
+      imageSelectModal.value!.open()
+      break
+    }
+    case 'media.embed.request': {
+      embedEditorModal.value!.open()
+      break
+    }
+    case 'media.emoji.request': {
+      emojiWidget.value!.open()
+      break
+    }
+    case 'media.image.edit': {
+      const selectedImage = ProseMirrorUtils.findNodes(editorState.value, schema.nodes.image)[0]
+      selectImage(selectedImage.node)
+      break
+    }
   }
 }
 

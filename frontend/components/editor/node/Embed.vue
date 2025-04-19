@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { useNodeViewContext } from '@prosemirror-adapter/vue'
-import type { NodeCallbacks } from '~/pages/admin/editor.client.vue'
+import type { NodeCallbacks } from '~/components/editor/Document.vue'
 
 const { contentRef, node } = useNodeViewContext()
 const mediaUtils = useMediaEmbeds()

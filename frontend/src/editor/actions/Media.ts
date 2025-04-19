@@ -108,3 +108,15 @@ let _actionGroup: Group = {
   ],
 }
 export const actionGroup = _actionGroup
+
+/** Items that are highly contextual and not intended to be part of the regular toolbar. */
+export const contextualItems = {
+  editImage: {
+    type: 'callback',
+    id: 'media.image.edit',
+    def: {
+      icon: 'material-symbols:image',
+      name: 'Edit image',
+    },
+  } as GroupCallback,
+}

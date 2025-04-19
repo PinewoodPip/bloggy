@@ -31,6 +31,27 @@ export const ProseMirrorUtils = {
     return tr
   },
 
+  /** Returns the first node in the current selection with the set attributes. */
+  selectionHasNode(state: EditorState, nodeType: NodeType, attrs?: Attrs): Node | null {
+    let foundNode: Node | null = null
+    for (let i = 0; i < state.selection.ranges.length && !foundNode; i++) {
+      let {$from: {pos: from}, $to: {pos: to}} = state.selection.ranges[i]
+      state.doc.nodesBetween(from, to, (node, pos) => {
+        if (foundNode) return
+        if (attrs) {
+          if (node.hasMarkup(nodeType, attrs)) {
+            foundNode = node
+          }
+        } else {
+          if (node.type == nodeType) {
+            foundNode = node
+          }
+        }
+      })
+    }
+    return foundNode
+  },
+
   /** Inserts a node before the cursor's position. */
   insertBeforeCursor(tr: Transaction, node: Node): Transaction {
     tr = tr.insert(tr.selection.from - 1, node)

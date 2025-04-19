@@ -36,23 +36,7 @@ export abstract class Action implements IAction {
 
   /** Returns the first node in the current selection with the set attributes. */
   protected selectionHasNode(state: EditorState, nodeType: NodeType, attrs?: Attrs): Node | null {
-    let foundNode: Node | null = null
-    for (let i = 0; i < state.selection.ranges.length && !foundNode; i++) {
-      let {$from: {pos: from}, $to: {pos: to}} = state.selection.ranges[i]
-      state.doc.nodesBetween(from, to, (node, pos) => {
-        if (foundNode) return
-        if (attrs) {
-          if (node.hasMarkup(nodeType, attrs)) {
-            foundNode = node
-          }
-        } else {
-          if (node.type == nodeType) {
-            foundNode = node
-          }
-        }
-      })
-    }
-    return foundNode
+    return ProseMirrorUtils.selectionHasNode(state, nodeType, attrs)
   }
 
   /** Returns the block range at the current selection. */

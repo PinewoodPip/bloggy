@@ -8,15 +8,20 @@ import ContextMenu from '~/components/context-menu/ContextMenu.vue'
 import * as Toolbar from '~/src/editor/Toolbar'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MediaActions from '~/src/editor/actions/Media'
+import { schema } from '~/src/editor/Schema'
+
+const { editorState } = useEditorInjects()
 
 const emit = defineEmits<{
   useAction: [Toolbar.actionGroupItemIdentifier]
 }>();
 
 const contextMenuOpen = ref(false)
+const contextMenuItems: Ref<object[][]> = ref([])
 
 /** Opens the context menu at the cursor's position. */
 function open() {
+  updateContextMenuItems() // Cannot be made reactive, as it depends on PM document state
   contextMenuOpen.value = true
 }
 
@@ -25,7 +30,7 @@ defineExpose({
 })
 
 /** Options shown in the context menu. */
-const contextMenuItems = computed(() => {
+function updateContextMenuItems() {
   const items: (Toolbar.GroupItem | object)[][] = []
 
   // Add clipboard actions
@@ -37,6 +42,10 @@ const contextMenuItems = computed(() => {
   // Add media items
   const mediaItems = []
   mediaItems.push(MediaActions.actionGroup.items.find((item) => item.id === 'media.emoji.request')!)
+  // "Edit image" if selection is an image
+  if (ProseMirrorUtils.selectionHasNode(editorState.value, schema.nodes.image)) {
+    mediaItems.push(MediaActions.contextualItems.editImage)
+  }
 
   items.push(
     clipboardItems,
@@ -50,8 +59,8 @@ const contextMenuItems = computed(() => {
     }
   }
 
-  return items
-})
+  contextMenuItems.value = items
+}
 
 function getActionContextMenuEntry(item: Toolbar.GroupItem): object {
   return {
