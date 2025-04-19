@@ -18,7 +18,7 @@
       <HorizontalFill />
       
       <!-- Post button -->
-      <MutationButton class="btn-primary" icon="material-symbols:add-comment" :status="postStatus" @click="postComment">Post {{ isReplying ? 'reply' : 'comment' }}</MutationButton>
+      <MutationButton class="btn-primary" icon="material-symbols:add-comment" :status="postStatus" :disabled="!canPost" @click="postComment">Post {{ isReplying ? 'reply' : 'comment' }}</MutationButton>
     </div>
   </div>
 </template>
@@ -64,12 +64,15 @@ const isReplying = computed(() => {
   return props.parentComment != null
 })
 
-// TODO extract?
-const editorView = computed(() => {
-  return editorDocument.value?.editorView
-})
-const editorState = computed(() => {
-  return editorDocument.value?.editorState
+/** Whether the content can be posted. */
+const canPost = computed(() => {
+  const state = editorDocument.value?.editorState!
+  if (state && state.doc) {
+    const text = state.doc.textContent as string
+    return text.length > 0 // Cannot be empty
+  } else {
+    return false
+  }
 })
 
 /** Mutation for uploading the comment. */
