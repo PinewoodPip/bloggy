@@ -100,6 +100,9 @@ div[data-popper-placement] > div > div[role=menu] {
 div[data-nuxtui-contextmenu-dropdown] > div:nth-child(2) {
   transform: unset !important;
 }
+div[data-nuxtui-contextmenu-dropdown] div[role=menu] > div {
+  @apply border-neutral-content/20 border
+}
 
 /* Apply theming to UDropdown elements */
 div[aria-haspopup=menu] > button > span {
