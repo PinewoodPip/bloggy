@@ -12,6 +12,14 @@ import * as WidgetActions from '~/src/editor/actions/Widgets'
 import * as MediaActions from '~/src/editor/actions/Media'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view';
+import { useMutation, useQuery } from '@tanstack/vue-query';
+import type { AxiosError } from 'axios';
+import { Markdown } from '~/src/editor/markdown/Parser'
+import * as cheerio from 'cheerio';
+import { injectLocal, provideLocal } from '@vueuse/core'
+
+/** Max amount of characters to use for auto-generated summaries. */
+const MAX_SUMMARY_LENGTH = 250
 
 /** Creates an article editor model. */
 export const useArticleEditor = () => {
@@ -82,12 +90,105 @@ export const useArticleEditor = () => {
 
 /** Auxiliary composable to import editor injects. */
 export const useEditorInjects = () => {
-  const editor = inject<Ref<Editor.Editor>>('editor')!
+  const editor = injectLocal<Ref<Editor.Editor>>('editor')!
   // Use computed to make contexts that use it reactive even if they don't use the editor itself
   const toolbar = computed(() => {
     return editor.value!.getToolbar()
   })
-  const editorState = inject<Ref<EditorState>>('editorState')!
-  const editorView = inject<Ref<EditorView>>('editorView')!
+  const editorState = injectLocal<Ref<EditorState>>('editorState')!
+  const editorView = injectLocal<Ref<EditorView>>('editorView')!
   return {editor, toolbar, editorState, editorView}
+}
+
+/** Queries and mutations for fetching and editing the article editor's current article. */
+export const useArticleEditorQueries = () => {
+  const articleService = useArticleService()
+  const responseToast = useResponseToast()
+  const { editor, editorState } = useEditorInjects()
+  const router = useRouter()
+  const route = useRoute()
+  const articleModel: Ref<Article | null> = ref(null)
+
+  /** Query for fetching article metadata and initial content */
+  const articleQuery = useQuery({
+    queryKey: ['articleContent'],
+    queryFn: async () => {
+      if (route.query['article']) {
+        const article = await articleService.getArticle(route.query['article'] as string)
+        articleModel.value = Object.assign({}, article)
+        return article
+      } else {
+        return null
+      }
+    },
+    retry: (count, err) => {
+      if ((err as AxiosError).status === 404) {
+        // Redirect back to admin panel if the article URL is invalid
+        responseToast.showError('Article not found')
+        router.push('/admin/content') 
+      } else if (count == 1) { // Show error on first failed fetch
+        responseToast.showError('Failed to load article content', err)
+      }
+      return true
+    }
+  })
+
+  /** Mutation for saving the article */
+  const articleMutation = useMutation({
+    mutationFn: (patchData: ArticleUpdateRequest) => {
+      return articleService.updateArticle((articleQuery.data.value as Article).path, patchData)
+    },
+    onSuccess: (article) => {
+      responseToast.showSuccess('Article saved')
+    },
+    onError: (err) => {
+      responseToast.showError('Failed to save article', err)
+    }
+  })
+
+  /** 
+   * Validates the metadata values and resets them if they're not valid.
+   */
+  function validateMetadata(article: Ref<Article | null | undefined>) {
+    // Reset the title field to the original fetched data if the user attempts to clear it.
+    if (article.value?.title === '') {
+      article.value.title = article.value!.title
+    }
+  }
+
+  /** Serializes the editor document and requests to patch the article. */
+  function saveDocument() {
+    const articleData = articleModel.value!
+
+    // Ensure fields are set to valid values first
+    validateMetadata(articleModel)
+
+    // Serialize the document and PATCH the article
+    const state = toRaw(editorState!)
+    const markdownStr = editor.value.serializeDocument(state.value)
+
+    // Extract text without markdown markers
+    const $ = cheerio.load(Markdown.render(markdownStr))
+    const text = DOMUtils.extractText($)
+    
+    // Generate "summary"
+    const summary = text.substring(0, MAX_SUMMARY_LENGTH)
+
+    console.log('Serialized document')
+    console.log(markdownStr)
+    articleMutation.mutate({
+      title: articleData.title,
+      content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
+      text: text,
+      summary: summary,
+    })
+  }
+
+  return {
+    saveDocument: saveDocument,
+    articleQuery: articleQuery,
+    articleMutation: articleMutation,
+    validateMetadata: validateMetadata,
+    articleModel: articleModel,
+  }
 }

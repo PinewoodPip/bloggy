@@ -1,4 +1,5 @@
 import type { Editor } from "~/src/editor/Editor"
+import { injectLocal, provideLocal } from '@vueuse/core'
 
 /** Exposes editor state to all child components. */
 export const useEditorProvides = (editor: Editor, document: Ref<Component>): void => {
@@ -12,7 +13,7 @@ export const useEditorProvides = (editor: Editor, document: Ref<Component>): voi
   })
   
   // @ts-ignore
-  provide<Ref<Editor.Editor>>('editor', editor)
-  provide('editorView', editorView)
-  provide('editorState', editorState)
+  provideLocal<Ref<Editor.Editor>>('editor', editor)
+  provideLocal('editorView', editorView)
+  provideLocal('editorState', editorState)
 }

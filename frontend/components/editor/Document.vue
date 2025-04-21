@@ -1,13 +1,8 @@
 <!-- Editor text area component, with context menu and widget modals support. -->
 <template>
-  <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
-    <ProsemirrorAdapterProvider>
-      <EditorProseMirrorWrapper ref="documentRef" :initial-content="initialContent" />
-    </ProsemirrorAdapterProvider>
-  </div>
-  
-  <!-- Context menu -->
-  <EditorDocumentContextMenu ref="contextMenu" @useAction="onContextMenuActionUsed" />
+  <ProsemirrorAdapterProvider>
+    <EditorProseMirrorWrapper ref="documentRef" :initial-content="initialContent" />
+  </ProsemirrorAdapterProvider>
 
   <!-- Widgets -->
   <EditorWidgetsManager ref="widgets" />
@@ -28,7 +23,6 @@ import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const widgets = useTemplateRef('widgets')
-const contextMenu = useTemplateRef('contextMenu')
 const clipboardManager = useTemplateRef('clipboardManager')
 const { editor, toolbar } = useEditorInjects()
 
@@ -66,15 +60,6 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
       clipboardManager.value?.onActionUsed(item)
     }
   }
-}
-
-function onContextMenu() {
-  contextMenu.value!.open()
-}
-
-/** Execute actions issued from context menu. */
-function onContextMenuActionUsed(actionID: Toolbar.actionGroupItemIdentifier) {
-  onActionUsed(actionID)
 }
 
 /** ProseMirror EditorView. */
