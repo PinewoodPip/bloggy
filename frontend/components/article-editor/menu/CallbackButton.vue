@@ -16,8 +16,7 @@
 <script setup lang="ts">
 import type * as Toolbar from '~/src/editor/Toolbar'
 
-const keybindStringifier = useKeybindStringifier()
-const { editor, editorState } = useEditorInjects()
+const { keybindLabel, isActive } = useToolbarCallbackItem(toRef(() => props.item))
 
 const props = defineProps<{
   item: Toolbar.GroupCallback,
@@ -31,16 +30,10 @@ function useTool() {
   emit('use', props.item)
 }
 
-const keybindLabel = computed(() => {
-  const keybind = editor.value.getItemKeybind(props.item.id)
-  return keybind ? keybindStringifier.stringify(keybind) : null
-})
-
 const btnClass = computed(() => {
-  const isActive = editorState.value && editor.value.isItemActive(editorState.value, props.item)
   return {
-    'btn-secondary': !isActive,
-    'btn-accent': isActive, // Highlight actions currently in use
+    'btn-secondary': !isActive.value,
+    'btn-accent': isActive.value, // Highlight actions currently in use
   }
 })
 

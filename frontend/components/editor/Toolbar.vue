@@ -23,8 +23,8 @@
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
-import CallbackButton from './CallbackButton.vue'
-import ActionMenuButton from './ActionMenuButton.vue'
+import CallbackButton from '~/components/article-editor/menu/CallbackButton.vue'
+import ActionMenuButton from '~/components/article-editor/menu/ActionMenuButton.vue'
 
 const { editor, toolbar } = useEditorInjects()
 
