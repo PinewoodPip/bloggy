@@ -5,7 +5,7 @@
     <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" />
 
     <!-- Toolbar; only rendered once editor is initialized -->
-    <EditorToolbar v-if="editorDocument?.editorState" @action-use="onActionUsed"/>
+    <ArticleEditorToolbar v-if="editorDocument?.editorState" />
 
     <!-- Content area -->
     <div class="flex gap-x-2">
@@ -25,7 +25,7 @@
     <EditorStatusBar class="fixed left-0 bottom-0 w-full" />
 
     <!-- Context menu -->
-    <EditorDocumentContextMenu ref="contextMenu" @useAction="onContextMenuActionUsed" />
+    <EditorDocumentContextMenu ref="contextMenu" />
   </UContainer>
 </template>
 <script setup lang="ts">
@@ -34,17 +34,13 @@ import type { Heading } from '~/components/editor/sidebar/Sidebar.vue'
 
 const router = useRouter()
 
-const editor = ref(useArticleEditor())
+const editor = ref(useArticleEditor(() => editorDocument.value!.editorView))
 const editorDocument = useTemplateRef('document')
 const contextMenu = useTemplateRef('contextMenu')
 useEditorProvides(editor, editorDocument)
 const editorQueries = useArticleEditorQueries()
 
 const sidebarVisible = ref(true)
-
-function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
-  editorDocument.value?.onActionUsed(item)
-}
 
 /** Selects and scrolls to a heading. */
 function onHeadingSelected(heading: Heading) {
@@ -67,17 +63,13 @@ function onHeadingSelected(heading: Heading) {
   })
 }
 
+/** The metadata of the article being edited. */
 const articleData = computed(() => {
   return editorQueries.articleQuery.data.value
 })
 
 function onContextMenu() {
   contextMenu.value!.open()
-}
-
-/** Execute actions issued from context menu. */
-function onContextMenuActionUsed(actionID: Toolbar.actionGroupItemIdentifier) {
-  onActionUsed(actionID)
 }
 
 /** Load the user's editor preferences when editor initializes. */

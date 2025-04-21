@@ -11,14 +11,11 @@
 <script setup lang="ts">
 import type * as Toolbar from '~/src/editor/Toolbar'
 
-const { menuItems, isActive } = useToolbarActionMenu(() => props.menu, (item) => emit('useAction', item))
+const { useItem } = useEditorToolbar()
+const { menuItems, isActive } = useToolbarActionMenu(() => props.menu, (item) => useItem(item))
 
 const props = defineProps<{
   menu: Toolbar.GroupActionMenu,
-}>()
-
-const emit = defineEmits<{
-  useAction: [Toolbar.GroupItem],
 }>()
 
 const menuVisible = ref(false)

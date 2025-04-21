@@ -45,6 +45,9 @@ export interface IAction {
 
 /** Main editor model class. Holds registered actions. */
 export class Editor {
+  /** ProseMirror editor instance getter. */
+  private pmViewGetter: () => EditorView
+
   actions: {[id: actionID]: IAction} = {}
 
   private toolbar: Toolbar
@@ -53,8 +56,9 @@ export class Editor {
   private customActionBindings: {[id: actionID]: keybind} = {}
   private customBindingToAction: {[combo: keybind]: actionID} = {}
 
-  constructor() {
+  constructor(pmViewGetter: () => EditorView) {
     this.toolbar = new Toolbar()
+    this.pmViewGetter = pmViewGetter
   }
 
   /** Registers an editor action. */
@@ -76,14 +80,15 @@ export class Editor {
   }
 
   /** Executes an action over the current selection. */
-  executeAction(view: EditorView, actionID: string, params?: object) {
+  executeAction(actionID: string, params?: object) {
     const action = this.getAction(actionID)
+    const documentView = this.pmViewGetter()
 
     // Run action and apply transaction
-    let transaction = action.execute(view.state, params)
+    let transaction = action.execute(documentView.state, params)
     if (transaction) {
       Promise.resolve(transaction).then((a) => {
-        view.dispatch(a)
+        documentView.dispatch(a)
       })
     }
   }

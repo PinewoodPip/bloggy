@@ -10,6 +10,7 @@ import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MediaActions from '~/src/editor/actions/Media'
 import { schema } from '~/src/editor/Schema'
 
+const { useItem } = useEditorToolbar()
 const { editorState } = useEditorInjects()
 
 const emit = defineEmits<{
@@ -67,7 +68,7 @@ function getActionContextMenuEntry(item: Toolbar.GroupItem): object {
     label: item.def.name,
     icon: item.def.icon,
     click: () => {
-      emit('useAction', item.id)
+      useItem(item)
     },
   }
 }

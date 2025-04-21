@@ -8,7 +8,7 @@
           <div v-for="group in visibleGroups" class="flex">
             <!-- Actions of the group -->
             <div class="flex gap-x-2">
-              <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" v-on="getGroupItemComponentEvents(item)" />
+              <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" />
             </div>
             <!-- Should be outside the actions container to avoid applying gap to it -->
             <div class="divider divider-horizontal mx-1"/>
@@ -21,61 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
 import CallbackButton from '~/components/article-editor/menu/CallbackButton.vue'
 import ActionMenuButton from '~/components/article-editor/menu/ActionMenuButton.vue'
 
-const { editor, toolbar } = useEditorInjects()
-
-const emit = defineEmits<{
-  actionUse: [Toolbar.GroupItem]
-}>()
+const { visibleGroups, getVisibleGroupItems } = useEditorToolbarItems()
 
 const headerRef = useTemplateRef('header')
 const headerParentRef = useTemplateRef('parent')
 
 const floating = ref(false)
-
-function useAction(action: Toolbar.GroupItem) {
-  emit('actionUse', action)
-}
-
-/** Toolbar groups to show, based on user preferences. */
-const visibleGroups = computed(() => {
-  const groups: Toolbar.Group[] = []
-  for (const group of toolbar.value.getToolbarGroups()) {
-    // Check if any action in the group is visible
-    const visible = getVisibleGroupItems(group).length > 0
-    if (visible) {
-      groups.push(group)
-    }
-  }
-  return groups
-})
-
-/** Returns the visible items of a toolbar group. */
-function getVisibleGroupItems(group: Toolbar.Group) {
-  const items: Toolbar.GroupItem[] = []
-  for (const item of group.items) {
-    let visible = false
-    if (item.type === 'action' || item.type === 'callback') {
-      visible = toolbar.value.isItemVisible(item.id)
-    } else if (item.type === 'actionMenu') {
-      // Menu is visible if any of its subitems is
-      const menuActions = (item as Toolbar.GroupActionMenu).subitems
-      visible = ArrayUtils.anyInArray(menuActions, (item) => {
-        return toolbar.value.isItemVisible(item.id)
-      })
-    } else {
-      throw 'Unsupported item type ' + item.type
-    }
-    if (visible) {
-      items.push(item)
-    }
-  }
-  return items
-}
 
 // Component, props and event getters for the dynamic toolbar item component
 function getGroupItemComponent(item: Toolbar.GroupItem) {
@@ -95,19 +50,6 @@ function getGroupItemComponentProps(item: Toolbar.GroupItem) {
   } else if (item.type === 'callback' || item.type === 'action') {
     return {
       item: item,
-    }
-  } else {
-    throw "Unimplemented group item: " + item.type
-  }
-}
-function getGroupItemComponentEvents(item: Toolbar.GroupItem) {
-  if (item.type === 'actionMenu') {
-    return {
-      useAction: useAction,
-    }
-  } else if (item.type === 'callback' || item.type === 'action') {
-    return {
-      use: useAction,
     }
   } else {
     throw "Unimplemented group item: " + item.type

@@ -16,18 +16,15 @@
 <script setup lang="ts">
 import type * as Toolbar from '~/src/editor/Toolbar'
 
+const { useItem } = useEditorToolbar()
 const { keybindLabel, isActive } = useToolbarCallbackItem(toRef(() => props.item))
 
 const props = defineProps<{
   item: Toolbar.GroupCallback,
 }>()
 
-const emit = defineEmits<{
-  use: [Toolbar.GroupItem],
-}>()
-
 function useTool() {
-  emit('use', props.item)
+  useItem(props.item)
 }
 
 const btnClass = computed(() => {

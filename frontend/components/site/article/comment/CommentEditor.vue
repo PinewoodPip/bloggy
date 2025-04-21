@@ -31,7 +31,7 @@ const commentService = useCommentService()
 const responseToast = useResponseToast()
 const editorDocument = useTemplateRef('document')
 const articlePath = useArticlePath()
-const editor = ref(useCommentEditor())
+const editor = ref(useCommentEditor(() => editorDocument.value!.editorView))
 useEditorProvides(editor, editorDocument)
 
 const props = defineProps<{

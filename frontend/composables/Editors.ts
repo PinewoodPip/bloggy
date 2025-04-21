@@ -3,6 +3,7 @@
  */
 import type { EditorState } from 'prosemirror-state';
 import * as Editor from '~/src/editor/Editor'
+import * as Toolbar from "~/src/editor/Toolbar"
 import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as SectioningActions from '~/src/editor/actions/Sectioning'
@@ -22,9 +23,9 @@ import { injectLocal, provideLocal } from '@vueuse/core'
 const MAX_SUMMARY_LENGTH = 250
 
 /** Creates an article editor model. */
-export const useArticleEditor = () => {
+export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor()
+  const editor: Editor.Editor = new Editor.Editor(pmViewGetter)
   const toolbar = editor.getToolbar()
 
   // Add default actions and groups
@@ -97,7 +98,8 @@ export const useEditorInjects = () => {
   })
   const editorState = injectLocal<Ref<EditorState>>('editorState')!
   const editorView = injectLocal<Ref<EditorView>>('editorView')!
-  return {editor, toolbar, editorState, editorView}
+  const itemUsedCallbacks = injectLocal<Ref<Toolbar.ItemUsedCallback[]>>('itemUsedCallbacks')!
+  return {editor, toolbar, editorState, editorView, itemUsedCallbacks}
 }
 
 /** Queries and mutations for fetching and editing the article editor's current article. */

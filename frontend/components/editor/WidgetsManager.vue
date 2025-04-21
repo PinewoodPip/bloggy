@@ -53,7 +53,8 @@ function selectEmbed(node: Node) {
   embedEditorModal.value!.open(node.attrs as Editor.EmbedAttrs)
 }
 
-function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
+/** Handle opening modals when corresponding toolbar items are used. */
+useEditorToolbarCallback((item) => {
   const itemID = typeof item === 'string' ? item : item.id // String overload.
   switch (itemID) {
     case 'FormatLink': {
@@ -98,13 +99,12 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
       break
     }
   }
-}
+})
 
 defineExpose({
   selectFootnote,
   selectImage,
   selectEmbed,
-  onActionUsed,
 })
 
 function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
@@ -150,7 +150,7 @@ function onEmojiSelected(emoji: any) {
 
 /** Executes an action at the current cursor location. */
 function executeAction(actionID: Editor.actionID, params?: object) {
-  editor.value.executeAction(editorView.value, actionID, params)
+  editor.value.executeAction(actionID, params)
 }
 
 </script>

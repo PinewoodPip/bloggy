@@ -3,14 +3,15 @@ import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MiscActions from '~/src/editor/actions/Misc'
+import type { EditorView } from 'prosemirror-view'
 
 /**
  * An editor setup for writing article comments.
  * Features only minimal formatting.
  */
-export const useCommentEditor = () => {
+export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor()
+  const editor: Editor.Editor = new Editor.Editor(pmViewGetter)
   const toolbar = editor.getToolbar()
 
   // Add default actions and groups

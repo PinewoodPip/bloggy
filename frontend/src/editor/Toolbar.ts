@@ -44,6 +44,8 @@ export interface Group {
   items: GroupItem[],
 }
 
+export type ItemUsedCallback = ((item: GroupItem) => void)
+
 export class Toolbar {
   private itemGroups: Group[] = []
 

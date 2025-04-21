@@ -38,29 +38,24 @@ export type NodeCallbacks = {
 
 /** Executes an action over the current selection. */
 function executeAction(actionID: string, params?: object) {
-  const editorRaw = toRaw(editorRef.value)
-  const view = toRaw(editorRaw!.editorView)
-  toRaw(editor.value).executeAction(view!, actionID, params)
+  toRaw(editor.value).executeAction(actionID, params)
 }
 
-/** Execute action commands */
+/** Execute action commands. */
 function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
   if (editorRef.value) {
     const itemID = typeof item === 'string' ? item : item.id // String overload.
     const editorRaw = toRaw(editorRef.value)
     const view = toRaw(editorRaw.editorView)
     const state = view?.state
-    if (state) {
-      if (editor.value.isAction(itemID)) {
-        executeAction(itemID)
-      } else {
-        widgets.value!.onActionUsed(item)
-      }
-      // Forward event to other handlers
-      clipboardManager.value?.onActionUsed(item)
+    if (state && editor.value.isAction(itemID)) {
+      executeAction(itemID)
     }
   }
 }
+useEditorToolbarCallback((item) => {
+  onActionUsed(item)
+})
 
 /** ProseMirror EditorView. */
 const editorView = computed(() => {
