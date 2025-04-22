@@ -1,11 +1,12 @@
 import { Plugin } from 'prosemirror-state'
-import { schema } from '~/src/editor/Schema'
+import { Schema } from 'prosemirror-model'
 
 const IMAGE_URL_PATTERN = new RegExp(`https?:\/\/.+\.(jpg|jpeg|svg|png)$`)
 
 /** Plugin that replaces pasted image and embed links with the corresponding nodes. */
-export const useReplacePastesPlugin = () => {
+export const useReplacePastesPlugin = (schema: Schema) => {
   const embeds = useMediaEmbeds()
+
   return new Plugin({
     props: {
       handlePaste(view, event, slice) {

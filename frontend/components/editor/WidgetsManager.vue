@@ -25,7 +25,6 @@
 import { Node } from 'prosemirror-model'
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
-import { schema } from '~/src/editor/Schema'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 
 const linkModal = useTemplateRef('linkModal')
@@ -37,6 +36,7 @@ const embedEditorModal = useTemplateRef('embedEditorModal')
 const emojiWidget = useTemplateRef('emojiWidget')
 
 const { editor, toolbar, editorView, editorState } = useEditorInjects()
+const schema = useEditorSchema()
 
 /** Selects a footnote to edit its attributes. */
 function selectFootnote(node: Node) {

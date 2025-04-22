@@ -4,7 +4,6 @@
 import type * as Toolbar from '~/src/editor/Toolbar'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MediaActions from '~/src/editor/actions/Media'
-import { schema } from '~/src/editor/Schema'
 
 type ContextMenuItem = NuxtDropdownItem & {
   item: Toolbar.GroupItem,
@@ -12,6 +11,7 @@ type ContextMenuItem = NuxtDropdownItem & {
 
 export const useEditorContextMenu = () => {
   const { editorState } = useEditorInjects()
+  const schema = useEditorSchema()
 
   /** Options shown in the context menu. */
   function getContextMenuItems() {

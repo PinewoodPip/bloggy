@@ -2,10 +2,10 @@
  * Base types for editor model.
  */
 import { EditorState, Transaction } from 'prosemirror-state'
+import { Schema } from 'prosemirror-model'
 import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
-import { schema } from '~/src/editor/Schema'
 import { Toolbar, type actionGroupItemIdentifier, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
 import type { EditorView } from 'prosemirror-view'
 
@@ -47,6 +47,7 @@ export interface IAction {
 export class Editor {
   /** ProseMirror editor instance getter. */
   private pmViewGetter: () => EditorView
+  private _schema: Schema
 
   actions: {[id: actionID]: IAction} = {}
 
@@ -56,9 +57,10 @@ export class Editor {
   private customActionBindings: {[id: actionID]: keybind} = {}
   private customBindingToAction: {[combo: keybind]: actionID} = {}
 
-  constructor(pmViewGetter: () => EditorView) {
+  constructor(schema: Schema, pmViewGetter: () => EditorView) {
     this.toolbar = new Toolbar()
     this.pmViewGetter = pmViewGetter
+    this._schema = schema
   }
 
   /** Registers an editor action. */
@@ -72,6 +74,11 @@ export class Editor {
       throw 'Action not registered: ' + id
     }
     return this.actions[id]
+  }
+  
+  /** The document's ProseMirror schema. */
+  get schema() {
+    return this._schema
   }
 
   /** Returns whether an item ID corresponds to an action. */
@@ -156,7 +163,7 @@ export class Editor {
     let markdownStr = DocumentSerializer.serialize(state.doc)
 
     // Insert footnote content required by the footnotes plugin
-    const footnotes = ProseMirrorUtils.findNodes(state, schema.nodes['footnote'])
+    const footnotes = ProseMirrorUtils.findNodes(state, this.schema.nodes['footnote'])
     for (const footnote of footnotes) {
       const node = footnote.node
       let text: string = node.attrs.text

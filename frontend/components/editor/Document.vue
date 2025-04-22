@@ -19,12 +19,12 @@ import { Node } from 'prosemirror-model'
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
 import type { EditorView } from 'prosemirror-view'
-import { schema } from '~/src/editor/Schema'
 
 const editorRef = useTemplateRef('documentRef')
 const widgets = useTemplateRef('widgets')
 const clipboardManager = useTemplateRef('clipboardManager')
 const { editor, toolbar } = useEditorInjects()
+const schema = useEditorSchema()
 
 const props = defineProps<{
   initialContent: string,

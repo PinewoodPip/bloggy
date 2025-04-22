@@ -4,7 +4,6 @@
 import { Node } from 'prosemirror-model'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { Group, GroupAction, GroupCallback } from '../Toolbar'
-import { schema } from '../Schema'
 import { Action } from './Action'
 
 export const actionGroup: Group = {

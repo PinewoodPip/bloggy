@@ -20,4 +20,5 @@ export const useEditorProvides = (editor: Editor, document: Ref<Component>): voi
   provideLocal('editorView', editorView)
   provideLocal('editorState', editorState)
   provideLocal('itemUsedCallbacks', itemUsedCallbacks)
+  provideLocal('documentSchema', editor.schema)
 }

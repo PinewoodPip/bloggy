@@ -5,7 +5,6 @@ import { type EditorState, type Transaction } from 'prosemirror-state'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
 import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
-import { schema } from '../Schema'
 import { Action } from './Action'
 
 export class FormatBold extends Action {

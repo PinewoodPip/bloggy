@@ -2,6 +2,7 @@
  * Composables for common editor configurations.
  */
 import type { EditorState } from 'prosemirror-state';
+import type { Schema } from 'prosemirror-model';
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from "~/src/editor/Toolbar"
 import * as HistoryActions from '~/src/editor/actions/History'
@@ -18,6 +19,7 @@ import type { AxiosError } from 'axios';
 import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
 import { injectLocal, provideLocal } from '@vueuse/core'
+import { schema } from '~/src/editor/Schema';
 
 /** Max amount of characters to use for auto-generated summaries. */
 const MAX_SUMMARY_LENGTH = 250
@@ -25,7 +27,7 @@ const MAX_SUMMARY_LENGTH = 250
 /** Creates an article editor model. */
 export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor(pmViewGetter)
+  const editor: Editor.Editor = new Editor.Editor(schema, pmViewGetter)
   const toolbar = editor.getToolbar()
 
   // Add default actions and groups
@@ -99,7 +101,14 @@ export const useEditorInjects = () => {
   const editorState = injectLocal<Ref<EditorState>>('editorState')!
   const editorView = injectLocal<Ref<EditorView>>('editorView')!
   const itemUsedCallbacks = injectLocal<Ref<Toolbar.ItemUsedCallback[]>>('itemUsedCallbacks')!
-  return {editor, toolbar, editorState, editorView, itemUsedCallbacks}
+  const schema = injectLocal<Schema>('documentSchema')!
+  return { editor, toolbar, editorState, editorView, itemUsedCallbacks, schema }
+}
+
+/** Composable for the editor document's ProseMirror schema. */
+export const useEditorSchema = () => {
+  const { editor } = useEditorInjects()
+  return editor.value.schema // Immutable; no reactivity necessary
 }
 
 /** Queries and mutations for fetching and editing the article editor's current article. */

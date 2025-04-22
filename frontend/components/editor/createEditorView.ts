@@ -18,8 +18,8 @@ import { createParser } from 'prosemirror-highlight/lowlight'
 const lowlight = createLowlight(common)
 const parser = createParser(lowlight)
 const lowlightPlugin = createHighlightPlugin({ parser })
-const replacePastesPlugin = useReplacePastesPlugin()
-const formattingInputRules = useFormattingInputRules()
+const replacePastesPlugin = useReplacePastesPlugin(schema)
+const formattingInputRules = useFormattingInputRules(schema)
 
 /**
  * Creates a ProseMirror EditorView.

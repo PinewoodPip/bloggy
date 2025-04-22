@@ -10,9 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import { schema } from '~/src/editor/Schema';
-
 const { editorState: state, editorView: view } = useEditorInjects()
+const schema = useEditorSchema()
 
 const emit = defineEmits<{
   headingSelected: [Heading],

@@ -4,6 +4,7 @@ import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view'
+import { schema } from '~/src/editor/Schema'
 
 /**
  * An editor setup for writing article comments.
@@ -11,7 +12,7 @@ import type { EditorView } from 'prosemirror-view'
  */
 export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor(pmViewGetter)
+  const editor: Editor.Editor = new Editor.Editor(schema, pmViewGetter)
   const toolbar = editor.getToolbar()
 
   // Add default actions and groups
