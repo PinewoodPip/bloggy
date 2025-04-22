@@ -10,9 +10,17 @@ declare global {
   type path = string
   /** Prefixed with a dot. */
   type fileExtension = string
+  /** Nuxt icon identifier. */
+  type icon = string
 
   type DynamicComponentDef = {
     component: Component | string,
     props: object,
+  }
+
+  type NuxtDropdownItem = {
+    label: string,
+    icon: icon,
+    click?: () => void,
   }
 }

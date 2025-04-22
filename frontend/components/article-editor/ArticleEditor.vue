@@ -22,7 +22,7 @@
     </div>
 
     <!-- Status bar -->
-    <EditorStatusBar class="fixed left-0 bottom-0 w-full" />
+    <ArticleEditorStatusBar class="fixed left-0 bottom-0 w-full" />
 
     <!-- Context menu -->
     <EditorDocumentContextMenu ref="contextMenu" />
