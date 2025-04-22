@@ -12,7 +12,7 @@
         <h4>{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
-          <EditorSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="toolbar.isItemVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="onResetKeybind" @toggle-visibility="onToggleActionVisibility" />
+          <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="toolbar.isItemVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />
         </div>
       </div>
     </template>
@@ -42,11 +42,13 @@
 </template>
 
 <script setup lang="ts">
+import { useEditorSettings } from '~/composables/editor/viewmodel/Settings'
 import * as Editor from '~/src/editor/Editor'
 import * as Toolbar from '~/src/editor/Toolbar'
 
 const keybindStringifier = useKeybindStringifier()
 const { editor, toolbar } = useEditorInjects()
+const { getGroupItems, isKeybindDefault, resetKeybind, setItemVisibility: setActionVisibility, setItemKeybind } = useEditorSettings()
 
 const rebindingModalVisible = ref(false)
 const pendingRebindItem: Ref<Toolbar.GroupItem | null> = ref(null)
@@ -58,8 +60,10 @@ const emit = defineEmits<{
   rebind: [Toolbar.actionGroupItemIdentifier, Editor.keybind | null]
 }>()
 
+/** Update the keybind of the selected item. */
 function rebind() {
   if (pendingRebindItem.value) {
+    setItemKeybind(pendingRebindItem.value, pendingRebindKeybind.value!)
     emit('rebind', pendingRebindItem.value.id, pendingRebindKeybind.value)
     rebindingModalVisible.value = false
   }
@@ -75,43 +79,10 @@ function resetBindingModal() {
   conflictingAction.value = null
 }
 
-function getGroupItems(group: Toolbar.Group): Toolbar.GroupItem[] {
-  const items: Toolbar.GroupItem[] = []
-  for (const item of group.items) {
-    if (item.type === 'action' || item.type === 'callback') {
-      items.push(item)
-    } else if (item.type === 'actionMenu') {
-      // Add all subitems
-      for (const subitem of (item as Toolbar.GroupActionMenu).subitems) {
-        items.push(subitem)
-      }
-    }
-  }
-  return items
-}
-
-/** Returns whether an action's keybind is the default one. */
-function isKeybindDefault(actionID: string) {
-  const defaultKeybind = editor.value.getDefaultItemKeybind(actionID)
-  const currentKeybind = editor.value.getItemKeybind(actionID)
-  return defaultKeybind === currentKeybind
-}
-
 function onRebindRequested(item: Toolbar.GroupItem) {
   resetBindingModal()
   rebindingModalVisible.value = true
   pendingRebindItem.value = item
-}
-
-function onResetKeybind(item: Toolbar.GroupItem) {
-  const defaultKeybind = editor.value.getDefaultItemKeybind(item)
-  emit('rebind', item.id, defaultKeybind)
-}
-
-/** Sets visibility and saves preferences. */
-function onToggleActionVisibility(item: Toolbar.GroupItem, visible: boolean) {
-  toolbar.value.setItemVisible(item.id, visible)
-  editor.value.savePreferences("ArticleEditor")
 }
 
 const pendingRebindActionName = computed(() => {

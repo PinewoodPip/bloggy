@@ -53,7 +53,7 @@
 
   <!-- Settings menu modal -->
   <UModal v-model="settingsMenuVisible" :overlay="true">
-    <EditorSettings @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
+    <ArticleEditorModalSettings @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
   </UModal>
 
   <!-- Metadata modal -->
@@ -61,6 +61,7 @@
 </template>
 
 <script setup lang="ts">
+import { ArticleEditorModalSettings } from '#components'
 import * as Editor from '~/src/editor/Editor'
 import type * as Toolbar from '~/src/editor/Toolbar'
 
@@ -147,21 +148,6 @@ function openSettingsMenu() {
 function onTitleFieldFocusOut() {
   articleModel.value!.title = articleTitle.value
   validateMetadata(articleQuery.data)
-}
-
-function onKeybindRebound(itemID: Toolbar.actionGroupItemIdentifier, keybind: Editor.keybind | null) {
-  // Clear keybind of the previous action bound to it
-  if (keybind) {
-    const previousAction = editor.value.getItemForKeybind(keybind)
-    if (previousAction) {
-      editor.value.setItemKeybind(previousAction.id, null)
-    }
-  }
-  // Set new keybind
-  editor.value.setItemKeybind(itemID, keybind)
-
-  // Persist settings
-  editor.value.savePreferences("ArticleEditor")
 }
 
 function saveDraft() {
