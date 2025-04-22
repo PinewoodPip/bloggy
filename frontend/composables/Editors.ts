@@ -109,7 +109,6 @@ export const useArticleEditorQueries = () => {
   const { editor, editorState } = useEditorInjects()
   const router = useRouter()
   const route = useRoute()
-  const articleModel: Ref<Article | null> = ref(null)
 
   /** Query for fetching article metadata and initial content */
   const articleQuery = useQuery({
@@ -117,7 +116,6 @@ export const useArticleEditorQueries = () => {
     queryFn: async () => {
       if (route.query['article']) {
         const article = await articleService.getArticle(route.query['article'] as string)
-        articleModel.value = Object.assign({}, article)
         return article
       } else {
         return null
@@ -149,21 +147,19 @@ export const useArticleEditorQueries = () => {
   })
 
   /** 
-   * Validates the metadata values and resets them if they're not valid.
+   * Validates article metadata values and resets them if they're not valid.
    */
-  function validateMetadata(article: Ref<Article | null | undefined>) {
+  function validateMetadata(article: ArticleUpdateRequest) {
     // Reset the title field to the original fetched data if the user attempts to clear it.
-    if (article.value?.title === '') {
-      article.value.title = article.value!.title
+    if (article.title === '') {
+      article.title = article!.title
     }
   }
 
   /** Serializes the editor document and requests to patch the article. */
-  function saveDocument() {
-    const articleData = articleModel.value!
-
+  function saveDocument(articleData: ArticleUpdateRequest) {
     // Ensure fields are set to valid values first
-    validateMetadata(articleModel)
+    validateMetadata(articleData)
 
     // Serialize the document and PATCH the article
     const state = toRaw(editorState!)
@@ -179,7 +175,7 @@ export const useArticleEditorQueries = () => {
     console.log('Serialized document')
     console.log(markdownStr)
     articleMutation.mutate({
-      title: articleData.title,
+      ...articleData,
       content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
       text: text,
       summary: summary,
@@ -191,6 +187,5 @@ export const useArticleEditorQueries = () => {
     articleQuery: articleQuery,
     articleMutation: articleMutation,
     validateMetadata: validateMetadata,
-    articleModel: articleModel,
   }
 }

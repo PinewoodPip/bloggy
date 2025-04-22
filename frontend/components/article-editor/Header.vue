@@ -10,7 +10,7 @@
       <div class="pt-3 pl-3">
         <span class="flex items-center">
           <!-- Title field -->
-          <input class="field-autosize bg-transparent font-bold text-lg min-w-16 px-2 mr-3" type="text" minlength="1" required v-model="articleTitle" @focusout="onTitleFieldFocusOut" />
+          <input class="field-autosize bg-transparent font-bold text-lg min-w-16 px-2 mr-3" type="text" minlength="1" required v-model="articlePatchData.title" @focusout="onTitleFieldFocusOut" />
 
           <!-- Path -->
           <span class="flex items-center">
@@ -45,7 +45,7 @@
 
     <!-- Session management buttons -->
     <div class="flex gap-x-2 my-auto">
-      <MutationButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" :status="articleTitle" @click="saveDocument">Publish</MutationButton>
+      <MutationButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" :status="articleMutation.status.value" @click="saveDocument">Publish</MutationButton>
       <IconButton icon="i-heroicons-archive-box-arrow-down" class="btn-smp btn-primary" @click="saveDraft">Save draft</IconButton>
       <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-smp btn-error" @click="exit">Exit</IconButton>
     </div>
@@ -53,7 +53,7 @@
 
   <!-- Settings menu modal -->
   <UModal v-model="settingsMenuVisible" :overlay="true">
-    <ArticleEditorModalSettings @rebind="onKeybindRebound" @close="settingsMenuVisible = false"/>
+    <ArticleEditorModalSettings @close="settingsMenuVisible = false"/>
   </UModal>
 
   <!-- Metadata modal -->
@@ -62,21 +62,22 @@
 
 <script setup lang="ts">
 import { ArticleEditorModalSettings } from '#components'
-import * as Editor from '~/src/editor/Editor'
-import type * as Toolbar from '~/src/editor/Toolbar'
+import type { Reactive } from 'vue'
 
 const router = useRouter()
-const { editor } = useEditorInjects()
-const { articleMutation, saveDocument, validateMetadata, articleQuery, articleModel } = useArticleEditorQueries()
+const { articleMutation, saveDocument, validateMetadata, articleQuery } = useArticleEditorQueries()
 
 const props = defineProps<{
   article: Article | undefined | null,
 }>();
 
-const articleTitle = ref('')
+const articlePatchData: Reactive<ArticleUpdateRequest> = reactive({
+  title: '',
+})
 watchEffect(() => {
   if (props.article) {
-    articleTitle.value = props.article.title
+    // Update title
+    articlePatchData.title = props.article.title
   }
 })
 
@@ -94,7 +95,7 @@ const fileDropdownItems = [
       label: 'Save & publish',
       icon: 'i-heroicons-book-open-16-solid',
       click: () => {
-        saveDocument()
+        saveDocument(articlePatchData)
       }
     },
     {
@@ -146,8 +147,8 @@ function openSettingsMenu() {
 }
 
 function onTitleFieldFocusOut() {
-  articleModel.value!.title = articleTitle.value
-  validateMetadata(articleQuery.data)
+  validateMetadata(articlePatchData)
+  articleMutation.mutate(articlePatchData)
 }
 
 function saveDraft() {
