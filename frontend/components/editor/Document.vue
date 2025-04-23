@@ -4,9 +4,6 @@
     <EditorProseMirrorWrapper ref="documentRef" :initial-content="initialContent" />
   </ProsemirrorAdapterProvider>
 
-  <!-- Widgets -->
-  <EditorWidgetsManager ref="widgets" />
-
   <!-- Clipboard manager -->
   <EditorClipboardManager ref="clipboardManager" />
 </template>
@@ -21,7 +18,6 @@ import * as Toolbar from '~/src/editor/Toolbar'
 import type { EditorView } from 'prosemirror-view'
 
 const editorRef = useTemplateRef('documentRef')
-const widgets = useTemplateRef('widgets')
 const clipboardManager = useTemplateRef('clipboardManager')
 const { editor, toolbar } = useEditorInjects()
 const schema = useEditorSchema()
@@ -29,12 +25,6 @@ const schema = useEditorSchema()
 const props = defineProps<{
   initialContent: string,
 }>();
-
-/** Callbacks available to node renderers. */
-export type NodeCallbacks = {
-  /** Notifies that the node should be selected for a node type-specific interaction. */
-  selectNode(node: Node): void,
-}
 
 /** Executes an action over the current selection. */
 function executeAction(actionID: string, params?: object) {
@@ -87,19 +77,6 @@ function getKeyComboAction(keyCombo: Editor.actionID): Editor.IAction | null {
 function isKeyComboBound(keyCombo: Editor.actionID) {
   return getKeyComboAction(keyCombo) !== null
 }
-
-/** Provide callbacks for nodes to notify they should be selected. */
-provide<NodeCallbacks>('nodeCallbacks', {
-  selectNode(node: Node) {
-    if (node.type == schema.nodes.footnote) {
-      widgets.value!.selectFootnote(node)
-    } else if (node.type === schema.nodes.image) {
-      widgets.value!.selectImage(node)
-    } else if (node.type === schema.nodes.embed) {
-      widgets.value!.selectEmbed(node)
-    }
-  }
-})
 
 // TODO would be clearer to reader if this used an object
 const shortcutEntries = useArbitraryKeyshortcuts(

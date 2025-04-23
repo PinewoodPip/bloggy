@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import { useNodeViewContext } from '@prosemirror-adapter/vue'
-import type { NodeCallbacks } from '~/components/editor/Document.vue'
+import type { NodeCallbacks } from '~/components/article-editor/ArticleEditor.vue'
 
 const { contentRef, node } = useNodeViewContext()
 const nodeCallbacks = inject<NodeCallbacks>('nodeCallbacks')

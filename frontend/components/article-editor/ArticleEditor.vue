@@ -26,17 +26,28 @@
 
     <!-- Context menu -->
     <EditorDocumentContextMenu ref="contextMenu" />
+
+    <!-- Widgets -->
+    <EditorWidgetsManager ref="widgets" />
   </UContainer>
 </template>
 <script setup lang="ts">
 import type * as Toolbar from '~/src/editor/Toolbar'
+import { Node } from 'prosemirror-model'
 import type { Heading } from '~/components/editor/sidebar/Sidebar.vue'
+
+/** Callbacks available to node renderers. */
+export type NodeCallbacks = {
+  /** Notifies that the node should be selected for a node type-specific interaction. */
+  selectNode(node: Node): void,
+}
 
 const router = useRouter()
 
 const editor = ref(useArticleEditor(() => editorDocument.value!.editorView))
 const editorDocument = useTemplateRef('document')
 const contextMenu = useTemplateRef('contextMenu')
+const widgets = useTemplateRef('widgets')
 useEditorProvides(editor, editorDocument)
 const editorQueries = useArticleEditorQueries()
 
@@ -71,6 +82,20 @@ const articleData = computed(() => {
 function onContextMenu() {
   contextMenu.value!.open()
 }
+
+/** Provide callbacks for nodes to notify they should be selected. */
+provide<NodeCallbacks>('nodeCallbacks', {
+  selectNode(node: Node) {
+    const schema = toRaw(editor.value).schema
+    if (node.type === schema.nodes.footnote) {
+      widgets.value!.selectFootnote(node)
+    } else if (node.type === schema.nodes.image) {
+      widgets.value!.selectImage(node)
+    } else if (node.type === schema.nodes.embed) {
+      widgets.value!.selectEmbed(node)
+    }
+  }
+})
 
 /** Load the user's editor preferences when editor initializes. */
 watchEffect(() => {
