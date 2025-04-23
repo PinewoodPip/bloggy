@@ -4,7 +4,7 @@ import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view'
-import { schema } from '~/src/editor/Schema'
+import { schema as CommentEditorSchema } from '~/src/editor/Schema' // TODO create separate schema
 
 /**
  * An editor setup for writing article comments.
@@ -12,8 +12,9 @@ import { schema } from '~/src/editor/Schema'
  */
 export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor(schema, pmViewGetter)
+  const editor: Editor.Editor = new Editor.Editor(CommentEditorSchema, pmViewGetter)
   const toolbar = editor.getToolbar()
+  const schema = editor.schema
 
   // Add default actions and groups
 
@@ -23,11 +24,11 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   toolbar.registerToolbarGroup(HistoryActions.actionGroup)
 
   // Formatting actions
-  editor.registerAction(new FormattingActions.FormatBold())
-  editor.registerAction(new FormattingActions.FormatItalic())
-  editor.registerAction(new FormattingActions.FormatUnderline())
-  editor.registerAction(new FormattingActions.FormatInlineCode())
-  editor.registerAction(new FormattingActions.FormatLink())
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleBold', schema.marks.strong, 'ctrl_b'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleItalic', schema.marks.em, 'ctrl_i'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleUnderline', schema.marks.underline, 'ctrl_u'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleInlineCode', schema.marks.code))
+  editor.registerAction(new FormattingActions.ToggleWordMark('ToggleLink', schema.marks.link))
   // TODO remove?
   for (const action of FormattingActions.alignmentActions) {
     editor.registerAction(action)

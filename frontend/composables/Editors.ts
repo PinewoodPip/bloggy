@@ -19,7 +19,7 @@ import type { AxiosError } from 'axios';
 import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
 import { injectLocal, provideLocal } from '@vueuse/core'
-import { schema } from '~/src/editor/Schema';
+import { schema as ArticleEditorSchema } from '~/src/editor/Schema';
 
 /** Max amount of characters to use for auto-generated summaries. */
 const MAX_SUMMARY_LENGTH = 250
@@ -27,8 +27,9 @@ const MAX_SUMMARY_LENGTH = 250
 /** Creates an article editor model. */
 export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
-  const editor: Editor.Editor = new Editor.Editor(schema, pmViewGetter)
+  const editor: Editor.Editor = new Editor.Editor(ArticleEditorSchema, pmViewGetter)
   const toolbar = editor.getToolbar()
+  const schema = editor.schema
 
   // Add default actions and groups
 
@@ -38,11 +39,11 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   toolbar.registerToolbarGroup(HistoryActions.actionGroup)
 
   // Formatting actions
-  editor.registerAction(new FormattingActions.FormatBold())
-  editor.registerAction(new FormattingActions.FormatItalic())
-  editor.registerAction(new FormattingActions.FormatUnderline())
-  editor.registerAction(new FormattingActions.FormatInlineCode())
-  editor.registerAction(new FormattingActions.FormatLink())
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleBold', schema.marks.strong, 'ctrl_b'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleItalic', schema.marks.em, 'ctrl_i'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleUnderline', schema.marks.underline, 'ctrl_u'))
+  editor.registerAction(new FormattingActions.ToggleMark('ToggleInlineCode', schema.marks.code))
+  editor.registerAction(new FormattingActions.ToggleWordMark('ToggleLink', schema.marks.link))
   for (const action of FormattingActions.alignmentActions) {
     editor.registerAction(action)
   }

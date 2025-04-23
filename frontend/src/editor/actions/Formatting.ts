@@ -2,104 +2,46 @@
  * Implements text formatting actions: bold, italics, etc.
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
+import { MarkType, NodeType } from 'prosemirror-model'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
 import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
 import { Action } from './Action'
 
-export class FormatBold extends Action {
-  static ID = 'FormatBold'
+export class ToggleMark extends Action {
+  private markType: MarkType
+  private defaultKeybind?: keybind
 
-  constructor() {
-    super(FormatBold.ID)
+  constructor(id: string, nodeType: MarkType, defaultKeybind?: string) {
+    super(id)
+    this.markType = nodeType
+    this.defaultKeybind = defaultKeybind
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const toggleBold = toggleMark(schema.marks.strong, null, {})
+    const toggleBold = toggleMark(this.markType, null, {})
     return this.getTransaction(toggleBold, state)
   }
 
   override isActive(state: EditorState): boolean {
-    return this.isMarkActive(state, state.schema.marks.strong)
+    return this.isMarkActive(state, this.markType)
   }
 
   override getDefaultKeyCombo(): keybind | null {
-    return 'ctrl_b' // Ctrl + B
+    return this.defaultKeybind ?? null
   }
 }
 
-export class FormatItalic extends Action {
-  static ID = 'FormatItalic'
+export class ToggleWordMark extends Action {
+  private markType: MarkType
 
-  constructor() {
-    super(FormatItalic.ID)
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const toggleItalics = toggleMark(schema.marks.em, null, {})
-    return this.getTransaction(toggleItalics, state)
-  }
-
-  override isActive(state: EditorState): boolean {
-    return this.isMarkActive(state, state.schema.marks.em)
-  }
-
-  override getDefaultKeyCombo(): keybind | null {
-    return 'ctrl_i' // Ctrl + I
-  }
-}
-
-export class FormatUnderline extends Action {
-  static ID = 'FormatUnderline'
-
-  constructor() {
-    super(FormatUnderline.ID)
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const toggleUnderline = toggleMark(schema.marks.underline, null, {}) // TODO extract this helper
-    return this.getTransaction(toggleUnderline, state)
-  }
-
-  override isActive(state: EditorState): boolean {
-    return this.isMarkActive(state, state.schema.marks.underline)
-  }
-
-  override getDefaultKeyCombo(): keybind | null {
-    return 'ctrl_u' // Ctrl + U
-  }
-}
-
-export class FormatInlineCode extends Action {
-  static ID = 'FormatInlineCode'
-
-  constructor() {
-    super(FormatInlineCode.ID)
-  }
-
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const toggleInlineCode = toggleMark(schema.marks.code, null, {}) // TODO extract this helper
-    return this.getTransaction(toggleInlineCode, state)
-  }
-
-  override isActive(state: EditorState): boolean {
-    return this.isMarkActive(state, state.schema.marks.code)
-  }
-
-  override getDefaultKeyCombo(): keybind | null {
-    return null
-  }
-}
-
-export class FormatLink extends Action {
-  static ID = 'FormatLink'
-
-  constructor() {
-    super(FormatLink.ID)
+  constructor(id: string, markType: MarkType) {
+    super(id)
+    this.markType = markType
   }
 
   execute(state: EditorState, params: {href: string, title: string}): Transaction | Promise<Transaction> | null {
-    const toggleLink = toggleMark(schema.marks.link, params)
+    const toggleLink = toggleMark(this.markType, params)
     const cursor = state.selection
 
     // If there is no text selected, select the word at the cursor and apply the link to it
@@ -110,7 +52,7 @@ export class FormatLink extends Action {
       tr = tr.setSelection(selection)
 
       // Add link mark to selection
-      tr = tr.addMark(selection.from, selection.to, schema.marks.link.create(params))
+      tr = tr.addMark(selection.from, selection.to, this.markType.create(params))
 
       return tr
     } else { // Otherwise apply link to whole selection
@@ -119,11 +61,7 @@ export class FormatLink extends Action {
   }
 
   override isActive(state: EditorState): boolean {
-    return this.isMarkActive(state, state.schema.marks.code)
-  }
-
-  override getDefaultKeyCombo(): keybind | null {
-    return null
+    return this.isMarkActive(state, this.markType)
   }
 }
 
@@ -181,7 +119,7 @@ export const actionGroup: Group = {
   items: [
     {
       type: 'action',
-      id: FormatBold.ID,
+      id: 'ToggleBold',
       def: {
         name: 'Toggle Bold',
         icon: 'i-heroicons-bold',
@@ -189,7 +127,7 @@ export const actionGroup: Group = {
     } as GroupAction,
     {
       type: 'action',
-      id: FormatItalic.ID,
+      id: 'ToggleItalic',
       def: {
         name: 'Toggle Italics',
         icon: 'i-heroicons-italic',
@@ -197,7 +135,7 @@ export const actionGroup: Group = {
     } as GroupAction,
     {
       type: 'action',
-      id: FormatUnderline.ID,
+      id: 'ToggleUnderline',
       def: {
         name: 'Toggle Underline',
         icon: 'i-heroicons-underline',
@@ -205,7 +143,7 @@ export const actionGroup: Group = {
     } as GroupAction,
     {
       type: 'action',
-      id: FormatInlineCode.ID,
+      id: 'ToggleInlineCode',
       def: {
         name: 'Toggle Inline Code',
         icon: 'i-material-symbols-code-rounded',
@@ -222,7 +160,7 @@ export const actionGroup: Group = {
     } as GroupActionMenu,
     {
       type: 'action',
-      id: FormatLink.ID,
+      id: 'ToggleLink',
       def: {
         name: 'Set Link',
         icon: 'material-symbols:link',
