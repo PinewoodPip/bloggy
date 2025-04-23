@@ -37,11 +37,12 @@ export const useEditorContextMenu = () => {
     )
 
     // Convert items to Nuxt UI dropdown items
-    const dropdownItems: ContextMenuItem[] = []
+    const dropdownItems: ContextMenuItem[][] = []
     for (const arr of items) {
+      dropdownItems.push([])
       for (const i in arr) {
         const item = arr[i]
-        dropdownItems.push(getActionContextMenuEntry(item as Toolbar.GroupItem))
+        dropdownItems[dropdownItems.length - 1].push(getActionContextMenuEntry(item as Toolbar.GroupItem))
       }
     }
 

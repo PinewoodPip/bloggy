@@ -22,14 +22,17 @@ function open() {
   const items = getContextMenuItems() // Cannot be made reactive, as it depends on PM document state
 
   // Add Nuxt dropdown click handler to items
-  for (const item of items) {
-    // @ts-ignore
-    item.click = () => {
-      emit('useAction', item.item.id)
-      useItem(item.item)
+  for (const itemGroup of items) {
+    for (const item of itemGroup) {
+      // @ts-ignore
+      item.click = () => {
+        emit('useAction', item.item.id)
+        useItem(item.item)
+      }
     }
   }
 
+  contextMenuItems.value = items
   contextMenuOpen.value = true
 }
 
