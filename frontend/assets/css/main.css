@@ -9,6 +9,7 @@
 }
 
 .large-modal {
+  max-height: 600px;
   @apply flexcol bg-base-100 rounded-box p-4
 }
 
