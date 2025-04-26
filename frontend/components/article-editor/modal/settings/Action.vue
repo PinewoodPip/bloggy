@@ -1,7 +1,7 @@
 <!-- Setting entry for an action; allows changing its keybind and visibility. -->
 <template>
-  <div class="flex items-center">
-    <UIcon class="size-5 mr-3" :class="nameClass" :name="item.def.icon"/>
+  <div class="flex items-center hover:bg-neutral/20 rounded-md">
+    <UIcon class="size-5 mr-2 ml-1" :class="nameClass" :name="item.def.icon"/>
     <span :class="nameClass">{{ itemNameLabel }}</span>
     <span v-if="!isVisibleInToolbar" class="italic ml-1" :class="nameClass">(hidden)</span>
 
@@ -16,14 +16,17 @@
         </button>
       </UTooltip>
 
-      <!-- Rebind button -->
-      <button class="btn btn-sm btn-secondary" @click="rebind">
-        <UKbd v-if="props.keybind">{{ keybindStr }}</UKbd>
-        <span v-else>Unbound</span>
-      </button>
-
+      <!-- Visibility button -->
       <UTooltip :text="visibilityTooltip">
-        <IconButton class="btn-sm btn-secondary" :icon="isVisibleInToolbar ? 'i-material-symbols-visibility' : 'i-material-symbols-visibility-off'" @click="toggleVisibility" />
+        <IconButton class="btn-sm btn-ghost" :icon="isVisibleInToolbar ? 'i-material-symbols-visibility' : 'i-material-symbols-visibility-off'" @click="toggleVisibility" />
+      </UTooltip>
+
+      <!-- Rebind button -->
+      <UTooltip text="Keybind">
+        <button class="btn btn-sm btn-secondary min-w-24" @click="rebind">
+          <UKbd v-if="props.keybind">{{ keybindStr }}</UKbd>
+          <span v-else>Unbound</span>
+        </button>
       </UTooltip>
     </div>
   </div>
