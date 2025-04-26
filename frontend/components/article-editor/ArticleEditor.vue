@@ -2,7 +2,7 @@
 <template>
   <UContainer class="flexcol gap-y-2">
     <!-- Header -->
-    <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" />
+    <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" @toggle-sidebar="sidebarVisible = !sidebarVisible" />
 
     <!-- Toolbar; only rendered once editor is initialized -->
     <ArticleEditorToolbar v-if="editorDocument?.editorState" />
