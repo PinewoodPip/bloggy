@@ -1,6 +1,6 @@
 <!-- Displays basic article metadata and menu bar. -->
 <template>
-  <div class="large-content-block flex">
+  <div class="small-content-block flex">
     <!-- Document icon -->
     <UIcon name="i-material-symbols-article-outline" class="w-20 h-20"/>
 
@@ -24,20 +24,9 @@
 
       <!-- Menu button links -->
       <ul class="menu menu-horizontal flex-row bg-base-200">
-        <!-- File menu -->
-        <li>
-          <Dropdown :items="fileDropdownItems">
-            <UButton label="File" />
-          </Dropdown>
+        <li v-for="subitem in menuItemGroup.subitems" :key="subitem.id" class="flex items-center">
+          <ArticleEditorMenuItemButton :item="subitem" />
         </li>
-        <!-- View menu -->
-        <li>
-          <Dropdown :items="viewDropdownItems">
-            <UButton label="View" />
-          </Dropdown>
-        </li>
-        <!-- Settings menu; opens a modal instead -->
-        <li><a @click="openSettingsMenu">Settings</a></li>
       </ul>
     </div>
 
@@ -66,11 +55,13 @@ import type { Reactive } from 'vue'
 
 const router = useRouter()
 const { articleMutation, saveDocument, validateMetadata, articleQuery } = useArticleEditorQueries()
+const { itemGroup: menuItemGroup } = useArticleEditorMainMenu()
 const titleField = useTemplateRef('titleField')
 
 const props = defineProps<{
   article: Article | undefined | null,
 }>();
+
 
 const articlePatchData: Reactive<ArticleUpdateRequest> = reactive({
   title: '',
@@ -89,63 +80,6 @@ const emit = defineEmits<{
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
-
-const fileDropdownItems = [
-  [
-    {
-      label: 'Save & publish',
-      icon: 'i-heroicons-book-open-16-solid',
-      click: () => {
-        saveDocument(articlePatchData)
-      }
-    },
-    {
-      // TODO only show this option if unpublished
-      label: 'Save as draft',
-      icon: 'i-heroicons-pencil-square',
-      click: () => {
-        saveDraft()
-      }
-    },
-    {
-      label: 'Document properties',
-      icon: 'i-heroicons-document-text',
-      click: () => {
-        editDocumentProperties()
-      }
-    },
-  ]
-]
-const viewDropdownItems = [
-  [
-    {
-      label: 'Markdown mode',
-      icon: 'i-material-symbols-markdown-outline',
-      click: () => {
-        toggleMarkdownView()
-      }
-    },
-    {
-      label: 'Table of contents',
-      icon: 'i-material-symbols-data-table-outline',
-      click: () => {
-        toggleTableOfContents()
-      }
-    },
-  ]
-]
-
-function openFileMenu() {
-  // TODO
-}
-
-function openViewMenu() {
-  // TODO
-}
-
-function openSettingsMenu() {
-  settingsMenuVisible.value = true
-}
 
 /** Requests to patch the article title if it was changed. */
 function onTitleFieldFocusOut() {
@@ -185,5 +119,29 @@ function exit() {
 function onMetadataUpdated(article: Article) {
   emit('metadataUpdated', article)
 }
+
+// Handle item events
+useEditorToolbarCallback((item) => {
+  switch (item.id) {
+    case 'Document.File.Save':
+      saveDocument({}) // Document data is added by the composable
+      break
+    case 'Document.File.SaveDraft':
+      saveDraft()
+      break
+    case 'Document.Properties':
+      editDocumentProperties()
+      break
+    case 'Document.View.Markdown':
+      toggleMarkdownView()
+      break
+    case 'Document.View.TableOfContents':
+      toggleTableOfContents()
+      break
+    case 'Document.Settings':
+      settingsMenuVisible.value = true
+      break
+  }
+})
 
 </script>

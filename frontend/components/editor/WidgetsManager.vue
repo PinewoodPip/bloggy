@@ -18,6 +18,7 @@
   <!-- Embed insertion modal -->
   <EditorModalEmbed ref="embedEditorModal" @confirm="onEmbedEdited" />
 
+  <!-- Emoji picker -->
   <EditorWidgetEmojiPanel ref="emojiWidget" @confirm="onEmojiSelected" />
 </template>
 

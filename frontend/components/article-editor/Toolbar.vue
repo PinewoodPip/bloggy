@@ -3,15 +3,15 @@
   <div ref="parent">
     <div ref="header" class="top-0 z-50">
       <div class="small-content-block flex">
-        <div class="flex p-2 overflow-x-auto">
+        <div class="flex px-1 overflow-x-auto">
           <!-- Action groups -->
           <div v-for="group in visibleGroups" class="flex">
             <!-- Actions of the group -->
-            <div class="flex gap-x-2">
+            <div class="flex gap-x-0.5">
               <component v-for="item in getVisibleGroupItems(group)" :is="getGroupItemComponent(item)" v-bind="getGroupItemComponentProps(item)" />
             </div>
             <!-- Should be outside the actions container to avoid applying gap to it -->
-            <div class="divider divider-horizontal mx-1"/>
+            <div class="divider divider-horizontal mx-0"/>
           </div>
         </div>
       </div>
@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import * as Toolbar from '~/src/editor/Toolbar'
-import CallbackButton from '~/components/article-editor/menu/CallbackButton.vue'
-import ActionMenuButton from '~/components/article-editor/menu/ActionMenuButton.vue'
+import CallbackButton from '~/components/article-editor/toolbar/CallbackButton.vue'
+import ActionMenuButton from '~/components/article-editor/toolbar/ActionMenuButton.vue'
 
 const { visibleGroups, getVisibleGroupItems } = useEditorToolbarItems()
 

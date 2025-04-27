@@ -24,7 +24,6 @@ const props = defineProps<{
 }>();
 
 function onHeadingSelected() {
-  console.log('cli')
   callbacks?.selectHeading(props.heading)
 }
 

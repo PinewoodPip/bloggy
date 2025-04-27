@@ -12,7 +12,7 @@
     </div>
 
     <!-- Form -->
-    <div class="flexcol flex-grow overflow-y-scroll gap-y-2 py-3">
+    <div class="flexcol flex-grow overflow-y-auto gap-y-2 py-3">
       <slot name="form"/>
     </div>
 

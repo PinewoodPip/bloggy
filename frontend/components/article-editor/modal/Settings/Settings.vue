@@ -8,8 +8,8 @@
       <!-- Keybinds -->
       <h3>Keybinds</h3>
       <!-- Groups -->
-      <div v-for="group in toolbar.getToolbarGroups()">
-        <h4>{{ group.name }}</h4>
+      <div v-for="group in toolbar.getToolbarGroups()" class="sticky">
+        <h4 class="font-semibold">{{ group.name }}</h4>
         <hr class="mb-2" />
         <div class="flexcol gap-y-2">
           <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="toolbar.isItemVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />

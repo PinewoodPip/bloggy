@@ -1,10 +1,10 @@
 <!-- Displays the document's structure based on headings. -->
 <template>
-  <div class="flex items-center gap-x-2 w-52">
+  <div class="flex items-center gap-x-2">
     <IconButton class="btn-ghost btn-sm" icon="material-symbols:arrow-back-ios-rounded" @click="emit('hide')" />
     <h2>Table of contents</h2>
   </div>
-  <ul class="menu bg-base-200 rounded-box overflow-x-auto">
+  <ul class="menu bg-base-200 rounded-box w-64 overflow-x-auto">
     <EditorSidebarHeading v-if="headings.length > 0" v-for="heading in headings" :heading="heading" />
     <p v-else class="text-sm text-base-content/80">Headings you add to the document will display here.</p>
   </ul>

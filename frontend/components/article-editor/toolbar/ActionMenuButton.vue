@@ -3,7 +3,7 @@
   <!-- Tooltip needs to be hidden while the menu is open, as otherwise it would show when hovering over the menu -->
   <UTooltip :text="!menuVisible ? menu.def.name : undefined">
     <UDropdown v-model:open="menuVisible" :items="menuItems" :popper="{ placement: 'bottom-start' }" >
-      <ArticleEditorMenuItemButton :icon="menu.def.icon" :active="isActive || menuVisible"  @click.prevent="toggleMenu" />
+      <ArticleEditorToolbarItemButton :icon="menu.def.icon" :active="isActive || menuVisible"  @click.prevent="toggleMenu" />
     </UDropdown>
   </UTooltip>
 </template>
