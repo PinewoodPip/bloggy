@@ -35,8 +35,9 @@ const headings = computed(() => {
   const topHeadings: Heading[] = []
   const allHeadings: Heading[] = []
   if (!state.value || !state.value.doc) return topHeadings
-  const nodes = ProseMirrorUtils.findNodes(state.value, schema.nodes.heading)
+  const nodes = ProseMirrorUtils.findNodes(toRaw(state.value), toRaw(schema).nodes.heading)
   for (const result of nodes) {
+    if (result.node.textContent.length == 0) continue // Ignore headings that were just inserted (no text typed yet)
     const level = result.node.attrs.level
     const heading: Heading = {
       name: result.node.textContent,
