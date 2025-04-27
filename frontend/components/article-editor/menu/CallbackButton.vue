@@ -1,7 +1,7 @@
 <!-- Button for displaying and executing toolbar callback and action items. -->
 <template>
   <UTooltip>
-    <IconButton :icon="item.def.icon" :class="btnClass" class="btn-smp rounded-sm" @pointerdown.prevent @click="useTool" />
+    <ArticleEditorMenuItemButton :icon="item.def.icon" :active="isActive" @pointerdown.prevent @click="useTool" />
 
     <!-- Tooltip template -->
     <template #text>
@@ -26,12 +26,5 @@ const props = defineProps<{
 function useTool() {
   useItem(props.item)
 }
-
-const btnClass = computed(() => {
-  return {
-    'btn-secondary': !isActive.value,
-    'btn-accent': isActive.value, // Highlight actions currently in use
-  }
-})
 
 </script>
