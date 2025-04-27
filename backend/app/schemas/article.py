@@ -64,13 +64,14 @@ class ArticlePreview(ArticleBase):
     authors: list[UserSchema.UserOutput]
     summary: str
     tags: list[str]
+    can_comment: bool
+    comments_count: int
 
 class ArticleOutput(ArticlePreview):
     """Complete article schema that includes metadata and content."""
     category: CategoryPreview
     content: str # Raw document text
     view_type: ArticleViewEnum
-    can_comment: bool
     show_authors: bool
 
 class ArticleSearchResults(BaseModel):

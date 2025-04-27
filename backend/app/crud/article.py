@@ -272,6 +272,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
         "path": get_article_path(db, article),
         "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
         "tags": create_tags_name_list(article.tags),
+        "comments_count": len(article.comments),
     })
 
 def get_article_path(db: Session, article: Article) -> str:
@@ -330,6 +331,7 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
         content=bytes.decode(article.content),
         view_type=ArticleViewEnum[article.view_type.name],
         can_comment=article.can_comment,
+        comments_count=len(article.comments),
         category_sorting_index=article.category_sorting_index,
         creation_time=article.creation_time,
         is_visible=article.is_visible,
