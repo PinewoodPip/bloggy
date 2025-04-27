@@ -58,18 +58,18 @@ function selectEmbed(node: Node) {
 useEditorToolbarCallback((item) => {
   const itemID = typeof item === 'string' ? item : item.id // String overload.
   switch (itemID) {
-    case 'FormatLink': {
-      const nodeRange = ProseMirrorUtils.getNodeRange(editorState.value)
-      const node = nodeRange.$from.node()
-
+    case 'SetLink': {
       // Search for a link within the node
       let linkAttrs: Editor.LinkAttrs | undefined = undefined
-      for (const mark of node.marks) {
-        if (mark.type == schema.marks.link) {
-          linkAttrs = mark.attrs as Editor.LinkAttrs
-          break
+      const selection = ProseMirrorUtils.selectWord(editorState.value)
+      selection.content().content.descendants((node, pos, parent, index) => {
+        const linkMark = node.marks.find((mark) => toRaw(mark.type) == toRaw(schema).marks.link)
+        if (linkMark) {
+          linkAttrs = linkMark.attrs as Editor.LinkAttrs
+          return false
         }
-      }
+        return true // Search for deeper text nodes
+      })
 
       linkModal.value!.open(linkAttrs)
       break
@@ -109,7 +109,7 @@ defineExpose({
 })
 
 function onLinkEdited(linkAttrs: Editor.LinkAttrs) {
-  executeAction('FormatLink', linkAttrs)
+  executeAction('ToggleLink', linkAttrs)
 }
 
 function onImageEdited(imgAttrs: Editor.ImageAttrs) {

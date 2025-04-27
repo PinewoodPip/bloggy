@@ -5,7 +5,7 @@ import { type EditorState, type Transaction } from 'prosemirror-state'
 import { MarkType, NodeType } from 'prosemirror-model'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
+import type { Group, GroupAction, GroupActionMenu, GroupCallback, GroupItem } from '../Toolbar'
 import { Action } from './Action'
 
 export class ToggleMark extends Action {
@@ -159,12 +159,12 @@ export const actionGroup: Group = {
       subitems: _alignmentActionItems,
     } as GroupActionMenu,
     {
-      type: 'action',
-      id: 'ToggleLink',
+      type: 'callback',
+      id: 'SetLink',
       def: {
         name: 'Set Link',
         icon: 'material-symbols:link',
       },
-    } as GroupAction,
+    } as GroupCallback,
   ]
 }
