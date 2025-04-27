@@ -1,6 +1,6 @@
 <!-- Root page of the published site, showing latest articles. -->
 <template>
-  <SitePaginatedPage ref="paginatedPage" :articles="articles" :total-articles="totalArticles" @page-change="onPageChanged">
+  <SitePaginatedPage ref="paginatedPage" :title="siteTitle" :articles="articles" :total-articles="totalArticles" :articleViewMode="'vertical'" @page-change="onPageChanged">
 
   <template #pageDescription>
     Latest articles
@@ -13,6 +13,7 @@
 import { useQuery } from '@tanstack/vue-query'
 
 const searchService = useSearchService()
+const meta = useSiteMeta()
 const page = useTemplateRef('paginatedPage')
 
 const articles = computed(() => {
@@ -27,6 +28,10 @@ const totalArticles = computed(() => {
 function onPageChanged(newPage: integer) {
   refetchArticles()
 }
+
+const siteTitle = computed(() => {
+  return meta.value.siteName
+})
 
 /** Query for fetching latest articles. */
 const { data: articleResults, status: categoryStatus, suspense: categorySuspense, refetch: refetchArticles } = useQuery({

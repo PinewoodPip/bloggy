@@ -24,6 +24,8 @@ export type ArticlePreview = {
   authors: User[],
   summary: string,
   tags: string[],
+  can_comment: boolean,
+  comments_count: integer,
 }
 
 export type Article = ArticlePreview & {
@@ -31,7 +33,6 @@ export type Article = ArticlePreview & {
   /** Raw document text */
   content: string,
   view_type: ArticleViewMode,
-  can_comment: boolean,
   show_authors: boolean,
 }
 

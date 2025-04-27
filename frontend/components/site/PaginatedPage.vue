@@ -14,7 +14,12 @@
           </div>
 
           <!-- Articles -->
-          <SiteArticlePreview v-for="article in articles" :article="article" />
+          <div v-if="articleViewMode === 'vertical'" class="flex">
+            <SiteArticlePreview v-for="article in articles" :article="article" />
+          </div>
+          <div v-if="articleViewMode === 'grid'" class="flex justify-center flex-wrap gap-4">
+            <SiteArticleCard v-for="article in articles" :article="article" />
+          </div>
         </div>
 
         <!-- Pagination -->
@@ -50,6 +55,7 @@ const props = defineProps<{
   title: string,
   articles: ArticlePreview[],
   totalArticles: integer,
+  articleViewMode: categoryViewMode,
 }>();
 
 const currentPage = ref(1)

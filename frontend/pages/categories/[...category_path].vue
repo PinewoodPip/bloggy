@@ -1,5 +1,5 @@
 <template>
-  <SitePaginatedPage ref="paginatedPage" :title="pageTitle" :articles="articles" :total-articles="totalArticles" @page-change="onPageChanged">
+  <SitePaginatedPage ref="paginatedPage" :title="pageTitle" :articles="articles" :articleViewMode="category.view_type" :total-articles="totalArticles" @page-change="onPageChanged">
     <!-- Page description -->
     <template v-if="category" #pageDescription>
       <!-- Category header and description -->

@@ -15,18 +15,13 @@
       <hr class="faint-hr" />
 
       <!-- Tags TODO -->
-      <div class="flex">
+      <div class="flex items-center">
         <div class="flex flex-grow gap-x-2 flex-wrap">
           <SiteArticleTag v-for="tag in tags" :tag="tag" />
         </div>
         <!-- Comments counter -->
         <div>
-          <RouterLink :to="articleURL" class="no-underline">
-            <UIcon name="i-material-symbols-comment" class="mr-2" />
-            <!-- Only underline the text, so the space between the icon is not underlined -->
-            <span class="link">TODO comments
-            </span>
-          </RouterLink>
+          <SiteArticleCommentsCounter :article="article"/>
         </div>
       </div>
     </div>
