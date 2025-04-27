@@ -45,7 +45,7 @@ export const useToolbarCallbackItem = (item: Ref<Toolbar.GroupCallback>) => {
   })
 
   const isActive = computed(() => {
-    return editorState.value && editor.value.isItemActive(editorState.value, item.value)
+    return editorState.value && toRaw(editor.value).isItemActive(editorState.value, item.value)
   })
 
   return { keybindLabel, isActive }

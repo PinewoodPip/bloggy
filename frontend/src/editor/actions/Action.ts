@@ -27,7 +27,7 @@ export abstract class Action implements IAction {
     let {$from, from, to, empty} = state.selection as NodeSelection
     // If there is no selection, check whether the mark is toggled on
     if (empty) {
-      return !!markType.isInSet(state.storedMarks || $from.marks())
+      return markType.isInSet(state.storedMarks || $from.marks()) !== undefined
     } else {
       // Check if the mark is used anywhere in the selection
       return state.doc.rangeHasMark(from === to ? from : from, to, markType) 
