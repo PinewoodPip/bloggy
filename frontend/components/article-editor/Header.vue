@@ -10,7 +10,7 @@
       <div class="pt-3 pl-3">
         <span class="flex items-center">
           <!-- Title field -->
-          <input class="field-autosize bg-transparent font-bold text-lg min-w-16 px-2 mr-3" type="text" minlength="1" required v-model="articlePatchData.title" @focusout="onTitleFieldFocusOut" />
+          <span class="min-w-10 font-bold text-lg px-2 mr-3" ref="titleField" contenteditable="true" @focusout="onTitleFieldFocusOut">{{ articlePatchData.title }}</span> <!-- Contenteditable does not support v-model -->
 
           <!-- Path -->
           <span class="flex items-center">
@@ -66,6 +66,7 @@ import type { Reactive } from 'vue'
 
 const router = useRouter()
 const { articleMutation, saveDocument, validateMetadata, articleQuery } = useArticleEditorQueries()
+const titleField = useTemplateRef('titleField')
 
 const props = defineProps<{
   article: Article | undefined | null,
@@ -148,9 +149,13 @@ function openSettingsMenu() {
 
 /** Requests to patch the article title if it was changed. */
 function onTitleFieldFocusOut() {
-  if (articlePatchData.title !== props.article?.title) {
+  const title = titleField.value?.textContent
+  if (title !== props.article?.title && title) {
+    articlePatchData.title = title || props.article!.title 
     validateMetadata(articlePatchData)
     articleMutation.mutate(articlePatchData)
+  } else {
+    titleField.value!.textContent = props.article!.title // Reset the field to the new title; this will also undo invalid title changes
   }
 }
 
