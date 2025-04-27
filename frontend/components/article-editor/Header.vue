@@ -146,9 +146,12 @@ function openSettingsMenu() {
   settingsMenuVisible.value = true
 }
 
+/** Requests to patch the article title if it was changed. */
 function onTitleFieldFocusOut() {
-  validateMetadata(articlePatchData)
-  articleMutation.mutate(articlePatchData)
+  if (articlePatchData.title !== props.article?.title) {
+    validateMetadata(articlePatchData)
+    articleMutation.mutate(articlePatchData)
+  }
 }
 
 function saveDraft() {
