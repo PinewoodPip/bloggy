@@ -1,7 +1,7 @@
 <!-- Image node view. -->
 <template>
   <UTooltip :text="node.attrs.alt">
-    <img :src="node.attrs.src" :alt="node.attrs.alt" />
+    <img :src="node.attrs.src" :alt="node.attrs.alt" @dblclick="selectNode" />
   </UTooltip>
 </template>
 
@@ -11,5 +11,9 @@ import type { NodeCallbacks } from '~/components/article-editor/ArticleEditor.vu
 
 const { contentRef, node } = useNodeViewContext()
 const nodeCallbacks = inject<NodeCallbacks>('nodeCallbacks')
+
+function selectNode() {
+  nodeCallbacks?.selectNode(node.value)
+}
 
 </script>
