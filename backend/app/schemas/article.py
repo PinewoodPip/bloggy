@@ -36,6 +36,8 @@ class ArticleUpdate(ArticleBase):
     filename: Optional[str] = None
     title: Optional[str] = None
     content: Optional[str] = None # Raw document text
+    is_draft: Optional[bool] = None # If true, the content will be saved as a draft and not published
+    featured_image_path: Optional[str] = None
     text: Optional[str] = None
     publish_time: Optional[str] = None # As ISO 8601 date
     is_visible: Optional[bool] = None
@@ -66,12 +68,14 @@ class ArticlePreview(ArticleBase):
     tags: list[str]
     can_comment: bool
     comments_count: int
+    featured_image_path: Optional[str]
 
 class ArticleOutput(ArticlePreview):
     """Complete article schema that includes metadata and content."""
     category: CategoryPreview
     content: str # Raw document text
     view_type: ArticleViewEnum
+    last_edit_time: Optional[datetime]
     show_authors: bool
 
 class ArticleSearchResults(BaseModel):

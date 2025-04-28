@@ -13,7 +13,7 @@ from datetime import datetime
 import warnings
 import re
 
-PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags"])
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags", "draft_content", "content"])
 SPLIT_CATEGORY_ARTICLE_PATH_REGEX = re.compile(r"(.+)\/([^\/]+)$") # Splits a path into category path and article filename.
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
@@ -35,6 +35,7 @@ def create_article(db: Session, category_path: str, article_input: ArticleInput,
         filename=article_input.filename,
         title=article_input.title,
         content=article_input.content.encode(),
+        draft_content=article_input.content.encode(), # Initialize draft to keep it in sync with published content
         summary=article_input.summary,
     )
 
@@ -93,7 +94,13 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
 
     # Update content
     if article_update.content:
-        article.content = article_update.content.encode()
+        # Update published content
+        if not article_update.is_draft:
+            article.content = article_update.content.encode()
+        article.draft_content = article_update.content.encode() # Always update draft, so it stays in sync with the published content
+
+        # Update edit timestamp
+        article.last_edit_time = datetime.now(timezone.utc)
 
     # Update authors
     if article_update.authors:
@@ -309,14 +316,13 @@ def create_elasticsearch_document(article: Article, text_content: str) -> dict:
         "tags": [tag.name for tag in article.tags],
     }
 
-def create_article_output(db: Session, article: Article) -> ArticleOutput:
+def create_article_output(db: Session, article: Article, is_draft: bool=False) -> ArticleOutput:
     """
     Creates an output schema for an article.
     """
     category = article.category
     category_path = CategoryCrud.get_category_path(db, article.category)
     return ArticleOutput(
-        id=article.id,
         category=CategoryPreview(
             id=category.id,
             name=category.name,
@@ -326,24 +332,11 @@ def create_article_output(db: Session, article: Article) -> ArticleOutput:
             view_type=CategoryViewEnum[category.view_type.name],
             sorting_type=CategorySortingModeEnum[category.sorting_type.name],
         ),
-        filename=article.filename,
-        title=article.title,
-        content=bytes.decode(article.content),
+        content=bytes.decode(article.draft_content if is_draft else article.content),
         view_type=ArticleViewEnum[article.view_type.name],
-        can_comment=article.can_comment,
-        comments_count=len(article.comments),
-        category_sorting_index=article.category_sorting_index,
-        creation_time=article.creation_time,
-        is_visible=article.is_visible,
-        publish_time=article.publish_time,
+        last_edit_time=article.last_edit_time,
         show_authors=article.show_authors,
-        authors=[UserCrud.create_user_output(author.user) for author in article.authors],
-        category_path=category_path,
-        category_id=category.id,
-        category_name=article.category.name,
-        path=get_article_path(db, article),
-        summary=article.summary,
-        tags=create_tags_name_list(article.tags),
+        **create_article_preview(db, article).model_dump(),
     )
 
 def create_search_output(db: Session, search_results: list[Article]) -> ArticleSearchResults:

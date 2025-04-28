@@ -11,6 +11,7 @@ if typing.TYPE_CHECKING:
     from models.category import Category
     from models.user import Editor
     from models.comment import Comment
+    from models.file import File
 
 class ArticleViewEnum(str, enum.Enum): # TODO move to schema?
     single_page = "single_page",
@@ -47,8 +48,15 @@ class Article(Base):
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
     filename = Column(String)
     title = Column(String)
+
     content = Column(LargeBinary)
+    """The published content visible to site readers."""
+
+    draft_content = Column(LargeBinary)
+    """Changes to content that are not yet published."""
+
     creation_time = Column(DateTime, default=lambda: datetime.now(timezone.utc)) # TODO change to server default
+    last_edit_time = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     publish_time = Column(DateTime, nullable=True, default=None)
     show_publish_time = Column(Boolean, default=True)
     is_visible = Column(Boolean, default=False)
@@ -58,7 +66,6 @@ class Article(Base):
     category_sorting_index = Column(Integer, default=0)
     summary = Column(String)
     # TODO featured image
-    # TODO comments
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")
     authors: Mapped[list["Editor"]] = relationship(secondary="article_authors", cascade="all", back_populates="articles")

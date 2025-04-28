@@ -45,13 +45,13 @@ async def _index_article_in_search(db: Session, article_id: int, text_content: s
     except Exception as e:
             warnings.warn("Exception while creating article document in search: " + str(e))
 
-def _get_article(db: Session, category_path: str, article_url: str) -> ArticleSchemas.ArticleOutput:
+def _get_article(db: Session, category_path: str, article_url: str, is_draft: bool) -> ArticleSchemas.ArticleOutput:
     """
     Auxiliary function for fetching an article.
     """
     try:
         article = ArticleCrud.get_article_by_path(db, category_path, article_url)
-        return ArticleCrud.create_article_output(db, article)
+        return ArticleCrud.create_article_output(db, article, is_draft)
     except ValueError as e:
         msg = str(e)
         if "There is no article at the path" in msg:
@@ -86,7 +86,7 @@ def _patch_article(db: Session, es: Elasticsearch | None, background_tasks: Back
         if es:
             background_tasks.add_task(_update_article_in_search, db, article.id, article_update.text)
 
-        return ArticleCrud.create_article_output(db, article)
+        return ArticleCrud.create_article_output(db, article, article_update.is_draft) # Return draft content if the patch was a draft
     except ValueError as e:
         msg = str(e)
         if "There is no article at the path" in msg:
@@ -121,20 +121,23 @@ async def create_article_at_root(article_input: ArticleSchemas.ArticleInput, bac
     return _create_article(db, es, background_tasks, current_user, "/", article_input)
 
 @router.get("/{category_path:path}/{article_url}", response_model=ArticleSchemas.ArticleOutput) # Automatically splits out the last part of the path.
-async def get_article(category_path: str, article_url: str, db: Session=Depends(get_db)):
+async def get_article(category_path: str, article_url: str, draft: bool=False, db: Session=Depends(get_db), current_user: User=Depends(get_current_user_optional)):
     """
     Fetches an article by its full URL path.
     """
-    return _get_article(db, "/" + category_path, article_url)
+    # Drafts are only visible to editors and admins.
+    if draft and not current_user or current_user.reader:
+        raise HTTPException(status_code=401, detail="Only editors can view drafts")
+    return _get_article(db, "/" + category_path, article_url, draft)
 
 @router.get("/{article_url}", response_model=ArticleSchemas.ArticleOutput)
-async def get_article_at_root(article_url: str, db: Session=Depends(get_db)):
+async def get_article_at_root(article_url: str, draft: bool=False, db: Session=Depends(get_db)):
     """
     Fetches an article at the root category.
     It's necessary for this to be a separate endpoint,
     as the catch-all syntax will not catch GETs to root of the endpoint collection.
     """
-    return _get_article(db, "/", article_url)
+    return _get_article(db, "/", article_url, draft)
 
 @router.patch("/{category_path:path}/{article_url}", response_model=ArticleSchemas.ArticleOutput)
 async def patch_article(category_path: str, article_url: str, article_update: ArticleSchemas.ArticleUpdate, background_tasks: BackgroundTasks, db: Session=Depends(get_db), es: Elasticsearch=Depends(get_elastic_search), current_user: User=Depends(get_current_user)):
