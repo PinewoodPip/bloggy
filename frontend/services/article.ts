@@ -34,6 +34,7 @@ export type Article = ArticlePreview & {
   content: string,
   view_type: ArticleViewMode,
   show_authors: boolean,
+  last_edit_time: dateISOString,
 }
 
 export type ArticleCreationRequest = {
@@ -62,6 +63,7 @@ export type ArticleUpdateRequest = {
   /** Plaintext transcript of the article */
   text?: string,
   tags?: string[],
+  is_draft?: boolean,
 }
 
 export type Tag = {

@@ -150,6 +150,7 @@ export const useArticleEditorQueries = () => {
     },
     onSuccess: (article) => {
       responseToast.showSuccess('Article saved')
+      articleQuery.refetch()
     },
     onError: (err) => {
       responseToast.showError('Failed to save article', err)
