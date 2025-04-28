@@ -46,6 +46,7 @@ class Article(Base):
 
     id = Column(Integer, index=True, primary_key=True, unique=True)
     category_id = Column(Integer, ForeignKey("categories.id", ondelete="CASCADE", onupdate="CASCADE"), nullable=False)
+    featured_image_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     filename = Column(String)
     title = Column(String)
 
@@ -65,9 +66,9 @@ class Article(Base):
     show_authors = Column(Boolean, default=True)
     category_sorting_index = Column(Integer, default=0)
     summary = Column(String)
-    # TODO featured image
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")
     authors: Mapped[list["Editor"]] = relationship(secondary="article_authors", cascade="all", back_populates="articles")
     comments: Mapped[list["Comment"]] = relationship("Comment", order_by="Comment.post_time", cascade="delete, delete-orphan", back_populates="article")
     tags: Mapped[list["Tag"]] = relationship(secondary="article_tags", cascade="all", back_populates="articles")
+    featured_image: Mapped["File"] = relationship("File")

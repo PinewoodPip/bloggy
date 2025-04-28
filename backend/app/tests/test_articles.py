@@ -178,6 +178,29 @@ def test_patch_article_draft(article_scenario):
     response = test_client.get(f"/articles/{article_scenario.article.path[1:]}?draft=true")
     assert is_unauthorized_request(response, "Only editors")
 
+def test_patch_article_featured_image(article_scenario):
+    """
+    Tests setting and retrieving an article's featured image.
+    """
+    client = ClientWrapper(test_client, article_scenario.editor_token_header)
+
+    # Set featured image and retrieve it
+    db = get_session()
+    file = create_random_file(db, article_scenario.editor.username, ".png")
+
+    article_update = ArticleUpdate(
+        featured_image_path=file.path,
+    )
+    article_output = client.patch_and_validate(f"/articles/{article_scenario.article.path[1:]}", article_update, ArticleOutput)
+    assert article_output.featured_image_path == file.path
+
+    # Attempt to use a non-existent file
+    article_update = ArticleUpdate(
+        featured_image_path="wrongpath.png",
+    )
+    article_output = client.patch(f"/articles/{article_scenario.article.path[1:]}", article_update)
+    assert is_bad_request(article_output, "not found")
+
 def test_article_change_category(article_scenario):
     """
     Tests changing an article's category.

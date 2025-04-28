@@ -77,6 +77,12 @@ class ClientWrapper:
             body = body.model_dump(exclude_unset=True)
         return self.test_client.patch(path, headers=self.token, json=body)
 
+    def patch_and_validate(self, path: str, body: BaseModel | dict, model: Type[T]) -> T:
+        """Sends a PATCH request and validates the output schema."""
+        response = self.patch(path, body)
+        assert is_ok_response(response)
+        return model.model_validate(response.json())
+
     def delete(self, path: str) -> Response:
         """Sends a DELETE request."""
         return self.test_client.delete(path, headers=self.token,)
@@ -164,12 +170,12 @@ def create_random_article_post(db: Session, category_path: str, minutes_offset: 
     ))
     return ArticleCrud.create_article_output(db, article)
 
-def create_random_file(db: Session, uploader_username: str) -> FileOutput:
+def create_random_file(db: Session, uploader_username: str, extension: str=".bin") -> FileOutput:
     """
     Creates a file with random bytes.
     """
     uploader = UserCrud.get_by_username(db, uploader_username)
-    file_input = FileInput(path="/" + random_lower_string() + ".bin", content=base64.encodebytes(random.randbytes(25)).decode("ascii"))
+    file_input = FileInput(path="/" + random_lower_string() + extension, content=base64.encodebytes(random.randbytes(25)).decode("ascii"))
     file = FileCrud.create_file(db, uploader, file_input)
     return FileCrud.create_file_output(db, file)
 

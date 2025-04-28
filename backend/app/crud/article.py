@@ -9,6 +9,7 @@ from models.article import *
 import crud.user as UserCrud
 import crud.category as CategoryCrud
 import crud.utils as CrudUtils
+import crud.file as FileCrud
 from datetime import datetime
 import warnings
 import re
@@ -119,6 +120,14 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
         except Exception as e:
             db.rollback()
             raise e
+        
+    # Update featured image
+    if article_update.featured_image_path:
+        file = FileCrud.get_by_path(db, article_update.featured_image_path)
+        if not file:
+            db.rollback()
+            raise ValueError("Featured image file not found")
+        article.featured_image = file
         
     # Update publishing time
     if article_update.publish_time != None:
@@ -280,6 +289,7 @@ def create_article_preview(db: Session, article: Article) -> ArticlePreview:
         "authors": [UserCrud.create_user_output(author.user) for author in article.authors],
         "tags": create_tags_name_list(article.tags),
         "comments_count": len(article.comments),
+        "featured_image_path": article.featured_image.path if article.featured_image else None,
     })
 
 def get_article_path(db: Session, article: Article) -> str:
