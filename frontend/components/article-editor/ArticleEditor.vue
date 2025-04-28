@@ -11,7 +11,7 @@
     <div class="flex gap-x-2">
       <!-- Sidebar -->
       <div v-if="sidebarVisible" class="large-content-block max-w-md max-h-fit">
-        <EditorSidebar @heading-selected="onHeadingSelected" @hide="sidebarVisible = false" />
+        <ArticleEditorSidebar @heading-selected="onHeadingSelected" @hide="sidebarVisible = false" />
       </div>
 
       <!-- Document -->
