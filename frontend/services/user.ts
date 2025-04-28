@@ -141,6 +141,11 @@ class UserService extends Service {
     const payload = this.parseJwt(cookie) as AuthTokenPayload
     return payload.iss === this.GOOGLE_JWT_ISSUER
   }
+  
+  /** Returns whether the user is an editor. */
+  isEditor(user: User): boolean {
+    return user.role === 'editor'
+  }
 
   /**
    * Extracts the payload from a JWT token.

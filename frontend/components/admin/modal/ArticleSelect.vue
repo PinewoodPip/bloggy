@@ -6,7 +6,11 @@
     </template>
     <template #form>
       <!-- File tree -->
-      <AdminTreeItem v-if="filesRoot" :item="filesRoot" @click="onFileSelected" />
+      <AdminTreeItem v-if="filesRoot" :item="filesRoot" @click="onFileSelected">
+        <template #buttons="btnProps">
+          <!-- No buttons. -->
+        </template>
+      </AdminTreeItem>
       <LoadingSpinner v-else />
     </template>
     <template #footer>

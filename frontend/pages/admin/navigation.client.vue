@@ -10,7 +10,22 @@
     <hr/>
 
     <!-- Navigation tree -->
-    <AdminTreeItem v-for="node in schema.root_nodes" :item="node" @edit="onNodeEditRequested" @create-node="onCreateGroupRequested" @create-leaf="onCreateChildRequested" />
+    <AdminTreeItem v-for="node in schema.root_nodes" :item="node">
+      <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
+        <!-- Leaf item button -->
+        <UTooltip v-if="canCreateLeaf" text="Add item">
+          <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" @click.stop="onCreateChildRequested(childItem)" />
+        </UTooltip>
+        <!-- Group item button -->
+        <UTooltip v-if="canCreateLeaf" text="Add item group">
+          <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" @click.stop="onCreateChildRequested(childItem)" />
+        </UTooltip>
+        <!-- Edit button -->
+        <UTooltip v-if="canEdit" text="Edit">
+          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onNodeEditRequested(childItem)" />
+        </UTooltip>
+      </template>
+    </AdminTreeItem>
 
     <hr class="my-2" />
 

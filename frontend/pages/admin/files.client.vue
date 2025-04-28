@@ -14,7 +14,18 @@
     <div class="flex-grow overflow-x-auto">
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root folder; subfolders will be rendered recursively -->
-        <AdminTreeItem :item="contentTree"  @create-leaf="onFileUploadRequested" @create-node="onFileUploadRequested" @edit="onFileUploadRequested" @click="onItemClick" />
+        <AdminTreeItem :item="contentTree" @click="onItemClick">
+          <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
+            <!-- Create file button -->
+            <UTooltip v-if="canCreateLeaf" text="Upload file">
+              <IconButton class="btn-sm btn-secondary" icon="material-symbols:upload-file" @click.stop="onFileUploadRequested(childItem)" />
+            </UTooltip>
+            <!-- Edit button -->
+            <UTooltip v-if="canEdit" text="Edit">
+              <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onFileUploadRequested(childItem)" />
+            </UTooltip>
+          </template>
+        </AdminTreeItem>
       </div>
       <div v-else class="loading loading-spinner" />
     </div>

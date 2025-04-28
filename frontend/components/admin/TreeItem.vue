@@ -21,18 +21,7 @@
 
       <!-- Management buttons; stop modifier prevents clicks from also toggling children -->
       <div class="invisible group-hover:visible flex gap-x-2">
-        <!-- Create node button -->
-        <UTooltip v-if="getters.canCreateNode(item as Node)" text="Create folder">
-          <IconButton class="btn-sm btn-secondary" icon="material-symbols:create-new-folder" :override-height="true" @click.stop="emit('createNode', item as Node)" />
-        </UTooltip>
-        <!-- Create leaf button -->
-        <UTooltip v-if="getters.canCreateLeaf(item as Node)" text="Create item">
-          <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" :override-height="true" @click.stop="emit('createLeaf', item as Node)" />
-        </UTooltip>
-        <!-- Edit button -->
-        <UTooltip v-if="canEdit" text="Edit">
-          <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" :override-height="true" @click.stop="emit('edit', item)" />
-        </UTooltip>
+        <slot name="buttons" :can-create-node="getters.canCreateNode(item as Node)" :can-create-leaf="getters.canCreateLeaf(item as Node)" :can-edit="canEdit" :item="item" />
       </div>
     </div>
 
@@ -41,10 +30,18 @@
       <div class="border-l border-l-neutral/30 mx-1 my-2" />
       <div class="flexcol flex-grow">
         <!-- Child nodes; events must be propagated to root -->
-        <TreeItem v-for="child in children" :item="child" v-on="onEvent" />
+        <TreeItem v-for="child in childNodes" :item="child" v-on="onEvent">
+          <template v-slot:buttons="{ item: child }">
+            <slot name="buttons" :can-create-node="getters.canCreateNode(child as Node)" :can-create-leaf="getters.canCreateLeaf(child as Node)" :can-edit="canEditNode(child)" :item="child" />
+          </template>
+        </TreeItem>
         
         <!-- Leafs -->
-        <TreeItem v-for="child in leafs" :item="child" v-on="onEvent" />
+        <TreeItem v-for="leaf in leafs" :item="leaf" v-on="onEvent">
+          <template v-slot:buttons="{ item: child }">
+            <slot name="buttons" :can-create-node="false" :can-create-leaf="false" :can-edit="canEditNode(child)" :item="child" />
+          </template>
+        </TreeItem>
       </div>
     </div>
   </div>
@@ -84,7 +81,7 @@ const emit = defineEmits<{
   click: [Node | Leaf],
 }>()
 
-const children = computed(() => {
+const childNodes = computed(() => {
   return getters.getChildrenNodes(props.item as Node)
 })
 
@@ -128,12 +125,19 @@ const nodeType = computed(() => {
   return getters.getNodeType(props.item)
 })
 
+/** Returns whether a node can be edited. */
+function canEditNode(node: Node | Leaf) {
+  const nodeType = getters.getNodeType(node)
+  return nodeType == 'leaf' ? getters.canEditLeaf(node as Leaf) : getters.canEditNode(node as Node)
+}
+
+/** Whether this item's node can be edited. */
 const canEdit = computed(() => {
-  return nodeType.value == 'leaf' ? getters.canEditLeaf(props.item as Leaf) : getters.canEditNode(props.item as Node)
+  return canEditNode(props.item as Node)
 })
 
 const hasChildren = computed(() => {
-  return children.value.length > 0 || leafs.value.length > 0
+  return childNodes.value.length > 0 || leafs.value.length > 0
 })
 
 </script>

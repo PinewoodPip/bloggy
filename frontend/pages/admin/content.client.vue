@@ -6,19 +6,36 @@
       <HorizontalFill/>
 
       <!-- Management buttons; redundant? It's more intuitive to create these by selecting the target category first. -->
-      <!-- <div class="flex gap-x-2">
-        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addCategory">New category</IconButton>
-        <IconButton icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addArticle">New article</IconButton>
-      </div> -->
+      <div class="flex gap-x-2">
+        <IconButton icon="material-symbols:create-new-folder" class="btn-primary btn-smp" @click="onCategoryCreateChildRequested(contentTree!)">New category</IconButton>
+        <UTooltip :text="!canCreateArticles ? 'Only editor accounts can create articles.' : ''">
+          <IconButton icon="material-symbols:article" class="btn-primary btn-smp" :disabled="!canCreateArticles" @click="onArticleCreateRequested(contentTree!)">New article</IconButton>
+        </UTooltip>
+      </div>
     </div>
 
-    <hr/>
+    <hr class="mb-2"/>
 
     <!-- Content tree -->
     <div class="flex-grow overflow-x-auto">
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root category; subcategories will be rendered recursively -->
-        <AdminTreeItem :item="contentTree" @click="onArticleClick" @create-leaf="onArticleCreateRequested" @create-node="onCategoryCreateChildRequested" @edit="onNodeEditRequested" />
+        <AdminTreeItem :key="contentTree.id" :item="contentTree" @click="onArticleClick">
+          <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
+            <!-- Create node button -->
+            <UTooltip v-if="canCreateNode" :text="'Create folder' +  childItem.id">
+              <IconButton class="btn-sm btn-secondary" icon="material-symbols:create-new-folder" @click.stop="onCategoryCreateChildRequested(childItem)" />
+            </UTooltip>
+            <!-- Create leaf button -->
+            <UTooltip v-if="canCreateLeaf" :text="canCreateArticles ? 'Create article' : 'Only editor accounts can create articles.'">
+              <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" @click.stop="onArticleCreateRequested(childItem)" :disabled="!canCreateArticles" />
+            </UTooltip>
+            <!-- Edit button -->
+            <UTooltip v-if="canEdit" text="Edit">
+              <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onNodeEditRequested(childItem)" />
+            </UTooltip>
+          </template>
+        </AdminTreeItem>
       </div>
       <div v-else class="loading loading-spinner" />
     </div>
@@ -55,6 +72,8 @@ interface ContentPanelRelevantSearchItems {
 const categoryService = useCategoryService()
 const articleService = useArticleService()
 const responseToast = useResponseToast()
+const userService = useUserService()
+const user = useLoggedInUser()
 const router = useRouter()
 const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useContentTree()
 const nodeGetters = useContentTreeGetters()
@@ -188,6 +207,12 @@ function isArticleRelevantToSearch(article: ArticlePreview): boolean {
   const filename = article.filename.toLocaleLowerCase()
   return title.includes(searchTerm.value) || filename.includes(searchTerm.value)
 }
+
+/** Whether the user can create articles. */
+const canCreateArticles = computed(() => {
+  return user.data.value ? userService.isEditor(user.data.value) : false
+})
+
 
 // Refresh ID map when content changes
 watchEffect(() => {
