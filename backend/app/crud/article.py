@@ -346,6 +346,7 @@ def create_article_output(db: Session, article: Article, is_draft: bool=False) -
         view_type=ArticleViewEnum[article.view_type.name],
         last_edit_time=article.last_edit_time,
         show_authors=article.show_authors,
+        parent_category_names=CategoryCrud.get_category_breadcrumbs(db, category),
         **create_article_preview(db, article).model_dump(),
     )
 

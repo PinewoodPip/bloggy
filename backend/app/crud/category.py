@@ -144,6 +144,22 @@ def get_category_path(db: Session, category: Category) -> str:
             parent = db.query(Category).filter(Category.id == parent.parent_id).first()
 
         return "/".join(path[::-1])
+    
+def get_category_breadcrumbs(db: Session, category: Category) -> str:
+    """
+    Returns the names of the parent categories up until the passed category.
+    """
+    if category.parent_id == None: # Root category case
+        return ["/"]
+    else:
+        # Backtrack upwards to root
+        path = [category.name]
+        parent = db.query(Category).filter(Category.id == category.parent_id).first()
+        while parent:
+            path.append(parent.name)
+            parent = db.query(Category).filter(Category.id == parent.parent_id).first()
+
+        return path[::-1]
 
 def get_category_articles(db: Session, category: Category, published_only: bool, amount: int = None, skip: int = 0) -> list[Article]:
     """

@@ -76,6 +76,7 @@ class ArticleOutput(ArticlePreview):
     content: str # Raw document text
     view_type: ArticleViewEnum
     last_edit_time: Optional[datetime]
+    parent_category_names: list[str] # Names of categories along the path
     show_authors: bool
 
 class ArticleSearchResults(BaseModel):
