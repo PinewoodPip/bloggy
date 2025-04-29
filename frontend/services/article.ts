@@ -36,6 +36,7 @@ export type Article = ArticlePreview & {
   view_type: ArticleViewMode,
   show_authors: boolean,
   last_edit_time: dateISOString,
+  parent_category_names: string[],
 }
 
 export type ArticleCreationRequest = {

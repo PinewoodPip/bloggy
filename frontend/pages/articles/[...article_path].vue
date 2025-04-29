@@ -6,7 +6,7 @@
         <!-- Article -->
         <div class="large-content-block">
           <!-- Breadcrumbs -->
-          <SiteBreadcrumbs />
+          <SiteBreadcrumbs :crumbs="breadcrumbs" />
 
           <!-- Article header -->
           <h1>{{ article.title }}</h1>
@@ -111,6 +111,24 @@ const pageTitle = computed(() => {
   } else {
     return siteMeta.value.siteName
   }
+})
+
+/** Breadcrumb links from the article's category paths. */
+const breadcrumbs = computed(() => {
+  // Split path by / to build crumbs
+  const crumbs = []
+  const splitPath = article.value?.path.split('/')
+  const categoryNames = article.value?.parent_category_names!
+  if (splitPath) {
+    // Traverse all components, except the trailing article filename
+    for (let i = 0; i < splitPath.length - 1; i++) {
+      const path = splitPath.slice(0, i + 1).join('/')
+      const categoryName = path === '/' ? 'Home' : categoryNames[i] // Root category is a special case as usual
+      crumbs.push({ name: categoryName, url: path ? '/categories' + path : '/' })
+    }
+  }
+  crumbs.push({ name: article.value?.title, url: route.fullPath }) // Add the article itself
+  return crumbs
 })
 
 /** Query for fetching the article */
