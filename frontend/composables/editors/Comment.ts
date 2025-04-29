@@ -1,10 +1,12 @@
 import * as Editor from '~/src/editor/Editor'
 import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
+import * as SectioningActions from '~/src/editor/actions/Sectioning'
 import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view'
-import { schema as CommentEditorSchema } from '~/src/editor/Schema' // TODO create separate schema
+import { schema as CommentEditorSchema } from '~/src/editor/schemas/Comment'
+import type { GroupAction } from '~/src/editor/Toolbar'
 
 /**
  * An editor setup for writing article comments.
@@ -34,6 +36,21 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
     editor.registerAction(action)
   }
   toolbar.registerToolbarGroup(FormattingActions.actionGroup)
+
+  editor.registerAction(new SectioningActions.MakeQuote())
+  toolbar.registerToolbarGroup({
+    name: 'Sectioning',
+    items: [
+      {
+        type: 'action',
+        id: SectioningActions.MakeQuote.ID,
+        def: {        
+          name: 'Insert Quote',
+          icon: 'i-material-symbols-format-quote',
+        },
+      } as GroupAction,
+    ]
+  })
 
   // Misc actions
   editor.registerAction(new MiscActions.InsertText())
