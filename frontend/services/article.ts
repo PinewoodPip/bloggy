@@ -26,6 +26,7 @@ export type ArticlePreview = {
   tags: string[],
   can_comment: boolean,
   comments_count: integer,
+  featured_image_path: path,
 }
 
 export type Article = ArticlePreview & {
@@ -64,6 +65,7 @@ export type ArticleUpdateRequest = {
   text?: string,
   tags?: string[],
   is_draft?: boolean,
+  featured_image_path?: path,
 }
 
 export type Tag = {

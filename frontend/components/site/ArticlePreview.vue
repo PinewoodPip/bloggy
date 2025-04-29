@@ -1,6 +1,11 @@
 <!-- Article summary view used in pagination. -->
 <template>
-  <article class="card card-border bg-base-200 shadow-md flex-grow">
+  <article class="card card-side card-border bg-base-200 shadow-md flex-grow max-h-64">
+    <!-- Cover image -->
+    <figure v-if="article.featured_image_path" class="object-cover max-h-full max-w-md m-4 mr-0 rounded-md">
+      <img :src="coverImageURL" alt="Cover image" />
+    </figure>
+    <!-- Card content -->
     <div class="card-body p-4"> <!-- Default card padding is 2x larger, way too large -->
       <h2 class="card-title link">
         <RouterLink :to="articleURL">{{ article.title }}</RouterLink>
@@ -40,6 +45,10 @@ const articleURL = computed(() => {
 
 const tags = computed(() => {
   return props.article.tags
+})
+
+const coverImageURL = computed(() => {
+  return CMSUtils.resolveFilePath(props.article.featured_image_path)
 })
 
 </script>

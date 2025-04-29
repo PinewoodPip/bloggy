@@ -1,9 +1,9 @@
 <!-- Displays article metadata as a card. -->
 <template>
   <div class="card bg-base-100 w-96 shadow-xl">
-    <figure>
-      <!-- TODO featured image -->
-      <!-- <img src="https://img.daisyui.com/images/stock/photo-1606107557195-0e29a4b5b4aa.webp" alt="Shoes" /> -->
+    <!-- Cover image -->
+    <figure v-if="article.featured_image_path" class="max-h-48 -mb-4">
+      <img :src="coverImageURL" alt="Cover image" />
     </figure>
     <div class="card-body">
       <!-- Title -->
@@ -38,6 +38,10 @@ const props = defineProps<{
 
 const articleURL = computed(() => {
   return CMSUtils.resolveArticlePath(props.article.path)
+})
+
+const coverImageURL = computed(() => {
+  return CMSUtils.resolveFilePath(props.article.featured_image_path)
 })
 
 </script>

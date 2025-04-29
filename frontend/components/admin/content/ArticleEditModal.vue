@@ -12,6 +12,9 @@
       <!-- TODO preview path in help -->
       <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article." icon="i-material-symbols-link" :required="true" />
 
+      <!-- Featured image -->
+      <FormGroupSiteImage v-model="articleData.featured_image_path" label="Featured image" help="Cover image for the article." icon="i-material-symbols:image" />
+
       <!-- Visibility -->
       <FormGroupCheckbox v-model="articleData.is_visible" label="Visible" help="Determines whether the article is visible in the published site." icon="i-material-symbols-visibility-rounded" />
 
@@ -118,6 +121,7 @@ watchEffect(() => {
     articleData.can_comment = article.can_comment
     articleData.show_authors = article.show_authors
     articleData.tags = article.tags
+    articleData.featured_image_path = article.featured_image_path
     chosenAuthors.value = article.authors
     publishDate.value = article.publish_time ? article.publish_time : undefined
   }
