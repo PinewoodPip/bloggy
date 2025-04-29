@@ -1,6 +1,7 @@
 """
 CRUD methods for Users table.
 """
+from datetime import datetime, timezone
 from typing import Any
 from sqlalchemy.orm import Session
 from models.user import Credentials, Reader, User, Editor, Admin
@@ -215,7 +216,6 @@ def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     
     # Create token and associate it to the user
     token = create_access_token(get_username(user))
-    user.current_token = token
     db.commit()
     
     return user, token
@@ -235,11 +235,9 @@ def authenticate_with_google(db: Session, credentials: str) -> User:
 
 def deauthenticate(db: Session, user: User):
     """
-    Invalidates a JWT token for a user.
+    Invalidates JWT tokens for a user.
     """
-    if user.current_token == None:
-        raise ValueError("User has no token")
-    user.current_token = None
+    user.token_valid_from = datetime.now(timezone.utc) # Invalidate all tokens issued before
     db.commit()
 
 def create_user_output(user: User) -> UserOutput:

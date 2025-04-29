@@ -1,7 +1,8 @@
 """
     User-related tables.
 """
-from sqlalchemy import Column, Integer, String, ForeignKey
+from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship, Mapped
 from models.article import Article
 from core.config import Base
@@ -15,6 +16,10 @@ class Credentials(Base):
 
     id = Column(Integer, index=True, primary_key=True) 
     username = Column(String, index=True, unique=True, nullable=True)
+
+    token_valid_from = Column(DateTime, nullable=True, default=lambda: datetime.now(timezone.utc))
+    """Date past which JWT tokens are valid. Used to invalidate old tokens."""
+
     hashed_password = Column(String, nullable=True)
     oauth_id = Column(String, nullable=True)
     # TODO 2fa
@@ -27,7 +32,6 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, index=True, primary_key=True)
-    current_token = Column(String, nullable=True, default=None) # JWT token
     credentials_id = Column(Integer, ForeignKey('credentials.id', ondelete="CASCADE"))
 
     # Relations

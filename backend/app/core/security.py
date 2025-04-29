@@ -26,8 +26,13 @@ def create_access_token(subject: str, expires_delta: timedelta=None) -> str:
         Creates a JWT token.
         Credits to Diego Hernandez.
     """
-    expire = datetime.now(timezone.utc) + (expires_delta if expires_delta else timedelta(days=CONFIG.ACCESS_TOKEN_EXPIRE_DAYS))
-    to_encode = {"exp": expire, "sub": str(subject)}
+    now = datetime.now(timezone.utc)
+    expire = now + (expires_delta if expires_delta else timedelta(days=CONFIG.ACCESS_TOKEN_EXPIRE_DAYS))
+    to_encode = {
+        "exp": expire,
+        "sub": str(subject),
+        "iat": now.timestamp(),
+    }
     encoded_jwt = jwt.encode(to_encode, CONFIG.SECRET_KEY, algorithm=CONFIG.ALGORITHM)
     return encoded_jwt
 

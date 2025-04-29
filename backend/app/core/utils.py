@@ -38,9 +38,11 @@ def get_current_user(db: Session=Depends(get_db), credentials: HTTPAuthorization
     except ValueError:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
     
-    # Ensure the token matches the current one in the DB
-    # The consequence of this is that only 1 session is allowed per user at a time (ie. logging on one device logs you out on others). TODO?
-    if user.current_token != token and not is_oauth:
+    # Ensure the token is still valid
+    # Logging out invalidates tokens issued before logout time
+    issued_at = payload["iat"]
+    last_valid_from = user.credentials.token_valid_from.timestamp() if user.credentials.token_valid_from else None
+    if (last_valid_from and (not issued_at or issued_at < last_valid_from)) and not is_oauth:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
     
     return user
