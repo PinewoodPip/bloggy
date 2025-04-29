@@ -35,7 +35,7 @@ const props = defineProps<{
 }>()
 
 const articleURL = computed(() => {
-  return '/articles' + props.article.path + '#comments' // Path already includes leading slash
+  return CMSUtils.resolveArticlePath(props.article.path)
 })
 
 const tags = computed(() => {

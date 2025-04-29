@@ -9,7 +9,7 @@
     </p>
 
     <!-- Comments -->
-    <div class="flexcol">
+    <div class="flexcol mt-3">
       <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" :key="comment.id" @delete="onCommentDeleted" @reply="onReplyRequested" />
     </div>
   </div>

@@ -1,11 +1,14 @@
 <!-- Template for a comment writing box. -->
 <template>
   <div class="flexcol">
-    <!-- Toolbar -->
-    <EditorToolbar @action-use="onActionUsed" />
-
-    <!-- Document -->
-    <EditorDocument ref="document" :initial-content="''" />
+    <SimpleEditor ref="editorRef">
+      <template #document>
+        <div class="relative" @click="editorFocused = true" @focusin="editorFocused = true" @focusout="editorFocused = false">
+          <p v-if="!editorFocused && isCommentEmpty" class="absolute text-base-content/70 left-2 top-2 select-none">Write a comment...</p>
+          <EditorDocument key="editorDocument" ref="documentRef" :initial-content="''" />
+        </div>
+      </template>
+    </SimpleEditor>
 
     <!-- Button area -->
     <div class="flex flex-grow mt-1">
@@ -18,7 +21,7 @@
       <HorizontalFill />
       
       <!-- Post button -->
-      <MutationButton class="btn-primary" icon="material-symbols:add-comment" :status="postStatus" :disabled="!canPost" @click="postComment">Post {{ isReplying ? 'reply' : 'comment' }}</MutationButton>
+      <MutationButton v-if="editorFocused || !isCommentEmpty"  class="btn-primary" icon="material-symbols:add-comment" :status="postStatus" :disabled="!canPost" @click="postComment">Post {{ isReplying ? 'reply' : 'comment' }}</MutationButton>
     </div>
   </div>
 </template>
@@ -29,10 +32,11 @@ import * as Toolbar from '~/src/editor/Toolbar'
 
 const commentService = useCommentService()
 const responseToast = useResponseToast()
-const editorDocument = useTemplateRef('document')
+const editorRef = useTemplateRef('editorRef')
 const articlePath = useArticlePath()
-const editor = ref(useCommentEditor(() => editorDocument.value!.editorView))
-useEditorProvides(editor, editorDocument)
+const document = useTemplateRef('documentRef')
+const editor = ref(useCommentEditor(() => document.value!.editorView))
+useEditorProvides(editor, document)
 
 const props = defineProps<{
   parentComment: ArticleComment | null,
@@ -42,6 +46,8 @@ const emit = defineEmits<{
   post: [ArticleComment],
   cancelReply: [],
 }>();
+
+const editorFocused = ref(false)
 
 function postComment() {
   const state = editorDocument.value?.editorState!
@@ -66,13 +72,22 @@ const isReplying = computed(() => {
 
 /** Whether the content can be posted. */
 const canPost = computed(() => {
+  return !isCommentEmpty.value // Cannot be empty
+})
+
+/** Whether the comment typed is an empty document. */
+const isCommentEmpty = computed(() => {
   const state = editorDocument.value?.editorState!
   if (state && state.doc) {
     const text = state.doc.textContent as string
-    return text.length > 0 // Cannot be empty
+    return text.length == 0
   } else {
-    return false
+    return true
   }
+})
+
+const editorDocument = computed(() => {
+  return document.value
 })
 
 /** Mutation for uploading the comment. */
