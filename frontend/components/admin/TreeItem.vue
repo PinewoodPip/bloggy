@@ -14,7 +14,7 @@
           <p>{{ getters.getName(item) }}</p>
         </UTooltip>
 
-        <!-- TODO slot for extra icons -->
+        <slot name="label" :item="item" />
       </div>
 
       <HorizontalFill />
@@ -31,6 +31,9 @@
       <div class="flexcol flex-grow">
         <!-- Child nodes; events must be propagated to root -->
         <TreeItem v-for="child in childNodes" :item="child" v-on="onEvent">
+          <template v-slot:label="{ item: child }">
+            <slot name="label" :item="child" />
+          </template>
           <template v-slot:buttons="{ item: child }">
             <slot name="buttons" :can-create-node="getters.canCreateNode(child as Node)" :can-create-leaf="getters.canCreateLeaf(child as Node)" :can-edit="canEditNode(child)" :item="child" />
           </template>
@@ -38,6 +41,9 @@
         
         <!-- Leafs -->
         <TreeItem v-for="leaf in leafs" :item="leaf" v-on="onEvent">
+          <template v-slot:label="{ item: child }">
+            <slot name="label" :item="child" />
+          </template>
           <template v-slot:buttons="{ item: child }">
             <slot name="buttons" :can-create-node="false" :can-create-leaf="false" :can-edit="canEditNode(child)" :item="child" />
           </template>

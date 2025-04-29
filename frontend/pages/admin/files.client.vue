@@ -15,6 +15,14 @@
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root folder; subfolders will be rendered recursively -->
         <AdminTreeItem :item="contentTree" @click="onItemClick">
+          <!-- File owner -->
+          <template #label="{ item: childItem }">
+            <UTooltip v-if="childItem.uploader" :text="`Uploaded by ${childItem.uploader.display_name || childItem.uploader.username}`">
+              <UserAvatar :user="childItem.uploader" class="my-auto size-6" />
+            </UTooltip>
+          </template>
+          
+          <!-- Buttons -->
           <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
             <!-- Create file button -->
             <UTooltip v-if="canCreateLeaf" text="Upload file">

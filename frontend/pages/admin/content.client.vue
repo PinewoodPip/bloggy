@@ -21,6 +21,17 @@
       <div v-if="contentStatus == 'success' && contentTree" class="flexcol gap-y-2">
         <!-- Render root category; subcategories will be rendered recursively -->
         <AdminTreeItem :key="contentTree.id" :item="contentTree" @click="onArticleClick">
+          <!-- Author avatar icons -->
+          <template #label="{ item: childItem }">
+            <!-- Will uncondense on hover -->
+            <div v-if="childItem.authors" class="avatar-group hover:space-x-0 -space-x-3">
+              <UTooltip v-for="author in childItem.authors" :key="author.id" :text="`Authored by ${author.display_name}`">
+                <UserAvatar :user="author" class="size-8" />
+              </UTooltip>
+            </div>
+          </template>
+          
+          <!-- Buttons -->
           <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
             <!-- Create node button -->
             <UTooltip v-if="canCreateNode" :text="'Create folder' +  childItem.id">

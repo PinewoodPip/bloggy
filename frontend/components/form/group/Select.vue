@@ -20,3 +20,11 @@ const model: ModelRef<string> = defineModel({
 })
 
 </script>
+
+<style lang="css">
+
+div[data-nuxtui-selectmenu] span {
+  @apply !text-base-content
+}
+
+</style>
