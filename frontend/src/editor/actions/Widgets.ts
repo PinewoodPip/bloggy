@@ -2,13 +2,16 @@
  * Implements actions for inserting semantic block nodes, such as code blocks.
  */
 import { setBlockType } from 'prosemirror-commands'
-import { Node, NodeRange } from "prosemirror-model"
+import { MarkType, Node, NodeRange, NodeType } from "prosemirror-model"
+import { toggleMark } from 'prosemirror-commands'
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
-import type { actionID, alertType, } from '../Editor'
+import type { actionID, alertType, AnnotationAttrs, } from '../Editor'
+import { addAnnotation } from '~/composables/editor/plugins/Annotations';
 import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 import { schema } from '../Schema'
+import { Comment } from '~/composables/editor/plugins/Annotations'
 
 export class InsertCodeBlock extends Action {
   static ID: string = 'InsertCodeBlock'
@@ -25,22 +28,26 @@ export class InsertCodeBlock extends Action {
   }
 }
 
-export class InsertAlert extends Action {
-  static ID: string = 'InsertAlert'
+/** Wraps/unwraps a selection into a node with set attributes. */
+export class ToggleNodeWithAttrs extends Action {
+  nodeType: NodeType
+  attrs?: object
 
-  alertType: alertType
-
-  constructor(type: alertType) {
-    super(`InsertAlert.${type}`)
-    this.alertType = type
+  constructor(id: string, nodeType: NodeType, attrs?: object) {
+    super(id)
+    this.nodeType = nodeType
+    this.attrs = attrs
   }
 
-  execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const alertNode = schema.nodes['alert']
+  execute(state: EditorState, attrs?: object): Transaction | Promise<Transaction> | null {
+    const nodeType = this.nodeType
+    attrs = (attrs || this.attrs)! // Fallback to default attrs
 
-    if (this.selectionHasNode(state, alertNode, {type: this.alertType})) { // If the selection is already an alert of the same type, pop its child out (removing the alert in the process, as it cannot be a leaf)
+    // If the selection is already an alert of the same type, pop its child out (removing the alert in the process, as it cannot be a leaf)
+    if (this.selectionHasNode(state, nodeType, attrs)) {
       let tr = state.tr
 
+      // Find top-most node(s) below the alert
       let found = false
       let depth = -1
       let parentStart = null
@@ -48,7 +55,7 @@ export class InsertAlert extends Action {
       const cursor = tr.selection
       while (!found) {
         const parent = cursor.$from.node(depth)
-        if (parent.type === alertNode) {
+        if (parent.type === nodeType) {
           parentStart = cursor.$from.start(depth)
           parentEnd = cursor.$from.end(depth)
           break
@@ -60,19 +67,37 @@ export class InsertAlert extends Action {
         tr = tr.lift(nodeStart, 0)
       }
       return tr
-    } else if (this.selectionHasNode(state, alertNode)) { // If the selection has some other type of alert, change its type
+    } else if (this.selectionHasNode(state, nodeType)) { // If the selection has the node already, update its attrs
       let tr = state.tr
       const cursor = tr.selection
       const nodeStart = cursor.$from.before(-1)
-      tr.setNodeAttribute(nodeStart, 'type', this.alertType)
+      for (const [k, v] of Object.entries(attrs)) {
+        tr.setNodeAttribute(nodeStart, k, v)
+      }
       return tr
-    } else { // Otherwise create an alert and insert the selection as its child
+    } else { // Otherwise create a node and insert the selection as its child
       let tr = state.tr
       const cursor = tr.selection
       const nodeStart = cursor.$from.blockRange(cursor.$to)!
-      tr.wrap(nodeStart, [{type: alertNode}])
+      tr.wrap(nodeStart, [{type: nodeType}])
       return tr
     }
+  }
+}
+
+/** Adds an annotation to a text/node selection. Requires the annotations plugin. */
+export class SetAnnotation extends Action {
+  constructor() {
+    super('SetAnnotation')
+  }
+
+  override execute(state: EditorState, attrs: AnnotationAttrs): Transaction | Promise<Transaction> | null {
+    const sel = state.selection
+    const commentPlugin = state.plugins.find((plugin) => {
+      // @ts-ignore
+      return plugin.key === 'comment$'
+    })!
+    return state.tr.setMeta(commentPlugin, {type: "newComment", from: sel.from, to: sel.to, comment: new Comment(attrs.comment, MathUtils.randomID(), attrs.author)})
   }
 }
 

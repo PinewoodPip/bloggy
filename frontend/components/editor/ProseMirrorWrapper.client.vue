@@ -7,8 +7,8 @@
 
 <script setup lang="ts">
 import { useMarkViewFactory, useNodeViewFactory, usePluginViewFactory, useWidgetViewFactory } from '@prosemirror-adapter/vue'
-import { EditorState, Plugin } from 'prosemirror-state'
-import { EditorView } from 'prosemirror-view'
+import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
+import { DecorationSet, EditorView } from 'prosemirror-view'
 import { createEditorView } from './createEditorView'
 import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
@@ -17,11 +17,13 @@ import CodeBlock from './node/CodeBlock.vue'
 import Footnote from './node/Footnote.vue'
 import Image from './node/Image.vue'
 import Embed from './node/Embed.vue'
+import Annotation from './decoration/Annotation.vue'
 import Underline from './mark/Underline.vue'
 import Link from './mark/Link.vue'
 import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
 import markdownit from 'markdown-it'
+import type { CommentState } from '~/composables/editor/plugins/Annotations'
 
 const nodeViewFactory = useNodeViewFactory()
 const markViewFactory = useMarkViewFactory()
@@ -30,6 +32,9 @@ const widgetViewFactory = useWidgetViewFactory()
 const getHashWidget = widgetViewFactory({
   as: 'i',
   component: Hashes,
+})
+const getAnnotationWidget = widgetViewFactory({
+  component: Annotation,
 })
 
 const props = defineProps<{
@@ -88,9 +93,27 @@ watchEffect((onCleanup) => {
       }),
     },
     [
-      // Hash display for headings
       new Plugin({
         props: {
+          decorations(state) {
+            const { $from, from } = state.selection
+            const node = $from.node()
+
+            // Fetch comment plugin
+            const commentPlugin = state.plugins.find((plugin) => {
+              // @ts-ignore
+              return plugin.key === 'comment$'
+            })
+            if (!commentPlugin) return
+            const pluginState = commentPlugin.getState(state) as CommentState
+
+            // Create widget
+            const widget = getAnnotationWidget($from.before() + 1, {
+              side: -1,
+              comments: pluginState.commentsAt(from),
+            })
+            return DecorationSet.create(state.doc, [widget])
+          },
           markViews: {
             underline: markViewFactory({
               component: Underline,

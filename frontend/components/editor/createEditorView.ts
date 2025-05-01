@@ -20,6 +20,7 @@ const parser = createParser(lowlight)
 const lowlightPlugin = createHighlightPlugin({ parser })
 const replacePastesPlugin = useReplacePastesPlugin(schema)
 const formattingInputRules = useFormattingInputRules(schema)
+const annotationsPlugin = useAnnotationsPlugin()
 
 /**
  * Creates a ProseMirror EditorView.
@@ -47,6 +48,7 @@ export function createEditorView(element: HTMLElement | null, content: Node, nod
         }),
         formattingInputRules,
         replacePastesPlugin,
+        annotationsPlugin,
         keymap({
           // Ctrl + [ increases indent
           'Mod-[': (state, dispatch) => {

@@ -7,6 +7,7 @@ import * as Editor from '~/src/editor/Editor'
 import * as Tools from "~/src/editor/ToolManager"
 import * as MediaActions from '~/src/editor/actions/Media'
 import * as MiscActions from '~/src/editor/actions/Misc'
+import * as WidgetActions from '~/src/editor/actions/Widgets'
 import type { EditorView } from 'prosemirror-view';
 import { useMutation, useQuery } from '@tanstack/vue-query';
 import type { AxiosError } from 'axios';
@@ -63,6 +64,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   const { menu: noteMenu } = WidgetTools.RegisterNoteTools(editor)
   const codeBlock = WidgetTools.RegisterCodeBlockTool(editor)
   const footnote = WidgetTools.RegisterFootnoteTool(editor)
+  const annotation = WidgetTools.RegisterAnnotationTool(editor)
 
   // Define toolbar
   toolManager.registerToolGroup({
@@ -130,6 +132,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
           codeBlock.id,
           noteMenu.id,
           footnote.id,
+          annotation.id,
         ],
       },
     ]
@@ -171,6 +174,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   editor.registerAction('InsertEmbed', new MediaActions.InsertEmbed())
   editor.registerAction('InsertText', new MiscActions.InsertText())
   editor.registerAction('DeleteSelection', new MiscActions.DeleteSelection())
+  editor.registerAction('SetAnnotation', new WidgetActions.SetAnnotation())
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {

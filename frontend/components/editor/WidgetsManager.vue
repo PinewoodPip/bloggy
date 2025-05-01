@@ -20,6 +20,9 @@
 
   <!-- Emoji picker -->
   <EditorWidgetEmojiPanel ref="emojiWidget" @confirm="onEmojiSelected" />
+
+  <!-- Comment editor -->
+  <EditorModalAnnotation ref="commentModal" @confirm="onAnnotationEdited" />
 </template>
 
 <script setup lang="ts">
@@ -34,6 +37,7 @@ const imageSelectModal = useTemplateRef('fileSelectModal')
 const footnoteModal = useTemplateRef('footnoteModal')
 const embedEditorModal = useTemplateRef('embedEditorModal')
 const emojiWidget = useTemplateRef('emojiWidget')
+const commentModal = useTemplateRef('commentModal')
 
 const { editor, editorView, editorState } = useEditorInjects()
 const schema = useEditorSchema()
@@ -46,6 +50,11 @@ function selectFootnote(node: Node) {
 /** Selects an image to edit its attributes. */
 function selectImage(node: Node) {
   hotlinkImageModal.value!.open(node.attrs as Editor.ImageAttrs)
+}
+
+function editAnnotation() {
+  // const selectedComment = ProseMirrorUtils.findNodes(editorState.value, schema.nodes.comment)[0]
+  commentModal.value!.open()
 }
 
 /** Selects an embed node to edit its attributes. */
@@ -98,6 +107,10 @@ useEditorToolCallback((item) => {
       selectImage(selectedImage.node)
       break
     }
+    case 'annotation.request': {
+      editAnnotation()
+      break
+    }
   }
 })
 
@@ -146,6 +159,10 @@ function onEmbedEdited(attrs: Editor.EmbedAttrs) {
 
 function onEmojiSelected(emoji: any) {
   executeAction('InsertText', {text: emoji.native})
+}
+
+function onAnnotationEdited(attrs: Editor.AnnotationAttrs) {
+  executeAction('SetAnnotation', attrs)
 }
 
 /** Executes an action at the current cursor location. */

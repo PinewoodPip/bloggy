@@ -8,6 +8,10 @@ import { addListNodes } from "prosemirror-schema-list"
 // Use the basic markdown schema as base
 const nodes = BasicSchema.spec.nodes
 
+/**
+ * Nodes
+ */
+
 // Change code block attribute names
 const codeBlock = nodes.get('code_block')
 codeBlock!.attrs = {
@@ -113,6 +117,10 @@ const embed = {
   }
 } as NodeSpec
 export const Embed = embed
+
+/**
+ * Marks
+ */
 
 // Add underline
 export const Underline = {
