@@ -237,7 +237,7 @@ def deauthenticate(db: Session, user: User):
     """
     Invalidates JWT tokens for a user.
     """
-    user.token_valid_from = datetime.now(timezone.utc) # Invalidate all tokens issued before
+    user.credentials.token_valid_from = datetime.now(timezone.utc) # Invalidate all tokens issued before
     db.commit()
 
 def create_user_output(user: User) -> UserOutput:
