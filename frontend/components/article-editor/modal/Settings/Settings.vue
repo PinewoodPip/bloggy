@@ -1,12 +1,12 @@
 <!-- Editor settings menu. -->
 <template>
-  <Modal @close="emit('close')">
+  <Modal :set-padding="false" @close="emit('close')">
     <template #headerTitle>
       <h2>Settings</h2>
     </template>
     <template #form>
       <!-- Keybinds -->
-      <h3>Keybinds</h3>
+      <h3 class="py-2 pb-0">Toolbar</h3>
       <!-- Groups -->
       <div v-for="group in tools.getToolGroup('toolbar').toolGroups" class="sticky">
         <div class="bg-base-100 z-10 sticky top-0">

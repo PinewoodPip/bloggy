@@ -12,7 +12,7 @@
     </div>
 
     <!-- Form -->
-    <div class="flexcol flex-grow overflow-y-auto gap-y-2 py-3">
+    <div class="flexcol flex-grow overflow-y-auto" :class="{ 'py-3': setPadding || (setPadding === undefined) }">
       <slot name="form"/>
     </div>
 
@@ -24,6 +24,11 @@
 </template>
 
 <script setup lang="ts">
+
+const { setPadding = true } = defineProps<{
+  /** Whether to automatically add padding to the form area. */
+  setPadding?: boolean,
+}>();
 
 const emit = defineEmits<{
   close: [],
