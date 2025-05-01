@@ -1,7 +1,7 @@
 <!-- Image node view. -->
 <template>
   <UTooltip :text="node.attrs.alt">
-    <img :src="node.attrs.src" :alt="node.attrs.alt" @dblclick="selectNode" />
+    <img :style="style" :src="node.attrs.src" :alt="node.attrs.alt" @dblclick="selectNode" />
   </UTooltip>
 </template>
 
@@ -15,5 +15,13 @@ const nodeCallbacks = inject<NodeCallbacks>('nodeCallbacks')
 function selectNode() {
   nodeCallbacks?.selectNode(node.value)
 }
+
+/** Set max height based on node attrs. */
+const style = computed(() => {
+  const { maxHeight } = node.value.attrs
+  return {
+    'max-height': `${maxHeight}px`,
+  }
+})
 
 </script>

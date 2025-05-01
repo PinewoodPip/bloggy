@@ -26,6 +26,13 @@ paragraph!.attrs = {
 }
 export const Paragraph = paragraph!
 
+// Add size attribute to image
+const image = nodes.get('image')!
+image.attrs!['maxHeight'] = {
+  default: undefined,
+}
+export const Image = image
+
 // Add alert/admonition block 
 const alert = {
   content: "paragraph+",

@@ -9,6 +9,7 @@ import * as Definitions from '~/src/editor/schemas/Nodes'
 let nodes = addListNodes(BasicSchema.spec.nodes, 'paragraph block*', 'block')
 
 nodes = nodes.update('paragraph', Definitions.Paragraph)
+nodes = nodes.update('image', Definitions.Image)
 nodes = nodes.addBefore('blockquote', 'alert', Definitions.Alert)
 nodes = nodes.addToEnd('footnote', Definitions.Footnote)
 nodes = nodes.addToEnd('embed', Definitions.Embed)

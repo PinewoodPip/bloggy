@@ -59,4 +59,12 @@ _DocumentSerializer.nodes['embed'] = (state, node) => {
   state.text(`:::\n\n`)
 }
 
+// Serialize images
+_DocumentSerializer.nodes['image'] = (state, node) => {
+  state.write(
+    "![" + state.esc(node.attrs.alt || "") + "](" + node.attrs.src.replace(/[\(\)]/g, "\\$&") + (node.attrs.title ? ' "' + node.attrs.title.replace(/"/g, '\\"') + '"' : "") + ")"
+    + (node.attrs.maxHeight ? `{maxHeight=${node.attrs.maxHeight}}` : '')
+  )
+}
+
 export const DocumentSerializer = _DocumentSerializer;

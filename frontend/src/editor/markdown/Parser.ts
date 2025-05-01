@@ -32,7 +32,7 @@ function listIsTight(tokens: readonly Token[], i: number) {
 }
 
 /** Extracts attributes added by the mkit-attrs plugin. */
-function extractBlockAttributes(tok: Token, tokens: Token[], i: integer): object {
+function extractBlockAttributes(tok: Token, tokens: Token[], i: integer): {[key: string]: string} {
   const attrs = tok.attrs
   const nodeAttrs: {[key: string]: string} = {}
   if (attrs) {
@@ -74,11 +74,15 @@ const _DocumentParser = new MarkdownParser(schema, md, {
   code_block: {block: "code_block", noCloseToken: true},
   fence: {block: "code_block", getAttrs: tok => ({language: tok.info || "javascript"}), noCloseToken: true},
   hr: {node: "horizontal_rule"},
-  image: {node: "image", getAttrs: tok => ({
-    src: tok.attrGet("src"),
-    title: tok.attrGet("title") || null,
-    alt: tok.children![0] && tok.children![0].content || null
-  })},
+  image: {node: "image", getAttrs: (tok, tokens, i) => {
+    const attrs = extractBlockAttributes(tok, tokens, i)
+    return {
+      src: tok.attrGet("src"),
+      title: tok.attrGet("title") || null,
+      alt: tok.children![0] && tok.children![0].content || null,
+      maxHeight: attrs["maxHeight"],
+    }
+  }},
   hardbreak: {node: "hard_break"},
   container_embed: {block: "embed", getAttrs: extractBlockAttributes},
 

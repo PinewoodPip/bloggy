@@ -2,11 +2,12 @@
 <template>
   <FullscreenModal v-model="openModel" :can-confirm="canConfirm" :confirm-callback="confirm">
     <template #headerTitle>
-      Insert image from link
+      {{ isEditing ? 'Edit image' : 'Insert image from link' }}
     </template>
     <template #form>
       <FormGroupInputField v-model="image.src" label="URL" icon="material-symbols:link" :required="true" />
       <FormGroupInputField v-model="image.alt" label="Alt" help="Description shown in tooltip and to assistive technologies." icon="material-symbols:title" />
+      <FormGroupInputField v-model="image.maxHeight" type="number" min="-1" label="Max Height" help="Maximum height in pixels." icon="material-symbols:fit-page-height" />
     </template>
     <template #footer>
       <IconButton class="btn-primary" icon="material-symbols:add-link" :disabled="!canConfirm" @click="confirm">Confirm</IconButton>
@@ -25,7 +26,9 @@ const emit = defineEmits<{
 const image: Reactive<ImageAttrs> = reactive({
   src: '',
   alt: '',
+  maxHeight: -1,
 })
+const isEditing = ref(false)
 
 const openModel = defineModel('open', {
   default: false,
@@ -36,6 +39,7 @@ function open(attrs?: ImageAttrs) {
   // Reset values
   image.src = ''
   image.alt = ''
+  isEditing.value = attrs !== undefined
 
   // Copy attrs
   if (attrs) {
