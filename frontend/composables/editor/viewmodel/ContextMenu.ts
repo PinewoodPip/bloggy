@@ -1,40 +1,29 @@
 /**
  * Viewmodel composables for creating editor context menu components.
  */
-import type * as Toolbar from '~/src/editor/Toolbar'
-import * as ClipboardActions from '~/src/editor/actions/Clipboard'
-import * as MediaActions from '~/src/editor/actions/Media'
+import type * as Tools from '~/src/editor/ToolManager'
 
 type ContextMenuItem = NuxtDropdownItem & {
-  item: Toolbar.GroupItem,
+  item: Tools.Tool,
 }
 
-export const useEditorContextMenu = () => {
-  const { editorState } = useEditorInjects()
-  const schema = useEditorSchema()
+/** Composable for creating a context menu using Nuxt UI dropdown items out of ToolGroup, filtering them by relevance based on content at the cursor. */
+export const useEditorContextMenu = (toolGroupID: string) => {
+  const { editorState, tools: toolManager } = useEditorInjects()
 
   /** Options shown in the context menu. */
   function getContextMenuItems() {
-    const items: (Toolbar.GroupItem | object)[][] = []
+    const items: Tools.Tool[][] = []
+    const toolGroup = toolManager.value.getToolGroup(toolGroupID)
+    const tools = toolGroup.toolGroups
 
-    // Add clipboard actions
-    const clipboardItems = []
-    for (const item of ClipboardActions.actionGroup.items) {
-      clipboardItems.push(item)
+    for (const arr of tools) {
+      const groupArr: Tools.Tool[] = []
+      items.push(groupArr)
+      for (const toolID of arr.tools) {
+        groupArr.push(tools.value.getTool(toolID))
+      }
     }
-
-    // Add media items
-    const mediaItems = []
-    mediaItems.push(MediaActions.actionGroup.items.find((item) => item.id === 'media.emoji.request')!)
-    // "Edit image" if selection is an image
-    if (ProseMirrorUtils.selectionHasNode(editorState.value, schema.nodes.image)) {
-      mediaItems.push(MediaActions.contextualItems.editImage)
-    }
-
-    items.push(
-      clipboardItems,
-      mediaItems,
-    )
 
     // Convert items to Nuxt UI dropdown items
     const dropdownItems: ContextMenuItem[][] = []
@@ -42,7 +31,10 @@ export const useEditorContextMenu = () => {
       dropdownItems.push([])
       for (const i in arr) {
         const item = arr[i]
-        dropdownItems[dropdownItems.length - 1].push(getActionContextMenuEntry(item as Toolbar.GroupItem))
+        // Filter items to only contextually-relevant ones
+        if (toolManager.value.isToolApplicable(editorState.value, item)) {
+          dropdownItems[dropdownItems.length - 1].push(getActionContextMenuEntry(item as Tools.Tool))
+        }
       }
     }
 
@@ -50,7 +42,7 @@ export const useEditorContextMenu = () => {
   }
 
   /** Creates a context menu item for a toolbar item. */
-  function getActionContextMenuEntry(item: Toolbar.GroupItem): ContextMenuItem {
+  function getActionContextMenuEntry(item: Tools.Tool): ContextMenuItem {
     return {
       label: item.def.name,
       icon: item.def.icon,

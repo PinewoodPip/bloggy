@@ -4,7 +4,7 @@
 import { redo as redoCommand, undo as undoCommand } from 'prosemirror-history'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { keybind } from '../Editor'
-import type { Group, GroupAction } from '../Toolbar'
+import type { ToolGroup, ActionTool } from '../ToolManager'
 import { Action } from './Action'
 
 export class Undo extends Action {
@@ -37,26 +37,4 @@ export class Redo extends Action {
   override getDefaultKeyCombo(): keybind | null {
     return 'ctrl_y' // Ctrl + Y
   }
-}
-
-export const actionGroup: Group = {
-  name: 'History',
-  items: [
-    {
-      type: 'action',
-      id: Undo.ID,
-      def: {
-        name: 'Undo',
-        icon: 'i-heroicons-arrow-uturn-left-solid',
-      },
-    } as GroupAction,
-    {
-      type: 'action',
-      id: Redo.ID,
-      def: {
-        name: 'Redo',
-        icon: 'i-heroicons-arrow-uturn-right-solid',
-      },
-    } as GroupAction,
-  ]
 }

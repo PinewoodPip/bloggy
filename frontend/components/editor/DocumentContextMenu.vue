@@ -5,13 +5,13 @@
 
 <script setup lang="ts">
 import ContextMenu from '~/components/context-menu/ContextMenu.vue'
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 
-const { useItem } = useEditorToolbar()
-const { getContextMenuItems } = useEditorContextMenu()
+const { useTool } = useEditorTools()
+const { getContextMenuItems } = useEditorContextMenu('context-menu')
 
 const emit = defineEmits<{
-  useAction: [Toolbar.actionGroupItemIdentifier]
+  useAction: [Tools.toolIdentifier]
 }>();
 
 const contextMenuOpen = ref(false)
@@ -27,7 +27,7 @@ function open() {
       // @ts-ignore
       item.click = () => {
         emit('useAction', item.item.id)
-        useItem(item.item)
+        useTool(item.item)
       }
     }
   }

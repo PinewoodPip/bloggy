@@ -1,4 +1,4 @@
-<!-- Button for displaying and executing editor actions. -->
+<!-- Button for displaying and executing subtools from a Menu tool. -->
 <template>
   <!-- Tooltip needs to be hidden while the menu is open, as otherwise it would show when hovering over the menu -->
   <UTooltip :text="!menuVisible ? menu.def.name : undefined">
@@ -9,13 +9,13 @@
 </template>
 
 <script setup lang="ts">
-import type * as Toolbar from '~/src/editor/Toolbar'
+import type * as Tools from '~/src/editor/ToolManager'
 
-const { useItem } = useEditorToolbar()
-const { menuItems, isActive } = useToolbarActionMenu(() => props.menu, (item) => useItem(item))
+const { useTool } = useEditorTools()
+const { menuItems, isActive } = useToolMenu(() => props.menu, (item) => useTool(item))
 
 const props = defineProps<{
-  menu: Toolbar.GroupActionMenu,
+  menu: Tools.MenuTool,
 }>()
 
 const menuVisible = ref(false)
@@ -23,5 +23,4 @@ const menuVisible = ref(false)
 function toggleMenu() {
   menuVisible.value = !menuVisible.value
 }
-
 </script>

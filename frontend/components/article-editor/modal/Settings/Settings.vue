@@ -8,11 +8,13 @@
       <!-- Keybinds -->
       <h3>Keybinds</h3>
       <!-- Groups -->
-      <div v-for="group in toolbar.getToolbarGroups()" class="sticky">
-        <h4 class="font-semibold">{{ group.name }}</h4>
-        <hr class="mb-2" />
+      <div v-for="group in tools.getToolGroup('toolbar').toolGroups" class="sticky">
+        <div class="bg-base-100 z-10 sticky top-0">
+          <h4 class="font-semibold py-1 pt-3">{{ group.name }}</h4>
+          <hr class="faint-hr mb-2" />
+        </div>
         <div class="flexcol gap-y-2">
-          <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="toolbar.isItemVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />
+          <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="tools.isToolVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />
         </div>
       </div>
     </template>
@@ -42,22 +44,21 @@
 </template>
 
 <script setup lang="ts">
-import { useEditorSettings } from '~/composables/editor/viewmodel/Settings'
 import * as Editor from '~/src/editor/Editor'
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 
 const keybindStringifier = useKeybindStringifier()
-const { editor, toolbar } = useEditorInjects()
+const { editor, tools } = useEditorInjects()
 const { getGroupItems, isKeybindDefault, resetKeybind, setItemVisibility: setActionVisibility, setItemKeybind } = useEditorSettings()
 
 const rebindingModalVisible = ref(false)
-const pendingRebindItem: Ref<Toolbar.GroupItem | null> = ref(null)
+const pendingRebindItem: Ref<Tools.Tool | null> = ref(null)
 const pendingRebindKeybind: Ref<Editor.keybind | null> = ref(null)
 const conflictingAction: Ref<Editor.actionID | null> = ref(null)
 
 const emit = defineEmits<{
   close: [],
-  rebind: [Toolbar.actionGroupItemIdentifier, Editor.keybind | null]
+  rebind: [Tools.toolIdentifier, Editor.keybind | null]
 }>()
 
 /** Update the keybind of the selected item. */
@@ -79,7 +80,7 @@ function resetBindingModal() {
   conflictingAction.value = null
 }
 
-function onRebindRequested(item: Toolbar.GroupItem) {
+function onRebindRequested(item: Tools.Tool) {
   resetBindingModal()
   rebindingModalVisible.value = true
   pendingRebindItem.value = item

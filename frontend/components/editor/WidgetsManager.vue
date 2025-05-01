@@ -25,7 +25,6 @@
 <script setup lang="ts">
 import { Node } from 'prosemirror-model'
 import * as Editor from '~/src/editor/Editor'
-import * as Toolbar from '~/src/editor/Toolbar'
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 
 const linkModal = useTemplateRef('linkModal')
@@ -36,7 +35,7 @@ const footnoteModal = useTemplateRef('footnoteModal')
 const embedEditorModal = useTemplateRef('embedEditorModal')
 const emojiWidget = useTemplateRef('emojiWidget')
 
-const { editor, toolbar, editorView, editorState } = useEditorInjects()
+const { editor, editorView, editorState } = useEditorInjects()
 const schema = useEditorSchema()
 
 /** Selects a footnote to edit its attributes. */
@@ -55,7 +54,7 @@ function selectEmbed(node: Node) {
 }
 
 /** Handle opening modals when corresponding toolbar items are used. */
-useEditorToolbarCallback((item) => {
+useEditorToolCallback((item) => {
   const itemID = typeof item === 'string' ? item : item.id // String overload.
   switch (itemID) {
     case 'SetLink': {

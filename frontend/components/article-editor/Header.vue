@@ -121,7 +121,7 @@ function onMetadataUpdated(article: Article) {
 }
 
 // Handle item events
-useEditorToolbarCallback((item) => {
+useEditorToolCallback((item) => {
   switch (item.id) {
     case 'Document.File.Save':
       saveDocument({}) // Document data is added by the composable

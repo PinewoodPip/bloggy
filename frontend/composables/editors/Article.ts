@@ -1,18 +1,18 @@
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 
 /** Composable for items to show in the main editor menu bar. */
 export const useArticleEditorMainMenu = () => {
-  const itemGroup: Toolbar.GroupActionMenu = {
+  const itemGroup: Tools.MenuTool = {
     id: 'Document',
     def: {
       name: 'Document',
       icon: 'i-heroicons-document-text',
     },
-    type: 'actionMenu',
+    type: 'menu',
     subitems: [
       // File menu
       {
-        type: 'actionMenu',
+        type: 'menu',
         id: 'Document.File',
         def: {
           name: 'File',
@@ -44,10 +44,10 @@ export const useArticleEditorMainMenu = () => {
             },
           }
         ],
-      } as Toolbar.GroupActionMenu,
+      } as Tools.MenuTool,
       // View menu
       {
-        type: 'actionMenu',
+        type: 'menu',
         id: 'Document.View',
         def: {
           name: 'View',
@@ -71,7 +71,7 @@ export const useArticleEditorMainMenu = () => {
             },
           },
         ],
-      } as Toolbar.GroupActionMenu,
+      } as Tools.MenuTool,
       // Settings
       {
         type: 'callback',

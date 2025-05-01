@@ -2,11 +2,10 @@ import * as Editor from '~/src/editor/Editor'
 import * as HistoryActions from '~/src/editor/actions/History'
 import * as FormattingActions from '~/src/editor/actions/Formatting'
 import * as SectioningActions from '~/src/editor/actions/Sectioning'
-import * as ClipboardActions from '~/src/editor/actions/Clipboard'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view'
 import { schema as CommentEditorSchema } from '~/src/editor/schemas/Comment'
-import type { GroupAction } from '~/src/editor/Toolbar'
+import type { ActionTool } from '~/src/editor/ToolManager'
 
 /**
  * An editor setup for writing article comments.
@@ -15,7 +14,7 @@ import type { GroupAction } from '~/src/editor/Toolbar'
 export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
   const editor: Editor.Editor = new Editor.Editor(CommentEditorSchema, pmViewGetter)
-  const toolbar = editor.getToolbar()
+  const toolbar = editor.getToolManager()
   const schema = editor.schema
 
   // Add default actions and groups
@@ -23,7 +22,7 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   // History actions
   editor.registerAction(new HistoryActions.Undo())
   editor.registerAction(new HistoryActions.Redo())
-  toolbar.registerToolbarGroup(HistoryActions.actionGroup)
+  toolbar.registerToolGroup(HistoryActions.actionGroup)
 
   // Formatting actions
   editor.registerAction(new FormattingActions.ToggleMark('ToggleBold', schema.marks.strong, 'ctrl_b'))
@@ -35,12 +34,12 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   for (const action of FormattingActions.alignmentActions) {
     editor.registerAction(action)
   }
-  toolbar.registerToolbarGroup(FormattingActions.actionGroup)
+  toolbar.registerToolGroup(FormattingActions.actionGroup)
 
   editor.registerAction(new SectioningActions.MakeQuote())
-  toolbar.registerToolbarGroup({
-    name: 'Sectioning',
-    items: [
+  toolbar.registerToolGroup({
+    id: 'Sectioning',
+    toolGroups: [
       {
         type: 'action',
         id: SectioningActions.MakeQuote.ID,
@@ -48,7 +47,7 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
           name: 'Insert Quote',
           icon: 'i-material-symbols-format-quote',
         },
-      } as GroupAction,
+      } as ActionTool,
     ]
   })
 
@@ -57,7 +56,7 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   editor.registerAction(new MiscActions.DeleteSelection())
 
   // Clipboard actions
-  toolbar.registerToolbarGroup(ClipboardActions.actionGroup)
+  toolbar.registerToolGroup(ClipboardActions.actionGroup)
 
   return editor
 }

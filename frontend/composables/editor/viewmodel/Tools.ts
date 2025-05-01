@@ -1,18 +1,18 @@
 /**
  * Viewmodel composables for editor toolbar items.
  */
-import type * as Toolbar from '~/src/editor/Toolbar'
+import type * as Tools from '~/src/editor/ToolManager'
 
 /** Viewmodel for a toolbar ActionMenu item. */
-export const useToolbarActionMenu = (menuGetter: () => Toolbar.GroupActionMenu, onUse: (item: Toolbar.GroupItem) => void) => {
-  const { editor, editorState, toolbar } = useEditorInjects()
+export const useToolMenu = (menuGetter: () => Tools.MenuTool, onUse: (item: Tools.Tool) => void) => {
+  const { editor, editorState, tools } = useEditorInjects()
   const menu = computed(() => menuGetter())
 
   /** NuxtUI dropdown menu items. */
   const menuItems = computed(() => {
     const items = []
     for (const subitem of menu.value.subitems) {
-      if (toolbar.value.isItemVisible(subitem.id)) {
+      if (tools.value.isToolVisible(subitem.id)) {
         items.push({
           label: subitem.def.name,
           icon: subitem.def.icon,
@@ -35,7 +35,7 @@ export const useToolbarActionMenu = (menuGetter: () => Toolbar.GroupActionMenu, 
 }
 
 /** Viewmodel for a toolbar Callback item. */
-export const useToolbarCallbackItem = (item: Ref<Toolbar.GroupCallback>) => {
+export const useToolbarCallbackItem = (item: Ref<Tools.CallbackTool>) => {
   const { editor, editorState } = useEditorInjects()
   const keybindStringifier = useKeybindStringifier()
 

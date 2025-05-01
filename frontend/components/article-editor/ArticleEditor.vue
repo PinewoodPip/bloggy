@@ -32,9 +32,7 @@
   </UContainer>
 </template>
 <script setup lang="ts">
-import type * as Toolbar from '~/src/editor/Toolbar'
 import { Node } from 'prosemirror-model'
-import type { Heading } from '~/components/editor/sidebar/Sidebar.vue'
 
 /** Callbacks available to node renderers. */
 export type NodeCallbacks = {

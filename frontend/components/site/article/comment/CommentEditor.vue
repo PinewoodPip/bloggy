@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query'
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 
 const commentService = useCommentService()
 const responseToast = useResponseToast()
@@ -62,7 +62,7 @@ function cancelReply() {
   emit('cancelReply')
 }
 
-function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
+function onActionUsed(item: Tools.Tool | Tools.toolIdentifier) {
   editorDocument.value?.onActionUsed(item)
 }
 

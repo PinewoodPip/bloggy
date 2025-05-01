@@ -14,12 +14,12 @@ import { ProsemirrorAdapterProvider } from '@prosemirror-adapter/vue'
 import { EditorState } from 'prosemirror-state'
 import { Node } from 'prosemirror-model'
 import * as Editor from '~/src/editor/Editor'
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 import type { EditorView } from 'prosemirror-view'
 
 const editorRef = useTemplateRef('documentRef')
 const clipboardManager = useTemplateRef('clipboardManager')
-const { editor, toolbar } = useEditorInjects()
+const { editor, tools } = useEditorInjects()
 const schema = useEditorSchema()
 
 const props = defineProps<{
@@ -32,7 +32,7 @@ function executeAction(actionID: string, params?: object) {
 }
 
 /** Execute action commands. */
-function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifier) {
+function onActionUsed(item: Tools.Tool | Tools.toolIdentifier) {
   if (editorRef.value) {
     const itemID = typeof item === 'string' ? item : item.id // String overload.
     const editorRaw = toRaw(editorRef.value)
@@ -43,7 +43,7 @@ function onActionUsed(item: Toolbar.GroupItem | Toolbar.actionGroupItemIdentifie
     }
   }
 }
-useEditorToolbarCallback((item) => {
+useEditorToolCallback((item) => {
   onActionUsed(item)
 })
 

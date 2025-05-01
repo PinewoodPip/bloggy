@@ -3,7 +3,7 @@
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
 import type { actionID, EmbedAttrs } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu, GroupCallback, GroupItem } from '../Toolbar'
+import type { ToolGroup, ActionTool, MenuTool, CallbackTool, Tool } from '../ToolManager'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
 import { schema } from '../Schema'
@@ -39,84 +39,4 @@ export class InsertEmbed extends Action {
     tr.replaceSelectionWith(embed)
     return tr
   }
-}
-
-/**
- * Action group
- */
-let _actionGroup: Group = {
-  name: 'Media',
-  items: [
-    /** Image items. */
-    {
-      type: 'actionMenu',
-      id: 'media.image.menu',
-      def: {
-        icon: 'material-symbols:image',
-        name: 'Insert image',
-      },
-      subitems: [
-        /** Callback to insert an image from a URL. */
-        {
-          type: 'callback',
-          id: 'media.image.hotlink',
-          def: {
-            name: 'From link',
-            longName: 'Insert image from link',
-            icon: 'material-symbols:link',
-          } 
-        } as GroupCallback,
-        /** Callback to upload an image to the site's CMS. */
-        {
-          type: 'callback',
-          id: 'media.image.upload',
-          def: {
-            name: 'Upload image',
-            icon: 'material-symbols:image-arrow-up-rounded',
-          } 
-        } as GroupCallback,
-        /** Callback to insert an image from the site's CMS. */
-        {
-          type: 'callback',
-          id: 'media.image.from_cms',
-          def: {
-            name: 'From site files',
-            longName: 'Insert image from site',
-            icon: 'material-symbols:cloud',
-          } 
-        } as GroupCallback,
-      ],
-    } as GroupActionMenu,
-    /** Callback to request an embed insert. */
-    {
-      type: 'callback',
-      id: 'media.embed.request',
-      def: {
-        name: 'Insert embed',
-        icon: 'material-symbols:featured-video-outline',
-      }
-    } as GroupCallback,
-    /** Callback to insert an emoji. */
-    {
-      type: 'callback',
-      id: 'media.emoji.request',
-      def: {
-        name: 'Insert emoji',
-        icon: 'material-symbols:sentiment-excited-outline',
-      } 
-    } as GroupCallback,
-  ],
-}
-export const actionGroup = _actionGroup
-
-/** Items that are highly contextual and not intended to be part of the regular toolbar. */
-export const contextualItems = {
-  editImage: {
-    type: 'callback',
-    id: 'media.image.edit',
-    def: {
-      icon: 'material-symbols:image',
-      name: 'Edit image',
-    },
-  } as GroupCallback,
 }

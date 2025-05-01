@@ -98,6 +98,8 @@ export const ProseMirrorUtils = {
 
   /** Returns a list of nodes of a type that match the passed attributes, if any. */
   findNodes(state: EditorState, nodeType: NodeType, attrs?: Attrs): {node: Node, startPos: integer, endPos: integer}[] {
+    state = toRaw(state)
+    nodeType = toRaw(nodeType)
     let startPos = 0
     let endPos = 0
     let matches:{node: Node, startPos: integer, endPos: integer}[] = []

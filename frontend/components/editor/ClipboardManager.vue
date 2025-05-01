@@ -21,7 +21,7 @@ function copyToClipboard() {
 }
 
 /** Handle clipboard items being used. */
-useEditorToolbarCallback((item) => {
+useEditorToolCallback((item) => {
   const view = editorView.value
   const itemID = typeof item === 'string' ? item : item.id // String overload.
   if (itemID == 'ClipboardPaste') {

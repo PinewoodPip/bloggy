@@ -1,5 +1,5 @@
 import type { Editor } from "~/src/editor/Editor"
-import * as Toolbar from "~/src/editor/Toolbar"
+import * as Tools from "~/src/editor/ToolManager"
 import { injectLocal, provideLocal } from '@vueuse/core'
 
 /** Exposes editor state to all child components. */
@@ -13,7 +13,7 @@ export const useEditorProvides = (editor: Editor, document: Ref<Component>): voi
     return document.value?.editorState
   })
 
-  const itemUsedCallbacks: Ref<Toolbar.ItemUsedCallback[]> = ref([])
+  const itemUsedCallbacks: Ref<Tools.ItemUsedCallback[]> = ref([])
   
   // @ts-ignore
   provideLocal<Ref<Editor.Editor>>('editor', editor)

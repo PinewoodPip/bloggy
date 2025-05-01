@@ -14,26 +14,26 @@
 </template>
 
 <script setup lang="ts">
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 import CallbackButton from '~/components/article-editor/toolbar/CallbackButton.vue'
-import ActionMenuButton from '~/components/article-editor/toolbar/ActionMenuButton.vue'
+import MenuButton from '~/components/article-editor/toolbar/MenuButton.vue'
 
 const { visibleGroups, getVisibleGroupItems } = useEditorToolbarItems()
 
 // Component, props and event getters for the dynamic toolbar item component
-function getGroupItemComponent(item: Toolbar.GroupItem) {
-  if (item.type === 'actionMenu') {
-    return ActionMenuButton
+function getGroupItemComponent(item: Tools.Tool) {
+  if (item.type === 'menu') {
+    return MenuButton
   } else if (item.type === 'callback' || item.type === 'action') {
     return CallbackButton
   } else {
     throw "Unimplemented group item: " + item.type
   }
 }
-function getGroupItemComponentProps(item: Toolbar.GroupItem) {
-   if (item.type === 'actionMenu') {
+function getGroupItemComponentProps(item: Tools.Tool) {
+   if (item.type === 'menu') {
     return {
-      menu: item as Toolbar.GroupActionMenu,
+      menu: item as Tools.MenuTool,
     }
   } else if (item.type === 'callback' || item.type === 'action') {
     return {

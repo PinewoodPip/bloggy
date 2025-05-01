@@ -4,7 +4,7 @@
 import { setBlockType, wrapIn } from 'prosemirror-commands'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
+import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 import { schema } from '../Schema'
 

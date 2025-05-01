@@ -6,7 +6,7 @@ import { Node, NodeRange } from "prosemirror-model"
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import type { actionID, alertType, } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu, GroupItem } from '../Toolbar'
+import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -108,58 +108,3 @@ export class InsertFootnote extends Action {
     return tr
   }
 }
-
-/**
- * Action group
- */
-// Create alert actions
-let _alertActions: InsertAlert[] = [
-  new InsertAlert('note'),
-  new InsertAlert('tip'),
-  new InsertAlert('important'),
-  new InsertAlert('caution'),
-  new InsertAlert('warning'),
-]
-const alertActionIDs: GroupItem[] = []
-for (const action of _alertActions) {
-  alertActionIDs.push({
-    type: 'action',
-    id: action.id,
-    def: {
-      name: `Toggle ${action.alertType} note`,
-      icon: 'material-symbols:lightbulb-2-outline', // TODO different icon per type
-    },
-  } as GroupAction)
-}
-let _actionGroup: Group = {
-  name: 'Widgets',
-  items: [
-    {
-      type: 'action',
-      id: InsertCodeBlock.ID,
-      def: {
-        name: 'Toggle Code Block',
-        icon: 'material-symbols:code-blocks-outline',
-      },
-    } as GroupAction,
-    {
-      type: 'actionMenu',
-      id: 'widgets.note.menu',
-      def: {
-        icon: 'material-symbols:lightbulb-2-outline',
-        name: 'Toggle Note',
-      },
-      subitems: alertActionIDs,
-    } as GroupActionMenu,
-    {
-      type: 'action',
-      id: InsertFootnote.ID,
-      def: {
-        name: 'Insert Footnote',
-        icon: 'material-symbols:edit-note',
-      },
-    } as GroupAction,
-  ],
-}
-export const actionGroup = _actionGroup
-export const alertActions = _alertActions

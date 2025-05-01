@@ -6,7 +6,7 @@ import { Schema } from 'prosemirror-model'
 import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
-import { Toolbar, type actionGroupItemIdentifier, type GroupActionMenu, type GroupItem, type ItemDef } from './Toolbar'
+import { ToolManager, type toolIdentifier, type MenuTool, type Tool, type ToolDef } from './ToolManager'
 import type { EditorView } from 'prosemirror-view'
 
 export type actionID = string
@@ -36,8 +36,11 @@ export interface IAction {
   /** Runs the action's effect. */
   execute(state: EditorState, params?: object): Transaction | Promise<Transaction> | null,
 
-  /** Returns whether the action is being used. */
+  /** Returns whether the action is being used in the context of the document. */
   isActive(state: EditorState): boolean,
+
+  /** Returns whether the item is contextually applicable to the current document state. */
+  isApplicable(state: EditorState): boolean,
 
   /** Returns the recommended default keybind for this action. */
   getDefaultKeyCombo(): keybind | null,
@@ -51,21 +54,21 @@ export class Editor {
 
   actions: {[id: actionID]: IAction} = {}
 
-  private toolbar: Toolbar
+  private toolManager: ToolManager
 
   // Action keybind mappings
   private customActionBindings: {[id: actionID]: keybind} = {}
   private customBindingToAction: {[combo: keybind]: actionID} = {}
 
   constructor(schema: Schema, pmViewGetter: () => EditorView) {
-    this.toolbar = new Toolbar()
+    this.toolManager = new ToolManager()
     this.pmViewGetter = pmViewGetter
     this._schema = schema
   }
 
   /** Registers an editor action. */
-  registerAction(action: Action) {
-    this.actions[action.id] = action
+  registerAction(id: actionID, action: IAction) {
+    this.actions[id] = action
   }
 
   /** Returns a registered action by its ID. */
@@ -82,14 +85,14 @@ export class Editor {
   }
 
   /** Returns whether an item ID corresponds to an action. */
-  isAction(id: actionGroupItemIdentifier): boolean {
+  isAction(id: toolIdentifier): boolean {
     return this.actions[id] !== undefined
   }
 
   /** Executes an action over the current selection. */
   executeAction(actionID: string, params?: object) {
     const action = this.getAction(actionID)
-    const documentView = this.pmViewGetter()
+    const documentView = toRaw(this.pmViewGetter())
 
     // Run action and apply transaction
     let transaction = action.execute(documentView.state, params)
@@ -101,17 +104,17 @@ export class Editor {
   }
 
   /** Returns the toolbar model. */
-  getToolbar(): Toolbar {
-    return this.toolbar
+  getToolManager(): ToolManager {
+    return this.toolManager
   }
 
   /** Returns whether a toolbar item is currently being used. */
-  isItemActive(state: EditorState, item: GroupItem): boolean {
+  isItemActive(state: EditorState, item: Tool): boolean {
     if (item.type === 'action') {
       return this.getAction(item.id).isActive(state)
-    } else if (item.type === 'actionMenu') {
+    } else if (item.type === 'menu') {
       // Menus are active if any subitem is
-      for (const subitem of (item as GroupActionMenu).subitems) {
+      for (const subitem of (item as MenuTool).subitems) {
         if (this.isItemActive(state, subitem)) {
           return true
         }
@@ -152,7 +155,7 @@ export class Editor {
   }
 
   /** Returns the default keybind for a toolbar item. */
-  getDefaultItemKeybind(item: GroupItem | actionGroupItemIdentifier) : keybind | null {
+  getDefaultItemKeybind(item: Tool | toolIdentifier) : keybind | null {
     const actionID = typeof(item) === 'object' ? item.id : item // ID overload.
     const action = this.actions[actionID] ? this.getAction(actionID) : null
     return action ? action.getDefaultKeyCombo() : null
@@ -182,7 +185,7 @@ export class Editor {
   savePreferences(storageKey: string) {
     const saveData = {
       keybinds: this.customActionBindings,
-      hiddenActions: [...this.toolbar.getHiddenItems().values()],
+      hiddenActions: [...this.toolManager.getHiddenTools().values()],
     }
     window.localStorage.setItem(storageKey, JSON.stringify(saveData))
   }
@@ -205,7 +208,7 @@ export class Editor {
 
       // Apply toolbar preferences
       for (const actionID of parsedSaveData.hiddenActions || []) {
-        this.toolbar.setItemVisible(actionID, false)
+        this.toolManager.setToolVisible(actionID, false)
       }
     }
   }

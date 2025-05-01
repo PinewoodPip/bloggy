@@ -18,6 +18,10 @@ export abstract class Action implements IAction {
     return false
   }
 
+  isApplicable(state: EditorState): boolean {
+    return true
+  }
+
   getDefaultKeyCombo(): keybind | null {
     return null
   }

@@ -5,7 +5,7 @@ import { type EditorState, type Transaction } from 'prosemirror-state'
 import { MarkType, NodeType } from 'prosemirror-model'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
-import type { Group, GroupAction, GroupActionMenu, GroupCallback, GroupItem } from '../Toolbar'
+import type { ToolGroup, ActionTool, MenuTool, CallbackTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 
 export class ToggleMark extends Action {
@@ -93,78 +93,4 @@ export class SetAlignment extends Action {
     // return this.selectionHasNode(state, schema.nodes['paragraph'], {align: this.type}) !== null
     return false
   }
-}
-
-/**
- * Action group
- */
-const _alignmentActionItems: GroupItem[] = []
-const _alignmentActions: Action[] = []
-for (const alignType of ['right', 'left', 'center', 'justify']) {
-  const action = new SetAlignment(alignType as alignmentType)
-  _alignmentActions.push(action)
-  _alignmentActionItems.push({
-    type: 'action',
-    def: {
-      name: StringUtils.capitalize(alignType),
-      longName: `Align ${alignType}`,
-      icon: SetAlignment.ICONS[alignType],
-    },
-    id: action.id,
-  })
-}
-export const alignmentActions = _alignmentActions
-export const actionGroup: Group = {
-  name: 'Formatting',
-  items: [
-    {
-      type: 'action',
-      id: 'ToggleBold',
-      def: {
-        name: 'Toggle Bold',
-        icon: 'i-heroicons-bold',
-      },
-    } as GroupAction,
-    {
-      type: 'action',
-      id: 'ToggleItalic',
-      def: {
-        name: 'Toggle Italics',
-        icon: 'i-heroicons-italic',
-      },
-    } as GroupAction,
-    {
-      type: 'action',
-      id: 'ToggleUnderline',
-      def: {
-        name: 'Toggle Underline',
-        icon: 'i-heroicons-underline',
-      },
-    } as GroupAction,
-    {
-      type: 'action',
-      id: 'ToggleInlineCode',
-      def: {
-        name: 'Toggle Inline Code',
-        icon: 'i-material-symbols-code-rounded',
-      },
-    } as GroupAction,
-    {
-      type: 'actionMenu',
-      id: 'formatting.alignment.menu',
-      def: {
-        icon: 'material-symbols:format-align-left',
-        name: 'Set Alignment',
-      },
-      subitems: _alignmentActionItems,
-    } as GroupActionMenu,
-    {
-      type: 'callback',
-      id: 'SetLink',
-      def: {
-        name: 'Set Link',
-        icon: 'material-symbols:link',
-      },
-    } as GroupCallback,
-  ]
 }

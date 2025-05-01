@@ -34,21 +34,21 @@
 
 <script setup lang="ts">
 import * as Editor from '~/src/editor/Editor'
-import * as Toolbar from '~/src/editor/Toolbar'
+import * as Tools from '~/src/editor/ToolManager'
 
 const keybindStringifier = useKeybindStringifier()
 
 const props = defineProps<{
-  item: Toolbar.GroupItem,
+  item: Tools.Tool,
   isVisibleInToolbar: boolean,
   canReset?: boolean,
   keybind: Editor.keybind | null,
 }>()
 
 const emit = defineEmits<{
-  rebind: [Toolbar.GroupItem],
-  toggleVisibility: [Toolbar.GroupItem, boolean]
-  resetToDefault: [Toolbar.GroupItem]
+  rebind: [Tools.Tool],
+  toggleVisibility: [Tools.Tool, boolean]
+  resetToDefault: [Tools.Tool]
 }>()
 
 function rebind() {

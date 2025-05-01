@@ -1,7 +1,7 @@
 <!-- Button for displaying and executing toolbar callback and action items. -->
 <template>
   <UTooltip>
-    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" @pointerdown.prevent @click="useTool" />
+    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" @pointerdown.prevent @click="useTool(item)" />
 
     <!-- Tooltip template -->
     <template #text>
@@ -14,17 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import type * as Toolbar from '~/src/editor/Toolbar'
+import type * as Tools from '~/src/editor/ToolManager'
 
-const { useItem } = useEditorToolbar()
+const { useTool } = useEditorTools()
 const { keybindLabel, isActive } = useToolbarCallbackItem(toRef(() => props.item))
 
 const props = defineProps<{
-  item: Toolbar.GroupCallback,
+  item: Tools.CallbackTool,
 }>()
-
-function useTool() {
-  useItem(props.item)
-}
 
 </script>

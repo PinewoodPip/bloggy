@@ -4,13 +4,7 @@
 import type { EditorState } from 'prosemirror-state';
 import type { Schema } from 'prosemirror-model';
 import * as Editor from '~/src/editor/Editor'
-import * as Toolbar from "~/src/editor/Toolbar"
-import * as HistoryActions from '~/src/editor/actions/History'
-import * as FormattingActions from '~/src/editor/actions/Formatting'
-import * as SectioningActions from '~/src/editor/actions/Sectioning'
-import * as ClipboardActions from '~/src/editor/actions/Clipboard'
-import * as ListActions from '~/src/editor/actions/Lists'
-import * as WidgetActions from '~/src/editor/actions/Widgets'
+import * as Tools from "~/src/editor/ToolManager"
 import * as MediaActions from '~/src/editor/actions/Media'
 import * as MiscActions from '~/src/editor/actions/Misc'
 import type { EditorView } from 'prosemirror-view';
@@ -20,67 +14,163 @@ import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
 import { injectLocal, provideLocal } from '@vueuse/core'
 import { schema as ArticleEditorSchema } from '~/src/editor/Schema';
+import * as FormattingTools from '~/src/editor/tools/Formatting';
+import * as HistoryTools from '~/src/editor/tools/History';
+import * as SectioningTools from '~/src/editor/tools/Sectioning';
+import * as ClipboardTools from '~/src/editor/tools/Clipboard';
+import * as MediaTools from '~/src/editor/tools/Media';
+import * as ListTools from '~/src/editor/tools/Lists';
+import * as WidgetTools from '~/src/editor/tools/Widgets';
 
 /** Max amount of characters to use for auto-generated summaries. */
 const MAX_SUMMARY_LENGTH = 250
 
-/** Creates an article editor model. */
+/** Creates an editor model for articles, with a rich-text schema and corresponding tools. */
 export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Create editor
   const editor: Editor.Editor = new Editor.Editor(ArticleEditorSchema, pmViewGetter)
-  const toolbar = editor.getToolbar()
+  const toolManager = editor.getToolManager()
   const schema = editor.schema
 
-  // Add default actions and groups
-
   // History actions
-  editor.registerAction(new HistoryActions.Undo())
-  editor.registerAction(new HistoryActions.Redo())
-  toolbar.registerToolbarGroup(HistoryActions.actionGroup)
+  const { undoTool: undo, redoTool: redo } = HistoryTools.RegisterHistoryActions(editor)
 
   // Formatting actions
-  editor.registerAction(new FormattingActions.ToggleMark('ToggleBold', schema.marks.strong, 'ctrl_b'))
-  editor.registerAction(new FormattingActions.ToggleMark('ToggleItalic', schema.marks.em, 'ctrl_i'))
-  editor.registerAction(new FormattingActions.ToggleMark('ToggleUnderline', schema.marks.underline, 'ctrl_u'))
-  editor.registerAction(new FormattingActions.ToggleMark('ToggleInlineCode', schema.marks.code))
-  editor.registerAction(new FormattingActions.ToggleWordMark('ToggleLink', schema.marks.link))
-  for (const action of FormattingActions.alignmentActions) {
-    editor.registerAction(action)
-  }
-  toolbar.registerToolbarGroup(FormattingActions.actionGroup)
+  const bold = FormattingTools.RegisterFormatBold(editor, schema.marks.strong)
+  const italic = FormattingTools.RegisterFormatItalics(editor, schema.marks.em)
+  const underline = FormattingTools.RegisterFormatUnderline(editor, schema.marks.underline)
+  const inlineCode = FormattingTools.RegisterFormatInlineCode(editor, schema.marks.code)
+  const link = FormattingTools.RegisterFormatLink(editor, schema.marks.link)
+  const alignmentMenu = FormattingTools.RegisterAlignmentMenu(editor)
 
   // Sectioning actions
-  for (const action of SectioningActions.headingActions) {
-    editor.registerAction(action)
-  }
-  editor.registerAction(new SectioningActions.InsertHorizontalRule())
-  editor.registerAction(new SectioningActions.MakeQuote())
-  toolbar.registerToolbarGroup(SectioningActions.actionGroup)
+  const headingTools = SectioningTools.RegisterHeadingTools(editor)
+  const horizontalRule = SectioningTools.RegisterHorizontalRuleTool(editor)
+  const quote = SectioningTools.RegisterQuoteTool(editor)
 
-  // Clipboard actions
-  toolbar.registerToolbarGroup(ClipboardActions.actionGroup)
+  // Clipboard tools
+  const clipboardTools = ClipboardTools.RegisterClipboardTools(editor)
 
-  // Media actions
-  editor.registerAction(new MediaActions.InsertImage())
-  editor.registerAction(new MediaActions.InsertEmbed())
-  toolbar.registerToolbarGroup(MediaActions.actionGroup)
+  // Media tools
+  const imageTools = MediaTools.RegisterArticleImageTools(editor)
+  const embed = MediaTools.RegisterEmbedTool(editor)
+  const emojiPicker = MediaTools.RegisterEmojiPickerTool(editor)
 
-  // List actions
-  editor.registerAction(new ListActions.ToggleBulletList())
-  editor.registerAction(new ListActions.ToggleNumberedList())
-  toolbar.registerToolbarGroup(ListActions.actionGroup)
+  // List tools
+  const { menu: listMenu, toggleBulletListTool, toggleNumberedListTool } = ListTools.RegisterListTools(editor)
 
   // Widget actions
-  editor.registerAction(new WidgetActions.InsertCodeBlock())
-  for (const action of WidgetActions.alertActions) {
-    editor.registerAction(action)
-  }
-  editor.registerAction(new WidgetActions.InsertFootnote())
-  toolbar.registerToolbarGroup(WidgetActions.actionGroup)
+  const { menu: noteMenu } = WidgetTools.RegisterNoteTools(editor)
+  const codeBlock = WidgetTools.RegisterCodeBlockTool(editor)
+  const footnote = WidgetTools.RegisterFootnoteTool(editor)
+
+  // Define toolbar
+  toolManager.registerToolGroup({
+    id: 'toolbar',
+    toolGroups: [
+      // History
+      {
+        name: 'History',
+        tools: [
+          redo.id, 
+          undo.id,
+        ],
+      },
+      // Clipboard
+      {
+        name: 'Clipboard',
+        tools: [
+          clipboardTools.cutTool.id,
+          clipboardTools.copyTool.id,
+          clipboardTools.pasteTool.id,
+        ],
+      },
+      // Formatting
+      {
+        name: 'Formatting',
+        tools: [
+          bold.id,
+          italic.id,
+          underline.id,
+          inlineCode.id,
+          link.id,
+          alignmentMenu.id,
+        ],
+      },
+      // Sectioning
+      {
+        name: 'Sectioning',
+        tools: [
+          headingTools.id,
+          horizontalRule.id,
+          quote.id,
+        ],
+      },
+      // Media
+      {
+        name: 'Media',
+        tools: [
+          imageTools.menu.id,
+          embed.id,
+          emojiPicker.id,
+        ],
+      },
+      // Lists
+      {
+        name: 'Lists',
+        tools: [
+          toggleBulletListTool.id,
+          toggleNumberedListTool.id,
+        ],
+      },
+      // Widgets
+      {
+        name: 'Widgets',
+        tools: [
+          codeBlock.id,
+          noteMenu.id,
+          footnote.id,
+        ],
+      },
+    ]
+  })
+
+  // Define context menu
+  toolManager.registerToolGroup({
+    id: 'context-menu',
+    toolGroups: [
+      // Clipboard
+      {
+        name: 'Clipboard',
+        tools: [
+          clipboardTools.cutTool.id,
+          clipboardTools.copyTool.id,
+          clipboardTools.pasteTool.id,
+        ],
+      },
+      // Formatting
+      {
+        name: 'Formatting',
+        tools: [
+          link.id,
+        ],
+      },
+      // Media
+      {
+        name: 'Media',
+        tools: [
+          imageTools.editTool.id,
+          emojiPicker.id,
+        ],
+      },
+    ]
+  })
 
   // Misc actions
-  editor.registerAction(new MiscActions.InsertText())
-  editor.registerAction(new MiscActions.DeleteSelection())
+  editor.registerAction('InsertImage', new MediaActions.InsertImage())
+  editor.registerAction('InsertEmbed', new MediaActions.InsertEmbed())
+  editor.registerAction('InsertText', new MiscActions.InsertText())
+  editor.registerAction('DeleteSelection', new MiscActions.DeleteSelection())
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {
@@ -96,14 +186,14 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
 export const useEditorInjects = () => {
   const editor = injectLocal<Ref<Editor.Editor>>('editor')!
   // Use computed to make contexts that use it reactive even if they don't use the editor itself
-  const toolbar = computed(() => {
-    return editor.value!.getToolbar()
+  const tools = computed(() => {
+    return editor.value!.getToolManager()
   })
   const editorState = injectLocal<Ref<EditorState>>('editorState')!
   const editorView = injectLocal<Ref<EditorView>>('editorView')!
-  const itemUsedCallbacks = injectLocal<Ref<Toolbar.ItemUsedCallback[]>>('itemUsedCallbacks')!
+  const itemUsedCallbacks = injectLocal<Ref<Tools.ItemUsedCallback[]>>('itemUsedCallbacks')!
   const schema = injectLocal<Schema>('documentSchema')!
-  return { editor, toolbar, editorState, editorView, itemUsedCallbacks, schema }
+  return { editor, tools, editorState, editorView, itemUsedCallbacks, schema }
 }
 
 /** Composable for the editor document's ProseMirror schema. */

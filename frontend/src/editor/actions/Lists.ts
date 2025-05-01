@@ -6,7 +6,7 @@ import { wrapInList } from 'prosemirror-schema-list'
 import { NodeType, NodeRange, type Attrs } from "prosemirror-model"
 import type { Command, EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
-import type { Group, GroupActionMenu } from '../Toolbar'
+import type { ToolGroup, MenuTool } from '../ToolManager'
 import { Action } from './Action'
 import { schema } from '../Schema'
 
@@ -64,39 +64,3 @@ export class ToggleNumberedList extends Action {
     return null
   }
 }
-
-/**
- * Action group
- */
-let _actionGroup: Group = {
-  name: 'Lists',
-  items: [
-    {
-      type: 'actionMenu',
-      id: 'lists.menu',
-      def: {
-        icon: 'material-symbols:format-list-bulleted',
-        name: 'Toggle List',
-      },
-      subitems: [
-        {
-          type: 'action',
-          id: ToggleBulletList.ID,
-          def: {
-            name: 'Toggle Bullet List',
-            icon: 'material-symbols:format-list-bulleted',
-          },
-        },
-        {
-          type: 'action',
-          id: ToggleNumberedList.ID,
-          def: {
-            name: 'Toggle Numbered List',
-            icon: 'material-symbols:format-list-numbered',
-          },
-        },
-      ],
-    } as GroupActionMenu,
-  ],
-}
-export const actionGroup = _actionGroup

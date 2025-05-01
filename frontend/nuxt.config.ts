@@ -12,6 +12,7 @@ export default defineNuxtConfig({
     // Auto-import API response/request types from service classes
     dirs: ['services', 'composables/editors', 'composables/editor/plugins', 'composables/editor/viewmodel']
   },
+  build: { transpile: ['emoji-mart-vue-fast'] }, // Necessary due to the way this component is imported
   // Expose env variables to vue components and compasables
   runtimeConfig: {
     public: {
@@ -25,5 +26,5 @@ export default defineNuxtConfig({
       script: [{ hid: "google", src: "https://accounts.google.com/gsi/client", defer: true }],
     },
   },
-  compatibilityDate: "2025-02-11"
+  compatibilityDate: "2025-02-11",
 })
