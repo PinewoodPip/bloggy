@@ -221,7 +221,7 @@ export const useArticleEditorQueries = () => {
     queryKey: ['articleContent'],
     queryFn: async () => {
       if (route.query['article']) {
-        const article = await articleService.getArticle(route.query['article'] as string)
+        const article = await articleService.getArticle(route.query['article'] as string, true)
         return article
       } else {
         return null

@@ -93,8 +93,12 @@ function onTitleFieldFocusOut() {
   }
 }
 
+/** Saves the article as a draft. */
 function saveDraft() {
-  // TODO
+  // Other document data is added by the composable
+ saveDocument({
+    is_draft: true
+  })
 }
 
 function toggleMarkdownView() {

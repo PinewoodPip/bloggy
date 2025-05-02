@@ -108,8 +108,10 @@ class ArticleService extends Service {
   }
 
   /** Fetches an article by its path; expects a leading slash. */
-  async getArticle(path: path): Promise<Article> {
-    const response = await this.get('/articles' + path)
+  async getArticle(path: path, draft?: boolean): Promise<Article> {
+    const response = await this.get('/articles' + path, {
+      draft: draft,
+    })
     return response.data
   }
 
