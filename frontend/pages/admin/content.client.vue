@@ -42,7 +42,7 @@
               <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" @click.stop="onArticleCreateRequested(childItem)" :disabled="!canCreateArticles" />
             </UTooltip>
             <!-- Edit button -->
-            <UTooltip v-if="canEdit" text="Edit">
+            <UTooltip v-if="canEdit && childItem.path != '/'" text="Edit"> <!-- Don't show edit button for root category -->
               <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onNodeEditRequested(childItem)" />
             </UTooltip>
           </template>
