@@ -6,11 +6,11 @@
     </div>
 
     <!-- Comment -->
-    <div class="flexcol gap-y-2 flex-grow">
+    <div class="flexcol flex-grow">
       <!-- Header -->
-      <div class="flex gap-x-2">
+      <div class="flex gap-x-3">
         <span class="font-bold">{{ authorNameLabel }}</span>
-        <span>Posted on {{ commentDate }}</span>
+        <span class="text-base-content/70">Posted on {{ commentDate }}</span>
       </div>
 
       <!-- Content -->

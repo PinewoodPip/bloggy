@@ -178,7 +178,6 @@ watchEffect((onCleanup) => {
   background-clip: padding-box;
   border-radius: 4px;
   padding: 5px 0;
-  margin-bottom: 23px;
   position: relative;
 }
 
@@ -218,7 +217,7 @@ watchEffect((onCleanup) => {
 }
 
 .ProseMirror {
-  padding: 4px 8px 4px 14px;
+  padding: 0px 8px 0px 14px;
   line-height: 1.2;
   outline: none;
 }

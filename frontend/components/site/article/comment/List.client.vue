@@ -1,15 +1,17 @@
 <!-- Container for comments of an article. -->
 <template>
   <div v-if="commentsStatus === 'success'" class="large-content-block" ref="commentsTop">
+    <!-- Counter -->
     <h2>{{ commentsCount }} comments</h2>
 
+    <!-- Comment editor box -->
     <SiteArticleCommentEditor v-if="canComment" ref="postBox" :parent-comment="replyComment" @post="onCommentPosted" @cancel-reply="onReplyCancelled" />
     <p v-else> <!-- TODO link -->
       Log-in to post comments.
     </p>
 
     <!-- Comments -->
-    <div class="flexcol mt-3">
+    <div class="flexcol mt-3 gap-y-3">
       <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" :key="comment.id" @delete="onCommentDeleted" @reply="onReplyRequested" />
     </div>
   </div>
