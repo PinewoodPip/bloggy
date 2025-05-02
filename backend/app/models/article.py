@@ -41,6 +41,22 @@ class Tag(Base):
     
     articles: Mapped[list["Article"]] = relationship(secondary="article_tags", back_populates="tags")
 
+class ArticleAnnotation(Base):
+    __tablename__ = "article_annotations"
+    id = Column(Integer, index=True, primary_key=True, unique=True)
+    article_id = Column(Integer, ForeignKey("articles.id"), primary_key=True, nullable=False)
+    comment = Column(String, nullable=False)
+    author_id = Column(Integer, ForeignKey("editors.user_id"), nullable=False)
+
+    start = Column(Integer, nullable=False)
+    """Starting position within the document."""
+
+    end = Column(Integer, nullable=False)
+    """End position within the document."""
+
+    article: Mapped["Article"] = relationship("Article")
+    author: Mapped["Editor"] = relationship("Editor")
+
 class Article(Base):
     __tablename__ = "articles"
 
@@ -69,6 +85,7 @@ class Article(Base):
 
     category: Mapped["Category"] = relationship("Category", back_populates="articles")
     authors: Mapped[list["Editor"]] = relationship(secondary="article_authors", cascade="all", back_populates="articles")
-    comments: Mapped[list["Comment"]] = relationship("Comment", order_by="Comment.post_time", cascade="delete, delete-orphan", back_populates="article")
+    comments: Mapped[list["Comment"]] = relationship("Comment", order_by="Comment.post_time", cascade="delete, delete-orphan", back_populates="article") # Delete comments when the article is deleted
     tags: Mapped[list["Tag"]] = relationship(secondary="article_tags", cascade="all", back_populates="articles")
     featured_image: Mapped["File"] = relationship("File")
+    annotations: Mapped[list["ArticleAnnotation"]] = relationship("ArticleAnnotation", back_populates="article", cascade="all, delete-orphan") # Delete annotations when the article is deleted

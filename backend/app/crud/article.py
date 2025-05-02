@@ -14,7 +14,7 @@ from datetime import datetime
 import warnings
 import re
 
-PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags", "draft_content", "content"])
+PATCH_ARTICLE_EXCLUDED_FIELDS = set(["authors", "category_path", "publish_time", "tags", "draft_content", "content", "annotations"])
 SPLIT_CATEGORY_ARTICLE_PATH_REGEX = re.compile(r"(.+)\/([^\/]+)$") # Splits a path into category path and article filename.
 
 def create_article(db: Session, category_path: str, article_input: ArticleInput, author: Editor) -> Article:
@@ -111,6 +111,29 @@ def update_article(db: Session, article: Article, article_update: ArticleUpdate)
             raise ValueError("All authors must be editors")
 
         article.authors = authors
+
+    # Update annotations
+    if article_update.annotations != None:
+        # Delete all previous annotations
+        # Ugly, but all of them would need to be updated anyways since the start/end positions are basically guaranteed to have changed
+        db.query(ArticleAnnotation).filter(ArticleAnnotation.article_id == article.id).delete()
+
+        # Create new annotations
+        for annotation in article_update.annotations:
+            author = UserCrud.get_by_username(db, annotation.author).editor
+            # Only editors can create annotations
+            if not author:
+                db.rollback()
+                raise ValueError("Annotation authors must be editors")
+            article_annotation = ArticleAnnotation(
+                id=annotation.id,
+                article_id=article.id,
+                comment=annotation.comment,
+                author_id=author.user_id,
+                start=annotation.start,
+                end=annotation.end,
+            )
+            db.add(article_annotation)
 
     # Update parent category
     if article_update.category_path != None:
@@ -326,12 +349,21 @@ def create_elasticsearch_document(article: Article, text_content: str) -> dict:
         "tags": [tag.name for tag in article.tags],
     }
 
+def create_annotation_output(db: Session, annotation: ArticleAnnotation) -> ArticleAnnotationOutput:
+    """
+    Creates an output schema for an annotation.
+    """
+    return CrudUtils.create_schema(annotation, ArticleAnnotationOutput, {
+        "author": UserCrud.create_user_output(annotation.author.user),
+    })
+
 def create_article_output(db: Session, article: Article, is_draft: bool=False) -> ArticleOutput:
     """
     Creates an output schema for an article.
     """
     category = article.category
     category_path = CategoryCrud.get_category_path(db, article.category)
+    annotations = article.annotations
     return ArticleOutput(
         category=CategoryPreview(
             id=category.id,
@@ -347,6 +379,7 @@ def create_article_output(db: Session, article: Article, is_draft: bool=False) -
         last_edit_time=article.last_edit_time,
         show_authors=article.show_authors,
         parent_category_names=CategoryCrud.get_category_breadcrumbs(db, category),
+        annotations=[create_annotation_output(db, annotation) for annotation in annotations],
         **create_article_preview(db, article).model_dump(),
     )
 

@@ -31,6 +31,24 @@ class ArticleInput(ArticleBase):
     text: Annotated[str, Field(description="Raw unformatted text transcript of the article.")]
     summary: Annotated[str, Field(description="Should be unformatted text.")]
 
+class ArticleAnnotation(BaseModel):
+    """Base schema for article editor annotations."""
+    id: int
+    comment: str
+    start: int
+    """Start position within the document."""
+
+    end: int
+    """End position within the document."""
+
+class ArticleAnnotationInput(ArticleAnnotation):
+    """Schema for creating editor-only annotations."""
+    author: str
+
+class ArticleAnnotationOutput(ArticleAnnotation):
+    """Schema for editor-only annotations on article drafts."""
+    author: UserSchema.UserOutput
+
 class ArticleUpdate(ArticleBase):
     """Schema for patching requests."""
     filename: Optional[str] = None
@@ -49,6 +67,7 @@ class ArticleUpdate(ArticleBase):
     category_path: Optional[str] = None
     summary: Optional[str] = None
     tags: Optional[list[str]] = None
+    annotations: Optional[list[ArticleAnnotationInput]] = None
 
 class ArticlePreview(ArticleBase):
     """Schema for basic article metadata, without content fields."""
@@ -78,6 +97,9 @@ class ArticleOutput(ArticlePreview):
     last_edit_time: Optional[datetime]
     parent_category_names: list[str] # Names of categories along the path
     show_authors: bool
+
+    annotations: Optional[list[ArticleAnnotationOutput]] = None
+    """Only present for authenticated editors"""
 
 class ArticleSearchResults(BaseModel):
     results: list[ArticlePreview]
