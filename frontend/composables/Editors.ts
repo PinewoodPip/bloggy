@@ -279,6 +279,27 @@ export const useArticleEditorQueries = () => {
     // Generate "summary"
     const summary = text.substring(0, MAX_SUMMARY_LENGTH)
 
+    // Extract annotations
+    const annotationsPlugin = ProseMirrorUtils.getPlugin(state.value, 'comment$')
+    const annotationsState = annotationsPlugin.getState(state.value) as CommentState
+    // @ts-ignore
+    const annotations = annotationsState.decos.find(0, state.value.doc.nodeSize)
+    const parsedAnnotations: ArticleAnnotationInput[] = []
+    for (const decoration of annotations) {
+      const annotation = decoration.type.spec
+      const to = decoration.to
+      const from = decoration.from
+      const attrs = annotation.comment
+      parsedAnnotations.push({
+        author: attrs.author,
+        id: attrs.id,
+        comment: attrs.text,
+        start: from,
+        end: to,
+      })
+    }
+
+    // Mutate the article
     console.log('Serialized document')
     console.log(markdownStr)
     articleMutation.mutate({
@@ -286,6 +307,7 @@ export const useArticleEditorQueries = () => {
       content: markdownStr.length > 0 ? markdownStr : ' ', // Backend requires the string to be non-empty.
       text: text,
       summary: summary,
+      annotations: parsedAnnotations,
     })
   }
 

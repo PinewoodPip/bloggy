@@ -29,18 +29,17 @@ const nodeViewFactory = useNodeViewFactory()
 const markViewFactory = useMarkViewFactory()
 const pluginViewFactory = usePluginViewFactory()
 const widgetViewFactory = useWidgetViewFactory()
-const getHashWidget = widgetViewFactory({
-  as: 'i',
-  component: Hashes,
-})
 const getAnnotationWidget = widgetViewFactory({
+  as: 'span',
   component: Annotation,
 })
 
 const props = defineProps<{
   initialContent: string,
+  schema: Schema,
   readonly?: boolean,
 }>()
+const schema = toRaw(props.schema) // Necessary to avoid jank with the editor re-rendering all the time
 
 const emit = defineEmits<{
   initialized: [EditorView],
@@ -50,6 +49,7 @@ const editorRef = ref<HTMLDivElement | null>(null)
 const editorView: Ref<EditorView|null> = ref(null)
 const editorState: Ref<EditorState|null> = ref(null)
 const placeholderHTML: Ref<string | null> = ref(null) // Shown by SSR
+const initialized = ref(false)
 
 defineExpose({
   editorView,
@@ -57,6 +57,7 @@ defineExpose({
 })
 
 watchEffect((onCleanup) => {
+  if (initialized.value) return
 
   const el = import.meta.client ? editorRef.value : null
   if (!el && import.meta.client) {
@@ -70,7 +71,6 @@ watchEffect((onCleanup) => {
   console.log("Article string:\n", props.initialContent)
   console.log("Markdown tokens:\n", Markdown.parse(props.initialContent, {}))
   
-  const deserializedContent = DocumentParser.parse(props.initialContent)
   const parser = CreateDocumentParser(schema)
   const deserializedContent = parser.parse(props.initialContent)
   console.log("Parsed PM document:\n", deserializedContent)
@@ -107,15 +107,20 @@ watchEffect((onCleanup) => {
             const node = $from.node()
 
             // Fetch comment plugin
-            const commentPlugin = state.plugins.find((plugin) => {
-              // @ts-ignore
-              return plugin.key === 'comment$'
-            })
+            const commentPlugin = ProseMirrorUtils.getPlugin(state, 'comment$')
             if (!commentPlugin) return
             const pluginState = commentPlugin.getState(state) as CommentState
 
+            // Determine position to place the widget at
+            let pos;
+            try {
+              pos = $from.before() // Selecting nodes at the top level of the document will cause before() to throw
+            } catch {
+              pos = from // Fallback to cursor position - fine in the root case, as it won't be in the middle of a node (so it won't displace other nodes)
+            }
+
             // Create widget
-            const widget = getAnnotationWidget($from.before() + 1, {
+            const widget = getAnnotationWidget(pos + 1, {
               side: -1,
               comments: pluginState.commentsAt(from),
             })
@@ -153,10 +158,10 @@ watchEffect((onCleanup) => {
     editorView.value = view
   }
 
+  initialized.value = true
   emit('initialized', editorView.value!)
 
   onCleanup(() => {
-    view.destroy()
     // Older versions used to re-initialize the view, but this was unnecessary and led to hot-reload issues.
     // view.destroy()
     // editorView.value = null
@@ -223,4 +228,10 @@ watchEffect((onCleanup) => {
 .ProseMirror blockquote {
   border-left: 3px solid oklch(var(--s)) !important
 }
+
+/** Highlight annotations with a background color. */
+.pm-annotation {
+  @apply bg-accent/20
+}
+
 </style>

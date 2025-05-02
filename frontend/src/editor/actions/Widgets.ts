@@ -7,10 +7,9 @@ import { toggleMark } from 'prosemirror-commands'
 import { TextSelection, type EditorState, type Transaction } from 'prosemirror-state'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import type { actionID, alertType, AnnotationAttrs, } from '../Editor'
-import { addAnnotation } from '~/composables/editor/plugins/Annotations';
 import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
-import { schema } from '../Schema'
+import { schema } from '../schemas/Article'
 import { Comment } from '~/composables/editor/plugins/Annotations'
 
 export class InsertCodeBlock extends Action {
@@ -93,11 +92,24 @@ export class SetAnnotation extends Action {
 
   override execute(state: EditorState, attrs: AnnotationAttrs): Transaction | Promise<Transaction> | null {
     const sel = state.selection
-    const commentPlugin = state.plugins.find((plugin) => {
-      // @ts-ignore
-      return plugin.key === 'comment$'
-    })!
+    const commentPlugin = ProseMirrorUtils.getPlugin(state, 'comment$')
     return state.tr.setMeta(commentPlugin, {type: "newComment", from: sel.from, to: sel.to, comment: new Comment(attrs.comment, MathUtils.randomID(), attrs.author)})
+  }
+
+  override isApplicable(state: EditorState): boolean {
+    return !state.selection.empty // Selection cannot be empty
+  }
+}
+
+/** Deletes annotations by ID. */
+export class DeleteAnnotation extends Action {
+  constructor() {
+    super('SetAnnotation')
+  }
+
+  override execute(state: EditorState, attrs: {id: integer}): Transaction | Promise<Transaction> | null {
+    const commentPlugin = ProseMirrorUtils.getPlugin(state, 'comment$')
+    return state.tr.setMeta(commentPlugin, {type: "deleteComment", comment: {id: attrs.id}}) // This event only requires the ID field
   }
 }
 

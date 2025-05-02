@@ -1,6 +1,6 @@
 <!-- Decoration for the annotations plugin. -->
 <template>
-  <UPopover class="h-0" :open="true" :popper="{ placement: 'top-end', offsetDistance: 15 }">
+  <UPopover class="select-none h-0" :open="true" :popper="{ placement: 'top-end', offsetDistance: 15 }">
     <!-- This fucking button (or rather, an "Open" default label) is hardcoded into the Nuxt UI popover element - we need to yeet it -->
     <UButton data-btn label="''" class="hidden !h-0" />
     <template #panel>
@@ -22,7 +22,7 @@
             <div class="card-actions justify-end">
               <!-- Remove annotation button -->
               <UTooltip text="Removes this annotation.">
-                <button class="btn btn-success btn-sm" @click="resolveComment">Resolve</button>
+                <button class="btn btn-success btn-sm" @click="resolveComment(comment.type.spec.comment.id)">Resolve</button>
               </UTooltip>
             </div>
           </div>
@@ -36,10 +36,12 @@
 import { useWidgetViewContext } from '@prosemirror-adapter/vue'
 
 const { spec } = useWidgetViewContext()
+const { editor } = useEditorInjects()
 const comments = spec?.comments
 
-function resolveComment() {
-  // TODO
+/** Requests to remove a comment. */
+function resolveComment(id: integer) {
+  editor.value.executeAction('DeleteAnnotation', {id: id})
 }
 
 </script>

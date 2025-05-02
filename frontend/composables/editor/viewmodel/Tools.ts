@@ -47,5 +47,9 @@ export const useToolbarCallbackItem = (item: Ref<Tools.CallbackTool>) => {
     return editorState.value && toRaw(editor.value).isToolActive(editorState.value, item.value)
   })
 
-  return { keybindLabel, isActive }
+  const isApplicable = computed(() => {
+    return item.value.isApplicable(editorState.value)
+  })
+
+  return { keybindLabel, isActive, isApplicable }
 }

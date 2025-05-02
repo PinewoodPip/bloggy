@@ -117,17 +117,7 @@ export class Editor {
 
   /** Returns whether a toolbar item is currently being used. */
   isToolActive(state: EditorState, item: Tool): boolean {
-    if (item.type === 'action') {
-      return this.getAction(item.id).isActive(state)
-    } else if (item.type === 'menu') {
-      // Menus are active if any subitem is
-      for (const subitem of (item as MenuTool).subitems) {
-        if (this.isToolActive(state, subitem)) {
-          return true
-        }
-      }
-    }
-    return false
+    return item.isActive && item.isActive(state)
   }
 
   /** Returns the keybind for an action. */

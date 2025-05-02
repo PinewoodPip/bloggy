@@ -6,6 +6,7 @@ import * as Editor from '~/src/editor/Editor'
 import * as Tools from "~/src/editor/ToolManager"
 import { RegisterActionTool, RegisterCallbackTool, RegisterMenuTool } from "./Generic"
 import * as WidgetActions from '~/src/editor/actions/Widgets'
+import type { EditorState } from 'prosemirror-state'
 
 /** Registers tools to toggle notes. */
 export const RegisterNoteTools = (editor: Editor.Editor) => {
@@ -57,14 +58,22 @@ export const RegisterFootnoteTool = (editor: Editor.Editor) => {
   })
 }
 
-/** Registers a tool to request adding an annotation. */
-export const RegisterAnnotationTool = (editor: Editor.Editor) => {
-  return RegisterCallbackTool(editor, {
-    type: 'callback',
-    id: 'annotation.request',
-    def: {
+export class RequestAnnotationTool extends Tools.CallbackTool {
+  action: Editor.IAction
+  constructor() {
+    super('annotation.request', {
       name: 'Insert Annotation',
       icon: 'material-symbols:comment',
-    }
-  })
+    })
+    this.action = new WidgetActions.SetAnnotation()
+  }
+
+  override isApplicable(state: EditorState): boolean {
+    return this.action.isApplicable(state)
+  }
+}
+
+/** Registers a tool to request adding an annotation. */
+export const RegisterAnnotationTool = (editor: Editor.Editor) => {
+  return RegisterCallbackTool(editor, new RequestAnnotationTool())
 }

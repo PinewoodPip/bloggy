@@ -37,6 +37,7 @@ export type Article = ArticlePreview & {
   show_authors: boolean,
   last_edit_time: dateISOString,
   parent_category_names: string[],
+  annotations: ArticleAnnotation[]
 }
 
 export type ArticleCreationRequest = {
@@ -46,6 +47,22 @@ export type ArticleCreationRequest = {
   content: string,
   summary: string,
   text: string,
+}
+
+export type ArticleAnnotationInput = {
+  id: integer,
+  author: string,
+  comment: string,
+  start: integer,
+  end: integer,
+}
+
+export type ArticleAnnotation = {
+  id: integer,
+  author: User,
+  comment: string,
+  start: integer,
+  end: integer,
 }
 
 export type ArticleUpdateRequest = {
@@ -67,6 +84,7 @@ export type ArticleUpdateRequest = {
   tags?: string[],
   is_draft?: boolean,
   featured_image_path?: path,
+  annotations?: ArticleAnnotationInput[],
 }
 
 export type Tag = {

@@ -1,7 +1,7 @@
 <!-- Button for displaying and executing toolbar callback and action items. -->
 <template>
   <UTooltip>
-    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" @pointerdown.prevent @click="useTool(item)" />
+    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" :disabled="!isApplicable" @pointerdown.prevent @click="useTool(item)" />
 
     <!-- Tooltip template -->
     <template #text>
@@ -17,10 +17,19 @@
 import type * as Tools from '~/src/editor/ToolManager'
 
 const { useTool } = useEditorTools()
-const { keybindLabel, isActive } = useToolbarCallbackItem(toRef(() => props.item))
+const { keybindLabel, isActive, isApplicable } = useToolbarCallbackItem(toRef(() => props.item))
 
 const props = defineProps<{
   item: Tools.CallbackTool,
 }>()
 
 </script>
+
+<style lang="css" scoped>
+
+/** Remove the dark background when the button is disabled */
+button[disabled] {
+  @apply bg-transparent
+}
+
+</style>

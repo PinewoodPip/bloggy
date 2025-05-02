@@ -16,7 +16,7 @@
 
       <!-- Document -->
       <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
-        <EditorDocument v-if="articleData" key="editorDocument" ref="document" :initial-content="initialContent" @initialized="onEditorInitialized" />
+        <EditorDocument v-if="articleData" key="editorDocument" ref="document" :initial-content="initialContent!" @initialized="onEditorInitialized" />
         <LoadingSpinner v-else />
       </div>
     </div>
@@ -34,6 +34,8 @@
 <script setup lang="ts">
 import { Node } from 'prosemirror-model'
 import type { Heading } from './Sidebar.vue'
+import type { AnnotationAttrs } from '~/src/editor/Editor'
+import { Comment } from '~/composables/editor/plugins/Annotations'
 
 /** Callbacks available to node renderers. */
 export type NodeCallbacks = {
@@ -48,6 +50,7 @@ const editorDocument = useTemplateRef('document')
 const contextMenu = useTemplateRef('contextMenu')
 const widgets = useTemplateRef('widgets')
 useEditorProvides(editor, editorDocument)
+const { editorView } = useEditorInjects()
 const editorQueries = useArticleEditorQueries()
 
 const sidebarVisible = ref(true)
@@ -106,6 +109,35 @@ function onMetadataUpdated(article: Article) {
   router.replace('/admin/editor?article=' + article.path).then(() => {
     editorQueries.articleQuery.refetch()
   })
+}
+
+/** Default states of ProseMirror plugins. */
+const initialPluginStates = computed(() => {
+  return {
+    annotations: articleData.value?.annotations,
+  }
+})
+
+/** The default editor document text. */
+const initialContent = computed(() => {
+  return articleData.value?.content
+})
+
+/** Initializes ProseMirror plugin states. */
+function onEditorInitialized() {
+  const states = initialPluginStates.value
+
+  // Set annotations
+  if (states.annotations) {
+    for (const annotation of states.annotations) {
+      const state = editorView.value.state
+      const commentPlugin = ProseMirrorUtils.getPlugin(state, 'comment$')
+      // A transaction can only set 1 plugin meta, thus we need to dispatch a transaction for each annotation.
+      let tr = state.tr
+      tr = tr.setMeta(commentPlugin, {type: "newComment", from: annotation.start, to: annotation.end, comment: new Comment(annotation.comment, annotation.id, annotation.author.username)})
+      editorView.value.dispatch(tr)
+    }
+  }
 }
 
 </script>
