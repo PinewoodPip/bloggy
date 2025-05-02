@@ -34,8 +34,26 @@
 
     <!-- Session management buttons -->
     <div class="flex gap-x-2 my-auto">
-      <MutationButton icon="i-material-symbols-save-outline" class="btn-smp btn-primary" :status="articleMutation.status.value" @click="saveDocument">Publish</MutationButton>
-      <IconButton icon="i-heroicons-archive-box-arrow-down" class="btn-smp btn-primary" @click="saveDraft">Save draft</IconButton>
+      <!-- Save button -->
+      <div class="join">
+        <!-- The actual save button -->
+        <MutationButton :icon="saveBtnMode === 'publish' ? 'i-material-symbols-save-outline' : 'i-heroicons-archive-box-arrow-down'" class="join-item btn-smp btn-primary" :status="articleMutation.status.value" @click="saveArticle">{{ saveBtnMode === 'publish' ? 'Publish' : 'Save draft' }}</MutationButton>
+        
+        <!-- Save mode dropdown -->
+        <div class="dropdown dropdown-bottom dropdown-end join-item">
+          <!-- Chevron -->
+          <div tabindex="0" role="button" class="btn-smp btn-outline btn btn-primary join-item">
+            <UIcon name="material-symbols:arrow-drop-down" />
+          </div>
+          <!-- Content -->
+          <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
+            <li @click="saveBtnMode = 'publish'"><a>Publish to site</a></li>
+            <li @click="saveBtnMode = 'draft'"><a>Save as draft</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Exit button -->
       <IconButton icon="i-heroicons-arrow-left-end-on-rectangle-solid" class="btn-smp btn-error" @click="exit">Exit</IconButton>
     </div>
   </div>
@@ -80,6 +98,7 @@ const emit = defineEmits<{
 
 const settingsMenuVisible = ref(false)
 const documentPropertiesVisible = ref(false)
+const saveBtnMode = ref('publish')
 
 /** Requests to patch the article title if it was changed. */
 function onTitleFieldFocusOut() {
@@ -93,11 +112,11 @@ function onTitleFieldFocusOut() {
   }
 }
 
-/** Saves the article as a draft. */
-function saveDraft() {
+/** Saves the article to the CMS. */
+function saveArticle() {
   // Other document data is added by the composable
  saveDocument({
-    is_draft: true
+    is_draft: saveBtnMode.value === 'draft',
   })
 }
 
