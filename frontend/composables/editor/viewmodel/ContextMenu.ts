@@ -15,13 +15,13 @@ export const useEditorContextMenu = (toolGroupID: string) => {
   function getContextMenuItems() {
     const items: Tools.Tool[][] = []
     const toolGroup = toolManager.value.getToolGroup(toolGroupID)
-    const tools = toolGroup.toolGroups
+    const tools = toolGroup.toolPalettes
 
     for (const arr of tools) {
       const groupArr: Tools.Tool[] = []
       items.push(groupArr)
       for (const toolID of arr.tools) {
-        groupArr.push(tools.value.getTool(toolID))
+        groupArr.push(toolManager.value.getTool(toolID))
       }
     }
 

@@ -8,9 +8,9 @@
 <script setup lang="ts">
 import { useMarkViewFactory, useNodeViewFactory, usePluginViewFactory, useWidgetViewFactory } from '@prosemirror-adapter/vue'
 import { EditorState, Plugin, PluginKey } from 'prosemirror-state'
+import { Schema } from 'prosemirror-model'
 import { DecorationSet, EditorView } from 'prosemirror-view'
 import { createEditorView } from './createEditorView'
-import Hashes from './node/Hashes.vue'
 import Heading from './node/Heading.vue'
 import Paragraph from './node/Paragraph.vue'
 import CodeBlock from './node/CodeBlock.vue'
@@ -20,7 +20,7 @@ import Embed from './node/Embed.vue'
 import Annotation from './decoration/Annotation.vue'
 import Underline from './mark/Underline.vue'
 import Link from './mark/Link.vue'
-import { DocumentParser, Markdown } from '~/src/editor/markdown/Parser'
+import { CreateDocumentParser, Markdown } from '~/src/editor/markdown/Parser'
 import { plugin as UnderlinePlugin } from '~/src/editor/markdown/plugins/underline'
 import markdownit from 'markdown-it'
 import type { CommentState } from '~/composables/editor/plugins/Annotations'
@@ -42,6 +42,10 @@ const props = defineProps<{
   readonly?: boolean,
 }>()
 
+const emit = defineEmits<{
+  initialized: [EditorView],
+}>();
+
 const editorRef = ref<HTMLDivElement | null>(null)
 const editorView: Ref<EditorView|null> = ref(null)
 const editorState: Ref<EditorState|null> = ref(null)
@@ -53,6 +57,7 @@ defineExpose({
 })
 
 watchEffect((onCleanup) => {
+
   const el = import.meta.client ? editorRef.value : null
   if (!el && import.meta.client) {
     return 
@@ -66,6 +71,8 @@ watchEffect((onCleanup) => {
   console.log("Markdown tokens:\n", Markdown.parse(props.initialContent, {}))
   
   const deserializedContent = DocumentParser.parse(props.initialContent)
+  const parser = CreateDocumentParser(schema)
+  const deserializedContent = parser.parse(props.initialContent)
   console.log("Parsed PM document:\n", deserializedContent)
 
   const view = createEditorView(el, deserializedContent, {
@@ -146,9 +153,14 @@ watchEffect((onCleanup) => {
     editorView.value = view
   }
 
+  emit('initialized', editorView.value!)
+
   onCleanup(() => {
     view.destroy()
-    editorView.value = null
+    // Older versions used to re-initialize the view, but this was unnecessary and led to hot-reload issues.
+    // view.destroy()
+    // editorView.value = null
+    // initialized.value = false
   })
 })
 </script>

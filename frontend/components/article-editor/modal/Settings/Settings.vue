@@ -8,13 +8,13 @@
       <!-- Keybinds -->
       <h3 class="py-2 pb-0">Toolbar</h3>
       <!-- Groups -->
-      <div v-for="group in tools.getToolGroup('toolbar').toolGroups" class="sticky">
+      <div v-for="group in tools.getToolGroup('toolbar').toolPalettes" class="sticky">
         <div class="bg-base-100 z-10 sticky top-0">
           <h4 class="font-semibold py-1 pt-3">{{ group.name }}</h4>
           <hr class="faint-hr mb-2" />
         </div>
         <div class="flexcol gap-y-2">
-          <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getItemKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="tools.isToolVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />
+          <ArticleEditorModalSettingsAction v-for="item in getGroupItems(group)" :item="item" :keybind="editor.getToolKeybind(item.id)" :canReset="!isKeybindDefault(item.id)" :is-visible-in-toolbar="tools.isToolVisible(item.id)" @rebind="onRebindRequested" @resetToDefault="resetKeybind" @toggle-visibility="setActionVisibility" />
         </div>
       </div>
     </template>

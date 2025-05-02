@@ -17,7 +17,7 @@ export class EditImageTool extends Tools.CallbackTool {
     })
   }
 
-  isApplicable(state: EditorState) {
+  override isApplicable(state: EditorState) {
     // An image must be within the selection or at the cursor.
     return ProseMirrorUtils.selectionHasNode(state, state.schema.nodes.image) != null
   }

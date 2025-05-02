@@ -39,7 +39,7 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   editor.registerAction(new SectioningActions.MakeQuote())
   toolbar.registerToolGroup({
     id: 'Sectioning',
-    toolGroups: [
+    toolPalettes: [
       {
         type: 'action',
         id: SectioningActions.MakeQuote.ID,

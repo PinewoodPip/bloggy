@@ -14,10 +14,10 @@ export interface Tool {
   def: ToolDef,
 
   /** Returns whether the item is contextually applicable to the current document state. */
-  isApplicable?: (state: EditorState) => boolean,
+  isApplicable: (state: EditorState) => boolean,
   
   /** Returns whether the item is currently being used in the document. */
-  isActive?: (state: EditorState) => boolean,
+  isActive: (state: EditorState) => boolean,
 }
 
 /** User-friendly metadata for a tool. */
@@ -38,6 +38,14 @@ export class CallbackTool implements Tool {
     this.type = 'callback'
     this.id = id
     this.def = def
+  }
+
+  isActive(state: EditorState): boolean {
+    return false
+  }
+
+  isApplicable(state: EditorState): boolean {
+    return true
   }
 }
 
@@ -77,6 +85,20 @@ export class MenuTool implements Tool {
     this.id = id
     this.def = def
   }
+
+  isActive(state: EditorState): boolean {
+    // The menu is active if any of its tools is.
+    for (const tool of this.subitems) {
+      if (tool.isActive(state)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  isApplicable(state: EditorState): boolean {
+    return true
+  }
 }
 
 /** Groups multiple tools of the same thematic purpose. */
@@ -89,7 +111,7 @@ export type ToolPalette = {
 export interface ToolGroup {
   id: string,
   /** The group's tools, intended to be organized thematically. */
-  toolGroups: ToolPalette[],
+  toolPalettes: ToolPalette[],
 }
 
 export type ItemUsedCallback = ((item: Tool) => void)

@@ -7,7 +7,7 @@ import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
 import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
-import { schema } from '../Schema'
+import { schema } from '../schemas/Article'
 
 export class SetHeading extends Action {
   private level: integer

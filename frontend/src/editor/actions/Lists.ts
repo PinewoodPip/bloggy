@@ -8,7 +8,7 @@ import type { Command, EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
 import type { ToolGroup, MenuTool } from '../ToolManager'
 import { Action } from './Action'
-import { schema } from '../Schema'
+import { schema } from '../schemas/Article'
 
 /** Toggles a list-like node based on whether the selection is currently within a list node with only 1 item. */
 function toggleList(nodeType: NodeType, state: EditorState): Command {

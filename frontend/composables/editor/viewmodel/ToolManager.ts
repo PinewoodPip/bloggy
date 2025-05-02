@@ -25,7 +25,7 @@ export const useEditorToolbarItems = () => {
   const visibleGroups = computed(() => {
     const groups: Tools.ToolPalette[] = []
     const group = toolManager.value.getToolGroup('toolbar')
-    for (const toolSet of group.toolGroups) {
+    for (const toolSet of group.toolPalettes) {
       // Check if any action in the group is visible
       const visible = getVisibleGroupItems(toolSet).length > 0
       if (visible) {

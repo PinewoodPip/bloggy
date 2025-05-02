@@ -16,7 +16,7 @@
 
       <!-- Document -->
       <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
-        <EditorDocument v-if="articleData" ref="document" :initial-content="articleData.content" />
+        <EditorDocument v-if="articleData" key="editorDocument" ref="document" :initial-content="initialContent" @initialized="onEditorInitialized" />
         <LoadingSpinner v-else />
       </div>
     </div>
@@ -33,6 +33,7 @@
 </template>
 <script setup lang="ts">
 import { Node } from 'prosemirror-model'
+import type { Heading } from './Sidebar.vue'
 
 /** Callbacks available to node renderers. */
 export type NodeCallbacks = {

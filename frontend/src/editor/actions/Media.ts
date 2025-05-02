@@ -6,7 +6,7 @@ import type { actionID, EmbedAttrs, ImageAttrs } from '../Editor'
 import type { ToolGroup, ActionTool, MenuTool, CallbackTool, Tool } from '../ToolManager'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
-import { schema } from '../Schema'
+import { schema } from '../schemas/Article'
 
 export class InsertImage extends Action {
   static ID: string = 'InsertImage'

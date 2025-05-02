@@ -12,6 +12,7 @@ export const useToolMenu = (menuGetter: () => Tools.MenuTool, onUse: (item: Tool
   const menuItems = computed(() => {
     const items = []
     for (const subitem of menu.value.subitems) {
+      // Only include tools the user set as visible
       if (tools.value.isToolVisible(subitem.id)) {
         items.push({
           label: subitem.def.name,
@@ -26,9 +27,7 @@ export const useToolMenu = (menuGetter: () => Tools.MenuTool, onUse: (item: Tool
   })
 
   const isActive = computed(() => {
-    return editorState.value && menu.value.subitems.find((subitem) => {
-      return editor.value.isItemActive(editorState.value, subitem)
-    }) !== undefined
+    return editorState.value && menu.value.isActive(editorState.value)
   })
 
   return {menuItems, isActive}
@@ -40,12 +39,12 @@ export const useToolbarCallbackItem = (item: Ref<Tools.CallbackTool>) => {
   const keybindStringifier = useKeybindStringifier()
 
   const keybindLabel = computed(() => {
-    const keybind = editor.value.getItemKeybind(item.value.id)
+    const keybind = editor.value.getToolKeybind(item.value.id)
     return keybind ? keybindStringifier.stringify(keybind) : null
   })
 
   const isActive = computed(() => {
-    return editorState.value && toRaw(editor.value).isItemActive(editorState.value, item.value)
+    return editorState.value && toRaw(editor.value).isToolActive(editorState.value, item.value)
   })
 
   return { keybindLabel, isActive }

@@ -64,8 +64,8 @@ export class Editor {
   private toolManager: ToolManager
 
   // Action keybind mappings
-  private customActionBindings: {[id: actionID]: keybind} = {}
-  private customBindingToAction: {[combo: keybind]: actionID} = {}
+  private customToolBindings: {[id: toolIdentifier]: keybind} = {}
+  private customBindingToTool: {[combo: keybind]: toolIdentifier} = {}
 
   constructor(schema: Schema, pmViewGetter: () => EditorView) {
     this.toolManager = new ToolManager()
@@ -116,13 +116,13 @@ export class Editor {
   }
 
   /** Returns whether a toolbar item is currently being used. */
-  isItemActive(state: EditorState, item: Tool): boolean {
+  isToolActive(state: EditorState, item: Tool): boolean {
     if (item.type === 'action') {
       return this.getAction(item.id).isActive(state)
     } else if (item.type === 'menu') {
       // Menus are active if any subitem is
       for (const subitem of (item as MenuTool).subitems) {
-        if (this.isItemActive(state, subitem)) {
+        if (this.isToolActive(state, subitem)) {
           return true
         }
       }
@@ -131,33 +131,33 @@ export class Editor {
   }
 
   /** Returns the keybind for an action. */
-  getItemKeybind(id: actionID): keybind | null {
-    const customKeybind = this.customActionBindings[id]
+  getToolKeybind(toolID: toolIdentifier): keybind | null {
+    const customKeybind = this.customToolBindings[toolID]
     return customKeybind ? customKeybind : null
   }
 
   /** Sets the custom keybind for an action. Use null to clear a binding. */
-  setItemKeybind(actionID: actionID, combo: keybind | null | undefined) {
+  setToolKeybind(toolID: toolIdentifier, combo: keybind | null | undefined) {
     // Clear previous binding
-    const previousBinding = this.customActionBindings[actionID]
+    const previousBinding = this.customToolBindings[toolID]
     if (previousBinding) {
-      delete this.customBindingToAction[previousBinding]
+      delete this.customBindingToTool[previousBinding]
     }
-    delete this.customActionBindings[actionID]
+    delete this.customToolBindings[toolID]
 
     // Set binding
-    if (combo && this.customBindingToAction[combo] !== actionID && this.customBindingToAction[combo]) {
-      throw "Binding is already in use by another action " + this.customBindingToAction[combo]
+    if (combo && this.customBindingToTool[combo] !== toolID && this.customBindingToTool[combo]) {
+      throw "Binding is already in use by another action " + this.customBindingToTool[combo]
     }
     if (combo) {
-      this.customBindingToAction[combo] = actionID
-      this.customActionBindings[actionID] = combo
+      this.customBindingToTool[combo] = toolID
+      this.customToolBindings[toolID] = combo
     }
   }
 
   /** Returns the action associated to a keybind. */
   getItemForKeybind(keyCombo: keybind): IAction | null {
-    const customBindingAction = this.customBindingToAction[keyCombo]
+    const customBindingAction = this.customBindingToTool[keyCombo]
     return customBindingAction !== undefined ? this.getAction(customBindingAction) : null
   }
 
@@ -191,7 +191,7 @@ export class Editor {
    */
   savePreferences(storageKey: string) {
     const saveData = {
-      keybinds: this.customActionBindings,
+      keybinds: this.customToolBindings,
       hiddenActions: [...this.toolManager.getHiddenTools().values()],
     }
     window.localStorage.setItem(storageKey, JSON.stringify(saveData))
@@ -210,7 +210,7 @@ export class Editor {
       // Apply keybinds
       for (const actionID in parsedSaveData.keybinds) {
         const keybind = parsedSaveData.keybinds[actionID]
-        this.setItemKeybind(actionID, keybind)
+        this.setToolKeybind(actionID, keybind)
       }
 
       // Apply toolbar preferences

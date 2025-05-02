@@ -48,7 +48,7 @@ export abstract class Action implements IAction {
     return ProseMirrorUtils.getNodeRange(state)
   }
 
-  /** Utility method to wrap the execution of a ProseMirror command. */
+  /** Utility method to wrap the execution of a ProseMirror command and extract its transaction. */
   getTransaction(command: Command, state: EditorState): Transaction | null {
     let transaction: Transaction | null = null
     command(state, (tr) => {

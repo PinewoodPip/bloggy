@@ -32,11 +32,11 @@ export const useEditorSettings = () => {
       if (keybind) {
         const previousAction = editor.value.getItemForKeybind(keybind)
         if (previousAction) {
-          editor.value.setItemKeybind(previousAction.id, null)
+          editor.value.setToolKeybind(previousAction.id, null)
         }
       }
       // Set new keybind
-      editor.value.setItemKeybind(item.id, keybind)
+      editor.value.setToolKeybind(item.id, keybind)
 
       // Persist settings
       editor.value.savePreferences("ArticleEditor")
@@ -45,7 +45,7 @@ export const useEditorSettings = () => {
     /** Returns whether an action's keybind is the default one. */
     isKeybindDefault(actionID: string) {
       const defaultKeybind = editor.value.getDefaultItemKeybind(actionID)
-      const currentKeybind = editor.value.getItemKeybind(actionID)
+      const currentKeybind = editor.value.getToolKeybind(actionID)
       return defaultKeybind === currentKeybind
     },
   
@@ -58,7 +58,7 @@ export const useEditorSettings = () => {
     /** Resets an item's keybind to its default. */
     resetKeybind(item: Tools.Tool) {
       const defaultKeybind = editor.value.getDefaultItemKeybind(item)
-      editor.value.setItemKeybind(item.id, defaultKeybind)
+      editor.value.setToolKeybind(item.id, defaultKeybind)
     },
   }
 }

@@ -6,7 +6,6 @@ import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
 import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
-import { schema } from '../Schema'
 
 /** Inserts text content at the cursor position. */
 export class InsertText extends Action {

@@ -14,7 +14,7 @@ import type { AxiosError } from 'axios';
 import { Markdown } from '~/src/editor/markdown/Parser'
 import * as cheerio from 'cheerio';
 import { injectLocal, provideLocal } from '@vueuse/core'
-import { schema as ArticleEditorSchema } from '~/src/editor/Schema';
+import { schema as ArticleEditorSchema } from '~/src/editor/schemas/Article';
 import * as FormattingTools from '~/src/editor/tools/Formatting';
 import * as HistoryTools from '~/src/editor/tools/History';
 import * as SectioningTools from '~/src/editor/tools/Sectioning';
@@ -69,7 +69,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Define toolbar
   toolManager.registerToolGroup({
     id: 'toolbar',
-    toolGroups: [
+    toolPalettes: [
       // History
       {
         name: 'History',
@@ -141,7 +141,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   // Define context menu
   toolManager.registerToolGroup({
     id: 'context-menu',
-    toolGroups: [
+    toolPalettes: [
       // Clipboard
       {
         name: 'Clipboard',
@@ -164,6 +164,7 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
         tools: [
           imageTools.editTool.id,
           emojiPicker.id,
+          annotation.id,
         ],
       },
     ]
@@ -175,12 +176,13 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   editor.registerAction('InsertText', new MiscActions.InsertText())
   editor.registerAction('DeleteSelection', new MiscActions.DeleteSelection())
   editor.registerAction('SetAnnotation', new WidgetActions.SetAnnotation())
+  editor.registerAction('DeleteAnnotation', new WidgetActions.DeleteAnnotation())
 
   // Set default keybinds
   for (const action of Object.values(editor.actions)) {
     const actionID = action.id
     const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
-    editor.setItemKeybind(actionID, defaultKeybind)
+    editor.setToolKeybind(actionID, defaultKeybind)
   }
 
   return editor

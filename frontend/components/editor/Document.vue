@@ -1,7 +1,7 @@
 <!-- Editor text area component, with context menu and widget modals support. -->
 <template>
   <ProsemirrorAdapterProvider>
-    <EditorProseMirrorWrapper ref="documentRef" :initial-content="initialContent" />
+    <EditorProseMirrorWrapper ref="documentRef" :initial-content="initialContent" :schema="schema" @initialized="e => emit('initialized', e)" />
   </ProsemirrorAdapterProvider>
 
   <!-- Clipboard manager -->
@@ -24,6 +24,10 @@ const schema = useEditorSchema()
 
 const props = defineProps<{
   initialContent: string,
+}>();
+
+const emit = defineEmits<{
+  initialized: [EditorView],
 }>();
 
 /** Executes an action over the current selection. */
