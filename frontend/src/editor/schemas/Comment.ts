@@ -7,11 +7,10 @@ import { schema as BasicSchema } from 'prosemirror-schema-basic'
 import { addListNodes } from "prosemirror-schema-list"
 import * as Definitions from '~/src/editor/schemas/Nodes'
 
-let nodes = addListNodes(BasicSchema.spec.nodes, 'paragraph block*', 'block')
+let nodes = BasicSchema.spec.nodes
 
 // Add nodes
 nodes = nodes.update('paragraph', Definitions.Paragraph)
-nodes = nodes.addBefore('blockquote', 'alert', Definitions.Alert)
 
 // Remove some Markdown media nodes
 nodes = nodes.remove('image')

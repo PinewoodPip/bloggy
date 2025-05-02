@@ -178,13 +178,6 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   editor.registerAction('SetAnnotation', new WidgetActions.SetAnnotation())
   editor.registerAction('DeleteAnnotation', new WidgetActions.DeleteAnnotation())
 
-  // Set default keybinds
-  for (const action of Object.values(editor.actions)) {
-    const actionID = action.id
-    const defaultKeybind = editor.getAction(actionID).getDefaultKeyCombo()
-    editor.setToolKeybind(actionID, defaultKeybind)
-  }
-
   return editor
 }
 

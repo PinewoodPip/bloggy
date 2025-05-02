@@ -15,7 +15,7 @@
 
       <!-- Content -->
       <div>
-        <SiteArticleContent :initial-content="comment.content" />
+        <SiteArticleContent :schema="CommentEditorSchema" :initial-content="comment.content" />
       </div>
 
       <!-- Reply button -->
@@ -39,6 +39,7 @@
 
 <script setup lang="ts">
 import { useMutation } from '@tanstack/vue-query';
+import { schema as CommentEditorSchema } from '~/src/editor/schemas/Comment'
 
 const user = useLoggedInUser()
 const articlePath = useArticlePath()

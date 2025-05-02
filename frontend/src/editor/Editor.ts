@@ -76,6 +76,10 @@ export class Editor {
   /** Registers an editor action. */
   registerAction(id: actionID, action: IAction) {
     this.actions[id] = action
+
+    // Set default keybind
+    const defaultKeybind = action.getDefaultKeyCombo()
+    this.setToolKeybind(id, defaultKeybind)
   }
 
   /** Returns a registered action by its ID. */

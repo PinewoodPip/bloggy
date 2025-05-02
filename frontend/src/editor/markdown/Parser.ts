@@ -46,7 +46,7 @@ function extractBlockAttributes(tok: Token, tokens: Token[], i: integer): {[key:
 
 /** Creates a parser for a schema. */
 export const CreateDocumentParser = (schema: Schema) => {
-  return new MarkdownParser(schema, md, {
+  const elements = {
     // Nodes
     blockquote: {block: "blockquote"},
     alert: {block: "alert", getAttrs: tok => {
@@ -61,10 +61,6 @@ export const CreateDocumentParser = (schema: Schema) => {
       const parts = label.split('--')
       return {index: parseInt(parts[0]), text: parts[1].replace(/_/g, ' ')} // Spaces are encoded differently
     }},
-    footnote_block: {ignore: true,},
-    footnote_reference: {ignore: true,},
-    footnote_anchor: {ignore: true, noCloseToken: true,},
-    footnote: {ignore: true,},
   
     list_item: {block: "list_item"},
     bullet_list: {block: "bullet_list", getAttrs: (_, tokens, i) => ({tight: listIsTight(tokens, i)})},
@@ -97,5 +93,29 @@ export const CreateDocumentParser = (schema: Schema) => {
       title: tok.attrGet("title") || null
     })},
     code_inline: {mark: "code", noCloseToken: true},
-  })
+  }
+
+  // Add footnotes
+  if (schema.nodes.footnote) {
+    Object.assign(elements, {
+      footnote_block: {ignore: true,},
+      footnote_reference: {ignore: true,},
+      footnote_anchor: {ignore: true, noCloseToken: true,},
+      footnote: {ignore: true,},
+    })
+  }
+
+  // Exclude elements that are not supported by the schema
+  const keysToRemove = [] // Auxiliary array to avoid mutating elements while iterating
+  for (const key in elements) {
+    const element = elements[key]
+    if ((element.block && !schema.nodes[element.block]) || (element.node && !schema.nodes[element.node]) || (element.mark && !schema.marks[element.mark])) {
+      keysToRemove.push(key)
+    }
+  }
+  for (const key of keysToRemove) {
+    delete elements[key]
+  }
+
+  return new MarkdownParser(schema, md, elements)
 }
