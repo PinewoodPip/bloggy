@@ -98,6 +98,10 @@ const { mutate: requestPost, status: postStatus } = useMutation({
   onSuccess: (comment) => {
     emit('post', comment)
     responseToast.showSuccess('Comment posted')
+
+    // Clear the editor
+    const view = editorDocument.value?.editorView
+    view?.dispatch(ProseMirrorUtils.deleteDocument(view.state))
   },
   onError: (err) => {
     responseToast.showError('Failed to post comment', err)

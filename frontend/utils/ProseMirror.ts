@@ -46,6 +46,13 @@ export const ProseMirrorUtils = {
     return tr
   },
 
+  /** Deletes all content within the document. */
+  deleteDocument(state: EditorState): Transaction {
+    let tr = state.tr
+    tr.deleteRange(0, tr.doc.content.size) // Delete all content
+    return tr
+  },
+
   /** Returns the first node in the current selection with the set attributes. */
   selectionHasNode(state: EditorState, nodeType: NodeType, attrs?: Attrs): Node | null {
     let foundNode: Node | null = null
