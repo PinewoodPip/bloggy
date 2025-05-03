@@ -6,7 +6,7 @@ import os
 @dataclass
 class AppConfig():
     """
-        Holds configuration environment values for the app.
+    Holds configuration environment values for the app.
     """
     # Security settings
     SECRET_KEY: str # JWT encryption key
@@ -33,6 +33,8 @@ class AppConfig():
     """Google Cloud app URL for OAuth."""
 
     def __init__(self):
+        OPTIONAL_ENV_VARS = {"GOOGLE_CLIENT_URL", "ES_ENABLED", "ES_URL", "ES_USERNAME", "ES_PASSWORD"}
+
         for field in fields(AppConfig): # Assign fields
             value = os.getenv(field.name)
             if value != None:
@@ -40,7 +42,7 @@ class AppConfig():
                 if field.type == int:
                     value = int(value)
                 setattr(self, field.name, value)
-            else:
+            elif field.name not in OPTIONAL_ENV_VARS: # Throw on startup if required fields are unset
                 raise ValueError("A required environment variable is unset: " + field.name)
 
 CONFIG = AppConfig()
