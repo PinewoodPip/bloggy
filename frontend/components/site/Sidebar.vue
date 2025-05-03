@@ -1,13 +1,14 @@
 <!-- Sidebar for published site pages. -->
 <template>
-  <div v-if="sidebar" class="large-content-block max-w-80">
+  <div v-if="sidebar" class="large-content-block w-[32rem]">
     <!-- Will switch from markdown to rich document after mount -->
-    <SiteArticleContent v-if="mounted" :initial-content="sidebar?.content" />
+    <SiteArticleContent v-if="mounted" :schema="ArticleEditorSchema" :initial-content="sidebar?.content" />
     <MarkdownDocument v-else :content="sidebar.content" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { schema as ArticleEditorSchema } from '~/src/editor/schemas/Article'
 import { useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
 

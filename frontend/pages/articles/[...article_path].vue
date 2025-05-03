@@ -16,7 +16,7 @@
 
           <!-- Article content -->
           <!-- Will switch from SSR view to client one once mounted -->
-          <SiteArticleContent v-if="mounted" :initial-content="article?.content" />
+          <SiteArticleContent v-if="mounted" :schema="ArticleEditorSchema" :initial-content="article?.content" />
           <MarkdownDocument v-else :content="article.content" />
 
           <hr class="faint-hr mb-2" />
@@ -72,7 +72,7 @@
 import { SiteArticleCommentList } from '#components'
 import { useQuery } from '@tanstack/vue-query'
 import type { AxiosError } from 'axios'
-import AvatarIcon from '~/components/AvatarIcon.vue'
+import { schema as ArticleEditorSchema } from '~/src/editor/schemas/Article';
 
 const articleService = useArticleService()
 const responseToast = useResponseToast()
