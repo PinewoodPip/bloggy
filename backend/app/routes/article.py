@@ -126,7 +126,7 @@ async def get_article(category_path: str, article_url: str, draft: bool=False, d
     Fetches an article by its full URL path.
     """
     # Drafts are only visible to editors and admins.
-    if draft and not current_user or current_user.reader:
+    if draft and (not current_user or current_user.reader):
         raise HTTPException(status_code=401, detail="Only editors can view drafts")
     return _get_article(db, "/" + category_path, article_url, draft)
 
