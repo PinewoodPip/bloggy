@@ -41,6 +41,7 @@
 const router = useRouter()
 const userService = useUserService()
 const { data: user, refetch: refetchUser } = useLoggedInUser()
+const siteConfig = useSiteConfig()
 const responseToast = useResponseToast()
 
 const accountEditFormVisible = ref(false)
@@ -75,7 +76,7 @@ function onUserEdited(user: User) {
 }
 
 const siteName = computed((): string => {
-  return "TODO"
+  return siteConfig.data.value?.site_name || 'Bloggy'
 })
 
 </script>
