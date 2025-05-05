@@ -20,7 +20,7 @@ async def upload_file(file_input: FileSchemas.FileInput, db: Session=Depends(get
         raise HTTPException(status_code=400, detail=str(e))
 
 @router.get("/", response_model=FileSchemas.FileTreeOutput)
-async def get_all(db: Session=Depends(get_db)):
+async def get_all(db: Session=Depends(get_db), current_user: User=Depends(get_current_user_optional)):
     """
     Gets all files as a tree structure.
     """

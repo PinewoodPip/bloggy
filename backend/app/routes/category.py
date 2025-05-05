@@ -40,7 +40,7 @@ async def get_category(category_path: str, published_only: bool=True, articles_a
             raise HTTPException(status_code=400, detail=str(e))
 
 @router.patch("/{category_path:path}", response_model=CategorySchemas.CategoryOutput)
-async def patch_category(category_path: str, category_update: CategorySchemas.CategoryUpdate, db: Session=Depends(get_db)):
+async def patch_category(category_path: str, category_update: CategorySchemas.CategoryUpdate, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
     Patches a category by its full URL path.
     """
