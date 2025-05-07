@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from core.lifespan import lifespan
 from core.config import engine
-from core.config import Base
+from core.config import Base, CONFIG
 from routes import user, category, article, file, search, site, comment
 
 # Importing models will have SQLAlchemy recognize them for creation & migration
@@ -14,7 +14,12 @@ from models.file import *
 from models.site import *
 
 # Initialize app
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(
+    lifespan=lifespan,
+    # Web documentation is intended to be disabled in production
+    docs_url="/docs" if CONFIG.API_DOCS else None,
+    redoc_url="/redoc" if CONFIG.API_DOCS else None,
+)
 
 # Set up CORS
 app.add_middleware(

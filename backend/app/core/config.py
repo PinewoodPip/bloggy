@@ -32,8 +32,11 @@ class AppConfig():
     GOOGLE_CLIENT_URL: str
     """Google Cloud app URL for OAuth."""
 
+    API_DOCS: bool = False
+    """Toggles Swagger UI at /docs"""
+
     def __init__(self):
-        OPTIONAL_ENV_VARS = {"GOOGLE_CLIENT_URL", "ES_ENABLED", "ES_URL", "ES_USERNAME", "ES_PASSWORD"}
+        OPTIONAL_ENV_VARS = {"GOOGLE_CLIENT_URL", "ES_ENABLED", "ES_URL", "ES_USERNAME", "ES_PASSWORD", "API_DOCS"}
 
         for field in fields(AppConfig): # Assign fields
             value = os.getenv(field.name)
