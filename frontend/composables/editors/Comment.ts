@@ -51,8 +51,8 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
         {
           name: 'History',
           tools: [
-            redo.id, 
             undo.id,
+            redo.id, 
           ],
         },
         // Clipboard

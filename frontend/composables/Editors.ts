@@ -74,8 +74,8 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
       {
         name: 'History',
         tools: [
-          redo.id, 
           undo.id,
+          redo.id, 
         ],
       },
       // Clipboard
