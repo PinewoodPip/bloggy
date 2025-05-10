@@ -7,7 +7,6 @@ import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
 import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
 import { Action } from './Action'
-import { schema } from '../schemas/Article'
 
 export class SetHeading extends Action {
   private level: integer
@@ -19,7 +18,7 @@ export class SetHeading extends Action {
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const headingNodeType = schema.nodes['heading']
+    const headingNodeType = state.schema.nodes['heading']
 
     // Check if any node within the selection already is a heading
     let hasSameHeading = false
@@ -36,7 +35,7 @@ export class SetHeading extends Action {
 
     // Change to paragraph if the nodes already had this heading,
     // otherwise change it to the heading type
-    const command = hasSameHeading ? setBlockType(schema.nodes['paragraph']) : setBlockType(headingNodeType, {level: this.level})
+    const command = hasSameHeading ? setBlockType(state.schema.nodes['paragraph']) : setBlockType(headingNodeType, {level: this.level})
 
     return this.getTransaction(command, state)
   }
@@ -54,7 +53,7 @@ export class InsertHorizontalRule extends Action {
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const hr = schema.nodes['horizontal_rule']
+    const hr = state.schema.nodes['horizontal_rule']
     const transaction = state.tr.replaceSelectionWith(hr.create()) // Will simply insert the node if the selection is empty
     return transaction
   }
@@ -72,7 +71,7 @@ export class MakeQuote extends Action {
   }
 
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
-    const quote = schema.nodes['blockquote']
+    const quote = state.schema.nodes['blockquote']
     const command = wrapIn(quote) // Transform selected nodes into children of a new quote node
     return this.getTransaction(command, state)
   }
