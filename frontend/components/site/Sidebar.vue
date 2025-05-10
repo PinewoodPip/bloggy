@@ -1,6 +1,6 @@
 <!-- Sidebar for published site pages. -->
 <template>
-  <div v-if="sidebar" class="large-content-block w-[32rem]">
+  <div v-if="sidebar" class="large-content-block min-w-[20rem]">
     <!-- Will switch from markdown to rich document after mount -->
     <SiteArticleContent v-if="mounted" :schema="ArticleEditorSchema" :initial-content="sidebar?.content" />
     <MarkdownDocument v-else :content="sidebar.content" />

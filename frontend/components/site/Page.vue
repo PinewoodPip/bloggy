@@ -18,7 +18,7 @@
       </div>
 
       <!-- Sidebar -->
-      <SiteSidebar />
+      <SiteSidebar v-if="showSidebar" />
     </div>
   </UContainer>
 
@@ -34,8 +34,9 @@
 
 const runtimeConfig = useRuntimeConfig()
 
-const props = defineProps<{
+const { title, showSidebar = true } = defineProps<{
   title: string,
+  showSidebar?: boolean,
 }>()
 
 const logoPath = computed(() => {
@@ -43,7 +44,7 @@ const logoPath = computed(() => {
 })
 
 useHead({
-  title: computed(() => props.title),
+  title: computed(() => title),
 })
 
 </script>

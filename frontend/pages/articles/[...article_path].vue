@@ -1,5 +1,5 @@
 <template>
-  <SitePage :title="pageTitle">
+  <SitePage :title="pageTitle" :show-sidebar="false">
     <template #content>
       <!-- Article area -->
       <div v-if="article" class="flexcol gap-y-5">
@@ -127,7 +127,7 @@ const breadcrumbs = computed(() => {
       crumbs.push({ name: categoryName, url: path ? '/categories' + path : '/' })
     }
   }
-  crumbs.push({ name: article.value?.title, url: route.fullPath }) // Add the article itself
+  crumbs.push({ name: article.value!.title, url: route.fullPath }) // Add the article itself
   return crumbs
 })
 
