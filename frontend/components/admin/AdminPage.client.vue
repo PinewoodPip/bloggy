@@ -15,7 +15,7 @@
           <p>{{ hint }}</p>
         </div>
 
-        <hr />
+        <FaintHr />
 
         <!-- Content -->
         <slot />

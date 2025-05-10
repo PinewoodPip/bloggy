@@ -12,12 +12,12 @@
       </h2>
       <SiteArticleMetadataSubtitle :article="article" :show-category="true" />
       
-      <hr class="faint-hr" />
+      <FaintHr class="faint-hr" />
 
       <!-- Summary -->
       <p class="min-h-16">{{ article.summary }}</p>
 
-      <hr class="faint-hr" />
+      <FaintHr class="faint-hr" />
 
       <!-- Tags TODO -->
       <div class="flex items-center">

@@ -19,7 +19,7 @@
           <SiteArticleContent v-if="mounted" :schema="ArticleEditorSchema" :initial-content="article?.content" />
           <MarkdownDocument v-else :content="article.content" />
 
-          <hr class="faint-hr mb-2" />
+          <FaintHr class="faint-hr mb-2" />
 
           <!-- Article footer -->
           <div class="flexcol gap-y-2">
@@ -48,7 +48,7 @@
               </div>
             </div>
 
-            <hr class="faint-hr" />
+            <FaintHr class="faint-hr" />
 
             <p>Share this article</p>
             <div class="flex gap-2 flex-wrap">

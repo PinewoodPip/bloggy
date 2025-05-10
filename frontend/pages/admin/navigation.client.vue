@@ -7,7 +7,7 @@
       <IconButton class="btn-primary btn-md" icon="material-symbols:upload" @click="onNewNodeRequested">Add item</IconButton>
     </div>
 
-    <hr/>
+    <FaintHr/>
 
     <!-- Navigation tree -->
     <AdminTreeItem v-for="node in schema.root_nodes" :item="node">
@@ -27,7 +27,7 @@
       </template>
     </AdminTreeItem>
 
-    <hr class="my-2" />
+    <FaintHr class="my-2" />
 
     <!-- Save button -->
     <MutationButton class="max-w-lg mx-auto" icon="material-symbols:save" :status="patchStatus" @click="applyChanges">Save</MutationButton>

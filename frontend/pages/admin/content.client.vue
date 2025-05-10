@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    <hr class="mb-2"/>
+    <FaintHr class="mb-2"/>
 
     <!-- Content tree -->
     <div class="flex-grow overflow-x-auto">

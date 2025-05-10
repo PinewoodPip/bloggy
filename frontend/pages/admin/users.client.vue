@@ -9,7 +9,7 @@
       <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
     </div>
 
-    <hr class="mb-2"/>
+    <FaintHr class="mb-2"/>
 
     <!-- Users list -->
     <div class="flex-grow overflow-x-auto">

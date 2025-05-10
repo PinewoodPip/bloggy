@@ -14,12 +14,12 @@
       <!-- Author and date -->
       <SiteArticleMetadataSubtitle :article="article" :show-category="false" /> <!-- Showing category would be too verbose -->
 
-      <hr class="faint-hr" />
+      <FaintHr class="faint-hr" />
 
       <!-- Summary -->
       <p class="min-h-16">{{ article.summary }}</p>
       
-      <hr class="faint-hr" />
+      <FaintHr class="faint-hr" />
 
       <!-- Tags -->
       <div class="card-actions items-center justify-end">

@@ -4,7 +4,7 @@
     <!-- Toolbar -->
     <SimpleEditorToolbar v-if="editorState" />
 
-    <hr class="border-base-300 mt-1" />
+    <FaintHr class="border-base-300 mt-1" />
 
     <!-- Document -->
     <div @contextmenu.prevent="contextMenu?.open()">

@@ -28,7 +28,7 @@
         <p>No articles found.</p>
       </li>
 
-      <hr v-if="searchStatus === 'success'" class="faint-hr my-2" />
+      <FaintHr v-if="searchStatus === 'success'" class="faint-hr my-2" />
       
       <!-- "All results" link -->
       <li v-if="searchStatus === 'success'">
