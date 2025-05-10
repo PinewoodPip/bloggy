@@ -12,7 +12,7 @@ import type { EditorView } from 'prosemirror-view'
 export type actionID = string
 /** In the format "{modifier}_{key}" */
 export type keybind = string
-export type alertType = 'note' | 'tip' | 'important' | 'caution' | 'warning'
+export type alertType = 'note' | 'tip' | 'important' | 'warning'
 export type alignmentType = 'left' | 'right' | 'center' | 'justify'
 export type AlertAttrs = {type: alertType}
 export type LinkAttrs = {href: string, title?: string}

@@ -78,7 +78,7 @@ export class ToggleNodeWithAttrs extends Action {
       let tr = state.tr
       const cursor = tr.selection
       const nodeStart = cursor.$from.blockRange(cursor.$to)!
-      tr.wrap(nodeStart, [{type: nodeType}])
+      tr.wrap(nodeStart, [{type: nodeType, attrs: attrs}])
       return tr
     }
   }

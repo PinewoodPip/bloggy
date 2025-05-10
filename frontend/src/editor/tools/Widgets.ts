@@ -8,6 +8,14 @@ import { RegisterActionTool, RegisterCallbackTool, RegisterMenuTool } from "./Ge
 import * as WidgetActions from '~/src/editor/actions/Widgets'
 import type { EditorState } from 'prosemirror-state'
 
+const NOTE_ICONS = {
+  note: 'material-symbols:lightbulb-2-outline',
+  tip: 'material-symbols:tips-and-updates',
+  important: 'material-symbols:error',
+  // caution: 'material-symbols:lightbulb-2-outline', // Removed; was unnecessary.
+  warning: 'material-symbols:warning-rounded',
+}
+
 /** Registers tools to toggle notes. */
 export const RegisterNoteTools = (editor: Editor.Editor) => {
   // Create actions
@@ -18,14 +26,15 @@ export const RegisterNoteTools = (editor: Editor.Editor) => {
     new WidgetActions.ToggleNodeWithAttrs('alert.insert.note', node, {type: 'note'}),
     new WidgetActions.ToggleNodeWithAttrs('alert.insert.tip', node, {type: 'tip'}),
     new WidgetActions.ToggleNodeWithAttrs('alert.insert.important', node, {type: 'important'}),
-    new WidgetActions.ToggleNodeWithAttrs('alert.insert.caution', node, {type: 'caution'}),
+    // new WidgetActions.ToggleNodeWithAttrs('alert.insert.caution', node, {type: 'caution'}), // Removed; was unnecessary.
     new WidgetActions.ToggleNodeWithAttrs('alert.insert.warning', node, {type: 'warning'}),
   ]
   for (const action of _alertActions) {
+    const noteType = (action.attrs as Editor.AlertAttrs).type
     tools.push(RegisterActionTool(editor,
       action, {
-        name: `Toggle ${(action.attrs as Editor.AlertAttrs).type} note`,
-        icon: 'material-symbols:lightbulb-2-outline', // TODO different icon per type
+        name: noteType === 'note' ? 'Toggle note' : `Toggle ${noteType} note`, // Avoid double "note" string
+        icon: NOTE_ICONS[noteType],
       })
     )
   }

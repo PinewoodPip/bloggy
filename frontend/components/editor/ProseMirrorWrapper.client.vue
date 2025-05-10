@@ -188,7 +188,26 @@ watchEffect((onCleanup) => {
 
 /* Alerts */
 .markdown-alert {
-  @apply bg-base-300 shadow-md
+  position: relative;
+  @apply bg-base-300 pr-4 shadow-md
+}
+.markdown-alert > div:first-child::before {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+/* Add alert icons */
+.markdown-alert-note > div:first-child::before {
+  content: url("https://api.iconify.design/material-symbols:lightbulb-2-outline.svg");
+}
+.markdown-alert-tip > div:first-child::before {
+  content: url("https://api.iconify.design/material-symbols:tips-and-updates.svg");
+}
+.markdown-alert-important > div:first-child::before {
+  content: url("https://api.iconify.design/material-symbols:error.svg");
+}
+.markdown-alert-warning > div:first-child::before {
+  content: url("https://api.iconify.design/material-symbols:warning-rounded.svg");
 }
 
 /* Bullet list items */
