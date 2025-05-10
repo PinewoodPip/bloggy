@@ -24,6 +24,10 @@
 
   <!-- Push footer to bottom of viewport -->
   <VerticalFill />
+
+  <!-- TODO footer -->
+  <!-- Temporary filler to add margin at bottom -->
+  <div class="my-5" />
 </template>
 
 <script setup lang="ts">
