@@ -15,7 +15,9 @@
           <!-- Path -->
           <span class="flex items-center">
             <UIcon name="i-material-symbols-link" class="mr-2" />
-            <code class="text-base-content/80">{{ article?.path }}</code>
+            <RouterLink :to="publishedArticlePath" class="hover:link link-neutral">
+              <code class="text-base-content/80">{{ article?.path }}</code>
+            </RouterLink>
           </span>
         </span>
       </div>
@@ -137,6 +139,11 @@ function exit() {
 function onMetadataUpdated(article: Article) {
   emit('metadataUpdated', article)
 }
+
+const publishedArticlePath = computed(() => {
+  const path = props.article?.path
+  return path ? CMSUtils.resolveArticlePath(path) : ''
+})
 
 // Re-initialize fields when article is updated
 watchEffect(() => {
