@@ -9,7 +9,8 @@
     <SiteSearchBar />
 
     <!-- Login button -->
-    <SiteGoogleLoginButton />
+    <!-- At the moment unnecessary here; re-add once user accounts can do more than just post comments -->
+    <!-- <SiteGoogleLoginButton /> -->
   </nav>
 </template>
 

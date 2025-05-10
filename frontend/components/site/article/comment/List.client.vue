@@ -1,21 +1,38 @@
 <!-- Container for comments of an article. -->
 <template>
-  <div v-if="commentsStatus === 'success'" class="large-content-block" ref="commentsTop">
-    <!-- Counter -->
-    <h2>{{ commentsCount }} comments</h2>
+  <div>
+    <h1 class="ml-1 my-3">Comments</h1>
+    <div class="large-content-block">
+      <div v-if="commentsStatus === 'success'" ref="commentsTop">
+        <!-- Comment box -->
+        <div>
+          <h2 class="mb-2">Post a comment</h2>
+          <p v-if="!isEditor">Comments are anonymous; your name will not be displayed.</p>
 
-    <!-- Comment editor box -->
-    <SiteArticleCommentEditor v-if="canComment" ref="postBox" :parent-comment="replyComment" @post="onCommentPosted" @cancel-reply="onReplyCancelled" />
-    <p v-else> <!-- TODO link -->
-      Log-in to post comments.
-    </p>
+          <!-- Comment editor box -->
+          <SiteArticleCommentEditor v-if="canComment" ref="postBox" :parent-comment="replyComment" @post="onCommentPosted" @cancel-reply="onReplyCancelled" />
+          <div v-else>
+            <!-- Login prompt -->
+            <div class="flexcol gap-y-2">
+              <p>Log-in to post comments.</p>
+              <SiteGoogleLoginButton />
+            </div>
+          </div>
+        </div>
 
-    <!-- Comments -->
-    <div class="flexcol mt-3 gap-y-3">
-      <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" :key="comment.id" @delete="onCommentDeleted" @reply="onReplyRequested" />
+        <FaintHr class="my-3" />
+
+        <!-- Comments -->
+        <div class="flexcol mt-3 gap-y-3">
+          <!-- Counter -->
+          <h2>{{ commentsCount }} comments</h2>
+
+          <SiteArticleComment v-for="comment in articleComments?.comments" :comment="comment" :key="comment.id" @delete="onCommentDeleted" @reply="onReplyRequested" />
+        </div>
+      </div>
+      <LoadingSpinner v-else />
     </div>
   </div>
-  <LoadingSpinner v-else />
 </template>
 
 <script setup lang="ts">
@@ -24,6 +41,7 @@ import type { AxiosError } from 'axios'
 
 const commentService = useCommentService()
 const user = useLoggedInUser()
+const userService = useUserService()
 const responseToast = useResponseToast()
 const router = useRouter()
 const route = useRoute()
@@ -81,6 +99,10 @@ function addReplies(arr: ArticleComment[], comment: ArticleComment) {
     addReplies(arr, reply)
   }
 }
+
+const isEditor = computed(() => {
+  return user.data.value && userService.isEditor(user.data.value)
+})
 
 /** Query for fetching comments */
 const { data: articleComments, status: commentsStatus, refetch: refetchComments } = useQuery({

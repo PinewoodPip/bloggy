@@ -1,6 +1,6 @@
 <!-- A minimal editor setup. -->
 <template>
-  <div class="border border-base-300 rounded-md p-1">
+  <div class="bg-base-100 border border-base-300 rounded-md p-1">
     <!-- Toolbar -->
     <SimpleEditorToolbar v-if="editorState" />
 
