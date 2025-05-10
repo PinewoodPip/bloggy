@@ -3,14 +3,14 @@
   Highlighted based on current page.
 -->
 <template>
-  <li class="min-w-full justify-start">
-    <RouterLink :class="buttonHighlightClass(page)" :to="'/admin/' + page">
+  <li class="min-w-full justify-start" :class="{ 'disabled': props.disabled }">
+    <component :is="disabled ? 'a' : 'router-link'" :class="buttonHighlightClass(page)" :to="'/admin/' + page">
       <!-- Icon -->
       <UIcon :name="icon"></UIcon>
 
       <!-- Button label -->
       <slot/>
-    </RouterLink>
+    </component>
   </li>
 </template>
 
@@ -20,6 +20,7 @@ const route = useRoute()
 const props = defineProps<{
   page: string,
   icon: string,
+  disabled?: boolean,
 }>()
 
 function isCurrentPage(page: string): boolean {

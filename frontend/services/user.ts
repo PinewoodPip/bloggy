@@ -147,6 +147,11 @@ class UserService extends Service {
     return user.role === 'editor'
   }
 
+  /** Returns whether the user is an admin. */
+  isAdmin(user: User): boolean {
+    return user.role === 'admin'
+  }
+
   /**
    * Extracts the payload from a JWT token.
    * Source: https://stackoverflow.com/a/38552302

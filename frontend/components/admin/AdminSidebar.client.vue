@@ -2,19 +2,21 @@
   <div class="large-content-block flexcol gap-y-1 max-w-sm h-full">    
     <h1>{{ siteName }} control panel</h1>
 
+    <FaintHr />
+
     <!-- Section links -->
     <div class="flexcol menu menu-bg-base-200 gap-y-1 p-0 overflow-y-auto">
       <AdminSidebarButton icon="i-heroicons-book-open" page="content">Content</AdminSidebarButton>
       <AdminSidebarButton icon="i-heroicons-user" page="users">Users</AdminSidebarButton>
       <AdminSidebarButton icon="material-symbols:image-outline" page="files">Files</AdminSidebarButton>
-      <AdminSidebarButton icon="i-heroicons-calendar" page="events">Events</AdminSidebarButton>
-      <AdminSidebarButton icon="material-symbols:assistant-navigation-outline" page="navigation">Navigation</AdminSidebarButton>
-      <AdminSidebarButton icon="i-heroicons-cog-6-tooth" page="config">Configuration</AdminSidebarButton>
+      <AdminSidebarButton icon="i-heroicons-calendar" page="events" :disabled="true">Events</AdminSidebarButton>
+      <AdminSidebarButton icon="material-symbols:assistant-navigation-outline" page="navigation" :disabled="!isAdmin">Navigation</AdminSidebarButton>
+      <AdminSidebarButton icon="i-heroicons-cog-6-tooth" page="config" :disabled="!isAdmin">Configuration</AdminSidebarButton>
     </div>
 
     <VerticalFill/>
 
-    <hr/>
+    <FaintHr/>
 
     <!-- User info -->
     <div class="flex px-2 pt-2"> <!-- No bottom padding as the sidebar already has enough -->
@@ -77,6 +79,10 @@ function onUserEdited(user: User) {
 
 const siteName = computed((): string => {
   return siteConfig.data.value?.site_name || 'Bloggy'
+})
+
+const isAdmin = computed((): boolean => {
+  return user.value ? userService.isAdmin(user.value) : false
 })
 
 </script>
