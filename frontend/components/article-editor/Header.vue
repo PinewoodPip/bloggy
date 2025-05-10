@@ -37,7 +37,7 @@
       <!-- Save button -->
       <div class="join">
         <!-- The actual save button -->
-        <MutationButton :icon="saveBtnMode === 'publish' ? 'i-material-symbols-save-outline' : 'i-heroicons-archive-box-arrow-down'" class="join-item btn-smp btn-primary" :status="articleMutation.status.value" @click="saveArticle">{{ saveBtnMode === 'publish' ? 'Publish' : 'Save draft' }}</MutationButton>
+        <MutationButton :icon="saveBtnMode === 'publish' ? 'i-material-symbols-save-outline' : 'i-heroicons-archive-box-arrow-down'" class="join-item btn-smp btn-primary" :status="articleMutation.status.value" @click="saveArticle()">{{ saveBtnMode === 'publish' ? 'Publish' : 'Save draft' }}</MutationButton>
         
         <!-- Save mode dropdown -->
         <div class="dropdown dropdown-bottom dropdown-end join-item">
@@ -72,6 +72,7 @@ import { ArticleEditorModalSettings } from '#components'
 import type { Reactive } from 'vue'
 
 const router = useRouter()
+const articleService = useArticleService()
 const { articleMutation, saveDocument, validateMetadata, articleQuery } = useArticleEditorQueries()
 const { itemGroup: menuItemGroup } = useArticleEditorMainMenu()
 const titleField = useTemplateRef('titleField')
@@ -83,12 +84,6 @@ const props = defineProps<{
 
 const articlePatchData: Reactive<ArticleUpdateRequest> = reactive({
   title: '',
-})
-watchEffect(() => {
-  if (props.article) {
-    // Update title
-    articlePatchData.title = props.article.title
-  }
 })
 
 const emit = defineEmits<{
@@ -113,10 +108,10 @@ function onTitleFieldFocusOut() {
 }
 
 /** Saves the article to the CMS. */
-function saveArticle() {
+function saveArticle(isDraft?: boolean) {
   // Other document data is added by the composable
  saveDocument({
-    is_draft: saveBtnMode.value === 'draft',
+    is_draft: isDraft ?? saveBtnMode.value === 'draft',
   })
 }
 
@@ -135,13 +130,24 @@ function editDocumentProperties() {
 
 /** Saves the document as a draft and returns to the admin panel. */
 function exit() {
-  saveDraft()
+  saveArticle(true) // Save draft first
   router.push('/admin/content')
 }
 
 function onMetadataUpdated(article: Article) {
   emit('metadataUpdated', article)
 }
+
+// Re-initialize fields when article is updated
+watchEffect(() => {
+  if (props.article) {
+    // Update title
+    articlePatchData.title = props.article.title
+
+    // Set default save mode based on article publishing state
+    saveBtnMode.value = articleService.isPublished(props.article) ? 'draft' : 'publish'
+  }
+})
 
 // Handle item events
 useEditorToolCallback((item) => {
@@ -150,7 +156,7 @@ useEditorToolCallback((item) => {
       saveDocument({}) // Document data is added by the composable
       break
     case 'Document.File.SaveDraft':
-      saveDraft()
+      saveArticle(true)
       break
     case 'Document.Properties':
       editDocumentProperties()

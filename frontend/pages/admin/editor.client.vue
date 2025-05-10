@@ -1,4 +1,4 @@
 <!-- Article editor page -->
 <template>
-  <ArticleEditor />
+  <ArticleEditor class="mt-2" />
 </template>

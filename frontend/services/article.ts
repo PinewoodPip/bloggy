@@ -125,6 +125,11 @@ class ArticleService extends Service {
   async getAllTags(): Promise<Tags> {
     return (await this.get('/articles/tags')).data
   }
+
+  /** Returns whether an article is published and visible. */
+  isPublished(article: Article): boolean {
+    return article.publish_time !== undefined && article.is_visible
+  }
 }
 
 export default ArticleService
