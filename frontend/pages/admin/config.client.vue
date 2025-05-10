@@ -19,23 +19,25 @@
       </div>
     </div>
 
-    <hr class="my-2" />
+    <FaintHr class="my-2" />
 
     <!-- Settings -->
-    <div v-if="configStatus === 'success'" class="flex-grow overflow-x-auto">
+    <div v-if="configStatus === 'success'" class="flex-grow">
       <!-- Theming -->
       <FormGroupMultiselect v-model="configUpdate.theme" :options="themes" :multiple="false" label="Theme" help="Determines the site's color scheme." :show-labels="true" :searchable="true" placeholder="Select theme" aria-label="select theme" @update:model-value="onThemeChanged" />
+
+      <FaintHr class="my-2" />
 
       <!-- Social networks -->
       <h2>Social Media Sharing</h2>
       <p>Select the social media networks that sharing options will be available for in article pages.</p>
       <div class="flexcol">
-        <FormGroupCheckbox v-for="network in config?.social_networks" v-model="enabledNetworks[network.id]" :icon="NETWORK_ICONS[network.id] || 'material-symbols:question-mark'" :label="network.name" />
+        <FormGroupCheckbox v-for="network in sortedNetworks" v-model="enabledNetworks[network.id]" :icon="NETWORK_ICONS[network.id] || 'material-symbols:question-mark'" :label="network.name" />
       </div>
     </div>
     <LoadingSpinner v-else />
 
-    <hr class="my-2" />
+    <FaintHr class="my-2" />
 
     <MutationButton class="max-w-lg mx-auto" icon="material-symbols:save" :status="patchStatus" @click="applyChanges">Save</MutationButton>
   </AdminPage>
@@ -95,6 +97,12 @@ function onThemeChanged() {
     colorMode.preference = configUpdate.theme
   }
 }
+
+/** Social networks to display, sorted alphabetically. */
+const sortedNetworks = computed(() => {
+  const networks = config.value?.social_networks || {}
+  return Object.values(networks).sort((a, b) => a.name.localeCompare(b.name))
+})
 
 /** Query for updating the config */
 const { mutate: requestPatch, status: patchStatus } = useMutation({
