@@ -9,9 +9,6 @@ COPY ./app /app
 # conftest.py expects a separate env file
 COPY ./.docker.env /.test.env
 
-# Wait to ensure the DB container has enough time to start up
-CMD ["sleep", "5"]
-
 # Run app
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
