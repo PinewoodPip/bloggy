@@ -16,7 +16,7 @@ const nodes = BasicSchema.spec.nodes
 const codeBlock = nodes.get('code_block')
 codeBlock!.attrs = {
   'language': {
-    default: 'javascript',
+    default: '',
   }
 }
 export const CodeBlock = codeBlock

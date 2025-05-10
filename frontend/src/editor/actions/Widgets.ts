@@ -22,7 +22,7 @@ export class InsertCodeBlock extends Action {
   execute(state: EditorState): Transaction | Promise<Transaction> | null {
     const codeBlockNode = schema.nodes['code_block']
     const paragraphNode = schema.nodes['paragraph']
-    const command = this.selectionHasNode(state, codeBlockNode) ? setBlockType(paragraphNode) : setBlockType(codeBlockNode, {language: 'javascript'})
+    const command = this.selectionHasNode(state, codeBlockNode) ? setBlockType(paragraphNode) : setBlockType(codeBlockNode, {language: ''})
     return this.getTransaction(command, state)
   }
 }
