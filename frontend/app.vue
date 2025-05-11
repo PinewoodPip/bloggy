@@ -22,6 +22,13 @@ onNuxtReady(() => {
   }
 })
 
+// Set page language attribute for assistive technologies
+useHead({
+  htmlAttrs: {
+    lang: 'en', // TODO make reactive once i18n is added
+  },
+})
+
 // Set favicon
 onMounted(() => {
   favicon.value = runtimeConfig.public.apiUrl + 'site/favicon'
