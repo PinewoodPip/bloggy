@@ -25,7 +25,7 @@
           <template #label="{ item: childItem }">
             <!-- Will uncondense on hover -->
             <div v-if="childItem.authors" class="avatar-group hover:space-x-0 -space-x-3">
-              <UTooltip v-for="author in childItem.authors" :key="author.id" :text="`Authored by ${author.display_name}`">
+              <UTooltip v-for="author in childItem.authors" :key="author.id" :text="`Written by ${author.display_name}`">
                 <UserAvatar :user="author" class="size-8" />
               </UTooltip>
             </div>

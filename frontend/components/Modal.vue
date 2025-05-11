@@ -2,7 +2,7 @@
 <template>
   <div class="large-modal relative">
     <!-- Header -->
-    <div class="flex sticky top-0 content-center bg-white border-b border-b-neutral/50 z-10 pb-2">
+    <div class="flex sticky top-0 content-center bg-transparent border-b border-b-neutral/50 z-10 pb-2">
       <slot name="headerTitle"/>
 
       <HorizontalFill/>
