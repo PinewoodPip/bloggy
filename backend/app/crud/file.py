@@ -84,7 +84,7 @@ def create_file_output(db: Session, file: File) -> FileOutput:
         "uploader": create_user_output(file.uploader),
     })
 
-def get_by_path(db: Session, path: str) -> User:
+def get_by_path(db: Session, path: str) -> File:
     """
     Returns a file by its path.
     """
