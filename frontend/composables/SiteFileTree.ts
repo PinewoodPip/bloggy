@@ -60,6 +60,9 @@ export const useSiteFileTree = () => {
       }
       return null
     },
+    isSelected(node: TreeNode) {
+      return false
+    },
     
     /** Returns whether the extension of a file is of a common image kind. */
     isImageFile(node: SiteFile) {

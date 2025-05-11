@@ -48,6 +48,9 @@ export const useContentTreeGetters = () => {
     canDeleteLeaf() {
       return true
     },
+    isSelected(node: ContentTreeNode) {
+      return false
+    }
   }
 }
 

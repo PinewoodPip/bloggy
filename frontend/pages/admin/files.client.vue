@@ -8,7 +8,7 @@
       <IconButton class="btn-primary btn-md" icon="material-symbols:upload" @click="onUploadFileRequested">Upload file</IconButton>
     </div>
 
-    <FaintHr/>
+    <FaintHr class="mb-2"/>
 
     <!-- Content tree -->
     <div class="flex-grow overflow-x-auto">

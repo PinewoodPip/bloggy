@@ -1,7 +1,7 @@
 <template>
-  <div class="flexcol select-none">
+  <div class="flexcol" tabindex="1" @keydown.enter="onClick">
     <!-- The item itself; toggles children visibility on click -->
-    <div class="group flex items-center hover:bg-secondary/50 rounded-btn cursor-pointer p-1" @click="onClick">
+    <div class="group flex items-center active:bg-secondary/80 rounded-btn cursor-pointer p-1" :class="extraContainerClasses" @click="onClick">
       <div class="flex gap-x-2">
         <!-- Folder icon indicates open/collapsed state. Leaf items always show as open -->
         <UIcon class="size-6" :name="icon" />
@@ -68,6 +68,7 @@ export type TreeItemGetters<Node, Leaf> = {
   canEditLeaf: (leaf: Leaf) => boolean,
   canDeleteNode: (node: Node) => boolean,
   canDeleteLeaf: (leaf: Leaf) => boolean,
+  isSelected?: (node: Node | Leaf) => boolean,
   /** Allows customizing the tooltip element by the name of the item. */
   getTooltipComponent?: (node: Node | Leaf) => DynamicComponentDef | null,
   leafIcon: string,
@@ -144,6 +145,15 @@ const canEdit = computed(() => {
 
 const hasChildren = computed(() => {
   return childNodes.value.length > 0 || leafs.value.length > 0
+})
+
+/** Applies hover classes when the element is marked as selected as well. */
+const extraContainerClasses = computed(() => {
+  const isSelected = getters.isSelected?.(props.item)
+  return {
+    'hover:bg-secondary/50': !isSelected,
+    'bg-secondary/50': isSelected,
+  }
 })
 
 </script>

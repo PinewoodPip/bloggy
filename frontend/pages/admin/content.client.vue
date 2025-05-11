@@ -34,16 +34,16 @@
           <!-- Buttons -->
           <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
             <!-- Create node button -->
-            <UTooltip v-if="canCreateNode" :text="'Create folder' +  childItem.id">
+            <UTooltip v-if="canCreateNode" :text="'Create folder' +  childItem.id" tabindex="2">
               <IconButton class="btn-sm btn-secondary" icon="material-symbols:create-new-folder" @click.stop="onCategoryCreateChildRequested(childItem)" />
             </UTooltip>
             <!-- Create leaf button -->
             <UTooltip v-if="canCreateLeaf" :text="canCreateArticles ? 'Create article' : 'Only editor accounts can create articles.'">
-              <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" @click.stop="onArticleCreateRequested(childItem)" :disabled="!canCreateArticles" />
+              <IconButton class="btn-sm btn-secondary" icon="material-symbols:add-notes" tabindex="2" @click.stop="onArticleCreateRequested(childItem)" :disabled="!canCreateArticles" />
             </UTooltip>
             <!-- Edit button -->
             <UTooltip v-if="canEdit && childItem.path != '/'" text="Edit"> <!-- Don't show edit button for root category -->
-              <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onNodeEditRequested(childItem)" />
+              <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" tabindex="2" @click.stop="onNodeEditRequested(childItem)" />
             </UTooltip>
           </template>
         </AdminTreeItem>

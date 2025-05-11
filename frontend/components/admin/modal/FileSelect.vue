@@ -24,6 +24,9 @@ const getters = useSiteFileTree()
 getters.canEditLeaf = () => false
 getters.canCreateLeaf = () => false
 getters.canCollapse = false
+getters.isSelected = (node: SiteFileTree | SiteFile) => {
+  return selectedFilePath.value === node.path
+}
 provide<TreeItemGetters<SiteFileTree, SiteFile>>('siteFileTree', getters)
 
 const emit = defineEmits<{

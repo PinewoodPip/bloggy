@@ -28,6 +28,9 @@ const getters = useContentTreeGetters()
 getters.canEditLeaf = () => false
 getters.canCreateLeaf = () => false
 getters.canCollapse = false
+getters.isSelected = (node: Category | ArticlePreview) => {
+  return selectedFilePath.value === node.path
+}
 provide<TreeItemGetters<Category, ArticlePreview>>('siteFileTree', getters)
 
 const emit = defineEmits<{
