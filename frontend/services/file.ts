@@ -54,10 +54,16 @@ class FileService extends Service {
     return response.data
   }
 
-  /** Fetches a file by its path; expects a leading slash. */
-  async getFile(path: path): Promise<SiteFile> {
-    const response = await this.get('/files' + path)
+  /** Fetches a file's metadata by its path; expects a leading slash. */
+  async getFileMetadata(path: path): Promise<SiteFile> {
+    const response = await this.get('/files' + path + '/metadata')
     return response.data
+  }
+
+  /** Returns the contents of a file. */
+  async getFileContent(path: path): Promise<any> {
+    const response = await this.get('/files' + path)
+    return response
   }
   
   /** Returns all files as a folder tree. */

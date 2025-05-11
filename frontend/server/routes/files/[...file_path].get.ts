@@ -15,9 +15,9 @@ export default defineEventHandler(async (event) => {
 
   // Fetch file and decode response
   try {
-    const file = await fileService.getFile('/' + path)
+    const file = await fileService.getFileMetadata('/' + path)
 
-    // Read extension and convert to a commmon HTTP application type ID
+    // Read extension and convert to a common HTTP application type ID
     let extension = file.filename.split('.')[1]
     extension = EXTENSION_ALIASES[extension] || extension
 
