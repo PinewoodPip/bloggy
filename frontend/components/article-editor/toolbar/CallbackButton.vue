@@ -17,7 +17,7 @@
 import type * as Tools from '~/src/editor/ToolManager'
 
 const { useTool } = useEditorTools()
-const { keybindLabel, isActive, isApplicable } = useToolbarCallbackItem(toRef(() => props.item))
+const { keybindLabel, isActive, isApplicable } = useEditorTool(toRef(() => props.item))
 
 const props = defineProps<{
   item: Tools.CallbackTool,

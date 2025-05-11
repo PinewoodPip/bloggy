@@ -10,7 +10,7 @@ export default defineNuxtConfig({
   },
   imports: {
     // Auto-import API response/request types from service classes
-    dirs: ['services', 'composables/editors', 'composables/editor/plugins', 'composables/editor/viewmodel']
+    dirs: ['services', 'composables/editors', 'composables/editor', 'composables/editor/plugins', 'composables/editor/viewmodel']
   },
   build: { transpile: ['emoji-mart-vue-fast'] }, // Necessary due to the way this component is imported
   // Expose env variables to vue components and compasables

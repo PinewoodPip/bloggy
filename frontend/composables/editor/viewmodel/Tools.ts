@@ -4,7 +4,7 @@
 import type * as Tools from '~/src/editor/ToolManager'
 
 /** Viewmodel for a toolbar ActionMenu item. */
-export const useToolMenu = (menuGetter: () => Tools.MenuTool, onUse: (item: Tools.Tool) => void) => {
+export const useMenuTool = (menuGetter: () => Tools.MenuTool, onUse: (item: Tools.Tool) => void) => {
   const { editor, editorState, tools } = useEditorInjects()
   const menu = computed(() => menuGetter())
 
@@ -34,7 +34,7 @@ export const useToolMenu = (menuGetter: () => Tools.MenuTool, onUse: (item: Tool
 }
 
 /** Viewmodel for a toolbar Callback item. */
-export const useToolbarCallbackItem = (item: Ref<Tools.CallbackTool>) => {
+export const useEditorTool = (item: Ref<Tools.CallbackTool>) => {
   const { editor, editorState } = useEditorInjects()
   const keybindStringifier = useKeybindStringifier()
 
