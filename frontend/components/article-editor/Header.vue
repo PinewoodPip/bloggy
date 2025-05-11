@@ -44,7 +44,7 @@
         <!-- Save mode dropdown -->
         <div class="dropdown dropdown-bottom dropdown-end join-item">
           <!-- Chevron -->
-          <div tabindex="0" role="button" class="btn-smp btn-outline btn btn-primary join-item">
+          <div tabindex="0" role="button" aria-label="Change article save mode" class="btn-smp btn-outline btn btn-primary join-item">
             <UIcon name="material-symbols:arrow-drop-down" />
           </div>
           <!-- Content -->

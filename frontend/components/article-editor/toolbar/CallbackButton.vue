@@ -1,7 +1,7 @@
 <!-- Button for displaying and executing toolbar callback and action items. -->
 <template>
   <UTooltip>
-    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" :disabled="!isApplicable" @pointerdown.prevent @click="useTool(item)" />
+    <ArticleEditorToolbarItemButton :icon="item.def.icon" :active="isActive" :disabled="!isApplicable" :aria-label="props.item.def.name" @pointerdown.prevent @click="useTool(item)" />
 
     <!-- Tooltip template -->
     <template #text>
