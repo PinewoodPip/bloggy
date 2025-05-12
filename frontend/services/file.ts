@@ -80,7 +80,7 @@ class FileService extends Service {
 
   /** Deletes a file. */
   async deleteFile(path: path): Promise<string> {
-    const response = await this.get('/files' + path)
+    const response = await this.delete('/files' + path)
     return response.data
   }
 }

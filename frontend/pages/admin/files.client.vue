@@ -28,9 +28,15 @@
             <UTooltip v-if="canCreateLeaf" text="Upload file">
               <IconButton class="btn-sm btn-secondary" icon="material-symbols:upload-file" @click.stop="onFileUploadRequested(childItem)" />
             </UTooltip>
+
             <!-- Edit button -->
             <UTooltip v-if="canEdit" text="Edit">
               <IconButton class="btn-sm btn-secondary" icon="i-material-symbols-edit-outline" @click.stop="onFileUploadRequested(childItem)" />
+            </UTooltip>
+
+            <!-- Delete button -->
+            <UTooltip v-if="canEdit" text="Delete">
+              <IconButton class="btn-sm btn-secondary hover:btn-error" icon="i-material-symbols-delete-outline" @click.stop="onFileDeleteRequested(childItem)" />
             </UTooltip>
           </template>
         </AdminTreeItem>
@@ -44,9 +50,12 @@
 </template>
 
 <script setup lang="ts">
+import { useMutation } from '@tanstack/vue-query'
 import type { TreeItemGetters } from '~/components/admin/TreeItem.vue'
 
 provide<TreeItemGetters<SiteFileTree, SiteFile>>('siteFileTree', useSiteFileTree())
+const fileService = useFileService()
+const responseToast = useResponseToast()
 const { data: contentTree, status: contentStatus, refetch: refetchContentTree } = useSiteFiles()
 
 const searchTerm = ref("")
@@ -63,6 +72,14 @@ function onFileUploadRequested(node: SiteFileTree | SiteFilePreview) {
   fileUpload.path = node.path
   fileUpload.originalPath = node.path
   fileUploadModalVisible.value = true
+}
+
+/** Prompts the user to confirm deleting the file. */
+function onFileDeleteRequested(node: SiteFileTree | SiteFilePreview) {
+  const file = node as SiteFilePreview
+  if (file.filename && confirm(`Are you sure you want to delete ${file.filename}?`)) {
+    fileDeletionMutation.mutate(file)
+  }
 }
 
 /** Opens files in a new tab. */
@@ -87,5 +104,17 @@ function onUploadFileRequested() {
 function onContentChanged() {
   refetchContentTree()
 }
+
+/** Mutation to delete files. */
+const fileDeletionMutation = useMutation({
+  mutationFn: async (file: SiteFilePreview) => {
+    const path = file.path
+    return fileService.deleteFile(path)
+  },
+  onSuccess: () => {
+    responseToast.showSuccess('File deleted')
+    refetchContentTree()
+  },
+})
 
 </script>
