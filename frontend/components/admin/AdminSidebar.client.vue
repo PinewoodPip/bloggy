@@ -2,7 +2,13 @@
   <div class="large-content-block flexcol gap-y-1 max-w-sm h-full">    
     <h1>{{ siteName }} control panel</h1>
 
-    <FaintHr />
+    <!-- Link to published site -->
+    <RouterLink class="flex items-center gap-x-2 text-sm text-base-content/80 hover:link" to="/">
+      <UIcon name="material-symbols:link" />
+      View published site
+    </RouterLink>
+
+    <FaintHr class="my-2" />
 
     <!-- Section links -->
     <div class="flexcol menu menu-bg-base-200 gap-y-1 p-0 overflow-y-auto">
