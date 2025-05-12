@@ -1,11 +1,10 @@
 <!-- Root page of the published site, showing latest articles. -->
 <template>
-  <SitePaginatedPage ref="paginatedPage" :title="siteTitle" :articles="articles" :total-articles="totalArticles" :articleViewMode="'vertical'" @page-change="onPageChanged">
-
-  <template #pageDescription>
-    Latest articles
-  </template>
-
+  <SitePaginatedPage ref="paginatedPage" :title="siteTitle" :articles="articles" :total-articles="totalArticles" :show-top-panel="true" :articleViewMode="'vertical'" @page-change="onPageChanged">
+    <!-- Description -->
+    <template #pageDescription>
+      <h1>Latest articles</h1>
+    </template>
   </SitePaginatedPage>
 </template>
 

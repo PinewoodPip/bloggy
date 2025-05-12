@@ -5,7 +5,7 @@
       Add comment
     </template>
     <template #form>
-      <FormGroupTextArea v-model="comment.comment" label="Comment" hint="Comment." icon="material-symbols:link" />
+      <FormGroupTextArea v-model="comment.comment" label="Annotation" hint="Displayed when the cursor is over the annotated elements." icon="material-symbols:link" />
     </template>
     <template #footer>
       <IconButton class="btn-primary" icon="material-symbols:add-link" :disabled="!canConfirm" @click="confirm">Confirm</IconButton>

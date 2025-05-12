@@ -7,10 +7,13 @@
       <IconButton class="btn-primary btn-md" icon="material-symbols:upload" @click="onNewNodeRequested">Add item</IconButton>
     </div>
 
-    <FaintHr/>
+    <FaintHr class="mb-2"/>
 
     <!-- Navigation tree -->
     <AdminTreeItem v-for="node in schema.root_nodes" :item="node">
+      <template #label="{ item: childItem }">
+        <p class="italic">({{ getNodeTypeName(childItem) }})</p>
+      </template>
       <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
         <!-- Leaf item button -->
         <UTooltip v-if="canCreateLeaf" text="Add item">
@@ -173,6 +176,22 @@ onMounted(() => {
 watch(config, () => {
   updateModel()
 })
+
+function getNodeTypeName(node: NavigationNodeInput) {
+  switch (node.type) {
+    case 'article':
+    case 'category':
+    case 'group': {
+      return node.type // TODO localize
+    }
+    case 'external_url': {
+      return "external URL"
+    }
+    default: {
+      return 'item'
+    }
+  }
+}
 
 /** Converts an output navigation node schema to an input/update one. */
 function convertNavigationNodeToInput(node: NavigationNode): NavigationNodeInput {

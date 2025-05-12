@@ -2,12 +2,12 @@
   <div class="flexcol" tabindex="1" @keydown.enter="onClick">
     <!-- The item itself; toggles children visibility on click -->
     <div class="group flex items-center active:bg-secondary/80 rounded-btn cursor-pointer p-1" :class="extraContainerClasses" @click="onClick">
-      <div class="flex gap-x-2">
+      <div class="flex items-center gap-x-2">
         <!-- Folder icon indicates open/collapsed state. Leaf items always show as open -->
         <UIcon class="size-6" :name="icon" />
 
         <!-- Path and title -->
-        <UTooltip :text="getters.getTooltip(item)">
+        <UTooltip :text="getters.getTooltip(item)" :popper="{ placement: 'left', offsetDistance: 40 }">
           <template v-if="tooltipComponent" #text>
             <component :is="tooltipComponent.component" v-bind="tooltipComponent.props" />
           </template>

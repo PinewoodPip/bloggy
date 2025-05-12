@@ -2,7 +2,8 @@
 <template>
   <div :class="{ selected }" class="flexcol relative mockup-code my-3" role="presentation">
     <!-- Language selector; shown only while editing the document -->
-    <label for="languageSelect" class="invisible">Language select</label>
+    <hr class="after:!bg-neutral-content/20 !my-0" />
+    <label for="languageSelect" class="invisible max-h-0">Language select</label>
     <select v-if="editorView?.editable" id="languageSelect" v-model="languageName" contenteditable="false" @change="onLanguageChanged()" class="select select-sm !absolute top-2 right-2 select-ghost w-full max-w-xs">
       <option disabled value="">Choose language...</option>
       <option v-for="option in languageDropdownItems" :key="option.id" :value="option.id">{{ option.name }}</option>

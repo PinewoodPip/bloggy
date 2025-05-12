@@ -18,7 +18,7 @@
       </div>
 
       <!-- Sidebar -->
-      <SiteSidebar v-if="showSidebar" />
+      <SiteSidebar v-if="showSidebar" class="max-h-fit sticky top-[1rem]" />
     </div>
   </UContainer>
 
