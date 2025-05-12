@@ -72,7 +72,7 @@ def test_patch_file(file_scenario):
     assert is_ok_response(response)
 
     # Retrieve it
-    response = client.get(f"/files/{file.path[1:]}", headers=file_scenario.editor_token_header)
+    response = client.get(f"/files/{file.path[1:]}/metadata", headers=file_scenario.editor_token_header)
     assert is_ok_response(response)
     file_output = FileOutput.model_validate(response.json())
     assert file_output.content == new_content_str
@@ -86,12 +86,12 @@ def test_patch_file(file_scenario):
     assert is_ok_response(response)
 
     # Retrieve from new path
-    response = client.get(f"/files/{new_path[1:]}", headers=file_scenario.editor_token_header)
+    response = client.get(f"/files/{new_path[1:]}/metadata", headers=file_scenario.editor_token_header)
     assert is_ok_response(response)
     file_output = FileOutput.model_validate(response.json())
     assert file_output.path == new_path
     assert file_output.content == file.content
 
     # Expect 404 from previous path
-    response = client.get(f"/files/{file.path[1:]}", headers=file_scenario.editor_token_header)
+    response = client.get(f"/files/{file.path[1:]}/metadata", headers=file_scenario.editor_token_header)
     assert is_not_found(response)
