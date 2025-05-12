@@ -179,11 +179,17 @@ def get_article_by_full_path(db: Session, path: str) -> Article:
     """
     Returns an article by its full path.
     """
+    # Split path into category & filename
     match = SPLIT_CATEGORY_ARTICLE_PATH_REGEX.match(path)
     article = None
-    if match:
+    if path.count("/") == 1: # If there is no category path, then the article is in the root
+        category_path = "/"
+        filename = path[1:]
+    elif match:
         category_path, filename = match.groups()
-        article = get_article_by_path(db, category_path, filename)
+
+    # Fetch article
+    article = get_article_by_path(db, category_path, filename)
     if not article:
         raise ValueError("Invalid path")
     return article
