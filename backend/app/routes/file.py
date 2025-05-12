@@ -95,8 +95,8 @@ async def put_file(file_path: str, file_input: FileSchemas.FileInput, db: Sessio
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
-@router.delete("/{file_path:path}", response_model=FileSchemas.FileOutput)
-async def delete_file(file_path: str, file_update: FileSchemas.FileUpdate, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
+@router.delete("/{file_path:path}")
+async def delete_file(file_path: str, db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
     """
     Deletes a file.
     """

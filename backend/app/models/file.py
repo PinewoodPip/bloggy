@@ -20,4 +20,4 @@ class File(Base):
     content = Column(LargeBinary)
     uploader_id = Column(Integer, ForeignKey("users.id"))
 
-    uploader: Mapped["User"] = relationship("User", back_populates="uploaded_files", cascade="all")
+    uploader: Mapped["User"] = relationship("User", back_populates="uploaded_files")
