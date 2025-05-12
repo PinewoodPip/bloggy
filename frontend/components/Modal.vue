@@ -12,7 +12,7 @@
     </div>
 
     <!-- Form -->
-    <div class="flexcol flex-grow overflow-y-auto" :class="{ 'py-3': setPadding || (setPadding === undefined) }">
+    <div class="flexcol gap-y-2 flex-grow overflow-y-auto" :class="{ 'py-3': setPadding || (setPadding === undefined) }">
       <slot name="form"/>
     </div>
 

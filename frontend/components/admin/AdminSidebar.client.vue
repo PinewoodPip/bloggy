@@ -32,7 +32,7 @@
         <p>{{ user ? (user.display_name || user.role) : "..." }}</p> <!-- TODO capitalize role -->
         <div class="flex justify-end gap-x-2 mt-2">
           <IconButton icon="i-heroicons-pencil" class="btn-smp btn-secondary" @click="editAccount">Edit account</IconButton>
-          <IconButton icon="i-heroicons-arrow-left-start-on-rectangle-20-solid" class="btn-smp btn-secondary" @click="logout">Logout</IconButton>
+          <IconButton icon="i-heroicons-arrow-left-start-on-rectangle-20-solid" class="btn-smp btn-secondary hover:btn-error" @click="logout">Logout</IconButton>
         </div>
       </div>
     </div>

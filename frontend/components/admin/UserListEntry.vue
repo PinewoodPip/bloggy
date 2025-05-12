@@ -10,8 +10,11 @@
 
     <!-- Management buttons -->
     <div class="flex gap-x-2">
-      <IconButton v-if="isEditor" icon="i-heroicons-book-open" class="btn-sm btn-secondary" @click="showArticles">View articles</IconButton>
+      <!-- Edit account -->
       <IconButton v-if="editable" icon="i-heroicons-pencil" class="btn-sm btn-secondary" @click="editAccount">Edit account</IconButton>
+
+      <!-- View articles -->
+      <IconButton v-if="isEditor" icon="i-heroicons-book-open" class="btn-sm btn-secondary" @click="showArticles">View articles</IconButton>
     </div>
   </div>
 </template>
