@@ -209,13 +209,18 @@ export const useArticleEditorQueries = () => {
     }
   })
 
+  const isSavingAsDraft = ref(false)
+
   /** Mutation for saving the article */
   const articleMutation = useMutation({
     mutationFn: (patchData: ArticleUpdateRequest) => {
+      isSavingAsDraft.value = patchData.is_draft || false
       return articleService.updateArticle((articleQuery.data.value as Article).path, patchData)
     },
     onSuccess: (article) => {
-      responseToast.showSuccess('Article saved')
+      // Include link to open the published article in a new tab
+      const description = articleService.isPublished(article) && !isSavingAsDraft.value ? `<a class="link" href=${CMSUtils.resolveArticlePath(article.path)} target="_blank">View published page</a>` : undefined
+      responseToast.showSuccess(isSavingAsDraft.value ? 'Draft saved' : 'Article published!', description)
       articleQuery.refetch()
     },
     onError: (err) => {

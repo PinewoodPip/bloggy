@@ -1,6 +1,10 @@
 <template>
   <NuxtPage/>
-  <UNotifications />
+  <UNotifications>
+    <template #description="{ description }">
+      <span v-html="description" />
+    </template>
+  </UNotifications>
 </template>
 
 <script setup lang="ts">
