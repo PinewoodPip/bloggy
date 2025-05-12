@@ -2,7 +2,7 @@
 <template>
   <UContainer class="flexcol gap-y-2">
     <!-- Header -->
-    <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" @toggle-sidebar="sidebarVisible = !sidebarVisible" />
+    <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" @toggle-sidebar="sidebarVisible = !sidebarVisible" @exit="emit('exit')" />
 
     <!-- Toolbar; only rendered once editor is initialized -->
     <ArticleEditorToolbar v-if="editorDocument?.editorState" />
@@ -42,6 +42,10 @@ export type NodeCallbacks = {
   /** Notifies that the node should be selected for a node type-specific interaction. */
   selectNode(node: Node): void,
 }
+
+const emit = defineEmits<{
+  exit: [],
+}>();
 
 const router = useRouter()
 

@@ -90,6 +90,7 @@ const articlePatchData: Reactive<ArticleUpdateRequest> = reactive({
 
 const emit = defineEmits<{
   toggleSidebar: [],
+  exit: [],
   metadataUpdated: [Article],
 }>();
 
@@ -132,6 +133,7 @@ function editDocumentProperties() {
 
 /** Saves the document as a draft and returns to the admin panel. */
 function exit() {
+  emit('exit')
   saveArticle(true) // Save draft first
   router.push('/admin/content')
 }
