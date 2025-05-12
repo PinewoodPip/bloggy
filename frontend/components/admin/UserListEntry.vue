@@ -18,6 +18,8 @@
 
 <script setup lang="ts">
 
+const router = useRouter()
+
 const props = defineProps<{
   user: User,
   editable: boolean,
@@ -28,7 +30,7 @@ const emit = defineEmits<{
 }>()
 
 function showArticles() {
-  // TODO
+  router.push(`/search?author=${props.user.display_name}`)
 }
 
 function editAccount() {
