@@ -4,7 +4,7 @@
 import { setBlockType, wrapIn } from 'prosemirror-commands'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
-import type { ToolGroup, ActionTool, MenuTool, Tool } from '../ToolManager'
+import type { ToolPalette, ActionTool, MultiTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 
 /** Inserts text content at the cursor position. */

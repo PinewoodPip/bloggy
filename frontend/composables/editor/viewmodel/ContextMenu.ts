@@ -7,20 +7,20 @@ type ContextMenuItem = NuxtDropdownItem & {
   item: Tools.Tool,
 }
 
-/** Composable for creating a context menu using Nuxt UI dropdown items out of ToolGroup, filtering them by relevance based on content at the cursor. */
-export const useEditorContextMenu = (toolGroupID: string) => {
+/** Composable for creating a context menu using Nuxt UI dropdown items out of a ToolPalette, filtering them by relevance based on content at the cursor. */
+export const useEditorContextMenu = (paletteID: string) => {
   const { editorState, tools: toolManager } = useEditorInjects()
 
   /** Options shown in the context menu. */
   function getContextMenuItems() {
     const items: Tools.Tool[][] = []
-    const toolGroup = toolManager.value.getToolGroup(toolGroupID)
-    const tools = toolGroup.toolPalettes
+    const palette = toolManager.value.getToolPalette(paletteID)
+    const toolGroups = palette.toolGroups
 
-    for (const arr of tools) {
+    for (const group of toolGroups) {
       const groupArr: Tools.Tool[] = []
       items.push(groupArr)
-      for (const toolID of arr.tools) {
+      for (const toolID of group.tools) {
         groupArr.push(toolManager.value.getTool(toolID))
       }
     }

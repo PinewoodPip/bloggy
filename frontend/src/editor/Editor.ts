@@ -6,7 +6,7 @@ import { Schema } from 'prosemirror-model'
 import { Action } from './actions/Action'
 import { DocumentSerializer } from '~/src/editor/markdown/Serializer'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
-import { ToolManager, type toolIdentifier, type MenuTool, type Tool, type ToolDef } from './ToolManager'
+import { ToolManager, type toolIdentifier, type MultiTool, type Tool, type ToolDef } from './ToolManager'
 import type { EditorView } from 'prosemirror-view'
 
 export type actionID = string

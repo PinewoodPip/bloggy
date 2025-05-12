@@ -3,7 +3,7 @@
  */
 import { type EditorState, type Transaction } from 'prosemirror-state'
 import type { actionID, EmbedAttrs, ImageAttrs } from '../Editor'
-import type { ToolGroup, ActionTool, MenuTool, CallbackTool, Tool } from '../ToolManager'
+import type { ToolPalette, ActionTool, MultiTool, CallbackTool, Tool } from '../ToolManager'
 import { ProseMirrorUtils } from '~/utils/ProseMirror'
 import { Action } from './Action'
 import { schema } from '../schemas/Article'

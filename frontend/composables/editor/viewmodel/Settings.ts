@@ -10,15 +10,15 @@ export const useEditorSettings = () => {
 
   return {
     /** Returns the items of a group that should be user-configurable. */
-    getGroupItems(group: Tools.ToolPalette): Tools.Tool[] {
+    getGroupItems(group: Tools.ToolGroup): Tools.Tool[] {
       const items: Tools.Tool[] = []
       for (const tool of group.tools) {
         const item = tools.value.getTool(tool)
         if (item.type === 'action' || item.type === 'callback') {
           items.push(item)
-        } else if (item.type === 'menu') {
+        } else if (item.type === 'multitool') {
           // Push all subitems
-          for (const subitem of (item as Tools.MenuTool).subitems) {
+          for (const subitem of (item as Tools.MultiTool).subitems) {
             items.push(subitem)
           }
         }

@@ -4,7 +4,7 @@
 import { redo as redoCommand, undo as undoCommand } from 'prosemirror-history'
 import type { EditorState, Transaction } from 'prosemirror-state'
 import type { keybind } from '../Editor'
-import type { ToolGroup, ActionTool } from '../ToolManager'
+import type { ToolPalette, ActionTool } from '../ToolManager'
 import { Action } from './Action'
 
 export class Undo extends Action {

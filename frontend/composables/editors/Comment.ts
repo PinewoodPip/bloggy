@@ -44,9 +44,9 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   const annotation = WidgetTools.RegisterAnnotationTool(editor)
 
   // Define toolbar
-  toolManager.registerToolGroup({
+  toolManager.registerToolPalette({
     id: 'toolbar',
-    toolPalettes: [
+    toolGroups: [
       // History
       {
         name: 'History',
@@ -93,9 +93,9 @@ export const useCommentEditor = (pmViewGetter: () => EditorView) => {
   })
 
   // Define context menu
-  toolManager.registerToolGroup({
+  toolManager.registerToolPalette({
     id: 'context-menu',
-    toolPalettes: [
+    toolGroups: [
       // Clipboard
       {
         name: 'Clipboard',

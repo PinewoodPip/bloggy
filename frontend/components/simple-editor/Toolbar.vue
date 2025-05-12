@@ -22,7 +22,7 @@ const { visibleGroups, getVisibleGroupItems } = useEditorToolbarItems()
 
 // Component, props and event getters for the dynamic toolbar item component
 function getGroupItemComponent(item: Tools.Tool) {
-  if (item.type === 'menu') {
+  if (item.type === 'multitool') {
     return MenuButton
   } else if (item.type === 'callback' || item.type === 'action') {
     return CallbackButton
@@ -31,9 +31,9 @@ function getGroupItemComponent(item: Tools.Tool) {
   }
 }
 function getGroupItemComponentProps(item: Tools.Tool) {
-   if (item.type === 'menu') {
+   if (item.type === 'multitool') {
     return {
-      menu: item as Tools.MenuTool,
+      menu: item as Tools.MultiTool,
     }
   } else if (item.type === 'callback' || item.type === 'action') {
     return {

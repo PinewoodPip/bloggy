@@ -12,10 +12,10 @@
 import type * as Tools from '~/src/editor/ToolManager'
 
 const { useTool } = useEditorTools()
-const { menuItems, isActive } = useMenuTool(() => props.menu, (item) => useTool(item))
+const { menuItems, isActive } = useEditorMultiTool(() => props.menu, (item) => useTool(item))
 
 const props = defineProps<{
-  menu: Tools.MenuTool,
+  menu: Tools.MultiTool,
 }>()
 
 const menuVisible = ref(false)

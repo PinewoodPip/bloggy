@@ -8,7 +8,7 @@
       <!-- Keybinds -->
       <h3 class="py-2 pb-0">Toolbar</h3>
       <!-- Groups -->
-      <div v-for="group in tools.getToolGroup('toolbar').toolPalettes" class="sticky">
+      <div v-for="group in tools.getToolPalette('toolbar').toolGroups" class="sticky">
         <div class="bg-base-100 z-10 sticky top-0">
           <h4 class="font-semibold py-1 pt-3">{{ group.name }}</h4>
           <FaintHr class="faint-hr mb-2" />

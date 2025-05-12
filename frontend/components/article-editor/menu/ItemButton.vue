@@ -16,9 +16,9 @@ const props = defineProps<{
 }>();
 
 const dropdownItems = computed(() => {
-  if (props.item.type === 'menu') {
+  if (props.item.type === 'multitool') {
     // Map to Nuxt UI items
-    return [(props.item as Tools.MenuTool).subitems.map((item) => ({
+    return [(props.item as Tools.MultiTool).subitems.map((item) => ({
       label: item.def.name,
       icon: item.def.icon,
       click: () => useTool(item),

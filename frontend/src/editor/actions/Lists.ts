@@ -6,7 +6,7 @@ import { wrapInList } from 'prosemirror-schema-list'
 import { NodeType, NodeRange, type Attrs } from "prosemirror-model"
 import type { Command, EditorState, Transaction } from 'prosemirror-state'
 import type { actionID, keybind } from '../Editor'
-import type { ToolGroup, MenuTool } from '../ToolManager'
+import type { ToolPalette, MultiTool } from '../ToolManager'
 import { Action } from './Action'
 import { schema } from '../schemas/Article'
 

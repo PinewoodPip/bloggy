@@ -4,7 +4,7 @@
 import type { actionID, IAction } from "./Editor"
 import { EditorState } from 'prosemirror-state'
 
-export type toolType = 'callback'|'action'|'menu'
+export type toolType = 'callback'|'action'|'multitool'
 export type toolIdentifier = string
 
 /** Represents an editor interaction that should be presented to the user. Does not need to correspond to direct document edits. */
@@ -73,14 +73,14 @@ export class ActionTool implements Tool {
 }
 
 /** Groups up related tools into a parent tool that represents them as one. */
-export class MenuTool implements Tool {
-  type: 'menu'
+export class MultiTool implements Tool {
+  type: 'multitool'
   subitems: Tool[]
   def: ToolDef
   id: toolIdentifier
 
   constructor(id: string, def: ToolDef, subitems: Tool[]) {
-    this.type = 'menu'
+    this.type = 'multitool'
     this.subitems = subitems
     this.id = id
     this.def = def
@@ -102,39 +102,39 @@ export class MenuTool implements Tool {
 }
 
 /** Groups multiple tools of the same thematic purpose. */
-export type ToolPalette = {
+export type ToolGroup = {
   name: string,
   tools: toolIdentifier[],
 }
 
-/** Groups multiple tool palettes, representing a major set of interaction items in the editor. */
-export interface ToolGroup {
+/** Groups multiple tool groups, representing a major set of interaction items in the editor. */
+export interface ToolPalette {
   id: string,
   /** The group's tools, intended to be organized thematically. */
-  toolPalettes: ToolPalette[],
+  toolGroups: ToolGroup[],
 }
 
 export type ItemUsedCallback = ((item: Tool) => void)
 
 /** Tracks registered editor tools and the user's preferences for them. */
 export class ToolManager {
-  private toolGroups: {[key: string]: ToolGroup} = {}
+  private toolPalettes: {[key: string]: ToolPalette} = {}
   private tools: {[key: string]: Tool} = {}
 
   /** Tools that the user has marked as irrelevant to them. */
   private hiddenItems: Set<toolIdentifier> = new Set()
   
-  /** Returns all tool groups in order of registration. */
-  getToolGroups(): {[key: string]: ToolGroup} {
-    return this.toolGroups
+  /** Returns all tool palettes in order of registration. */
+  getToolPalettes(): {[key: string]: ToolPalette} {
+    return this.toolPalettes
   }
 
-  /** Returns a tool group by ID. */
-  getToolGroup(id: string): ToolGroup {
-    return this.toolGroups[id]
+  /** Returns a tool palette by ID. */
+  getToolPalette(id: string): ToolPalette {
+    return this.toolPalettes[id]
   }
 
-  /** Registers a tool to be available for use in tool groups. */
+  /** Registers a tool to be available for use in tool palettes. */
   registerTool(item: Tool) {
     this.tools[item.id] = item
   }
@@ -144,9 +144,9 @@ export class ToolManager {
     return this.tools[id];
   }
 
-  /** Registers a tool group. */
-  registerToolGroup(group: ToolGroup) {
-    this.toolGroups[group.id] = group
+  /** Registers a tool palette. */
+  registerToolPalette(palette: ToolPalette) {
+    this.toolPalettes[palette.id] = palette
   }
 
   /** Returns whether a tool should be available in groups or hidden from the user. */

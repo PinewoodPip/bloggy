@@ -91,7 +91,7 @@ export const RegisterAlignmentMenu = (editor: Editor.Editor, alignmentActions?: 
     const tool = RegisterFormatAlignment(editor, alignType)
     tools.push(tool)
   }
-  const menu = new Tools.MenuTool(
+  const menu = new Tools.MultiTool(
     'formatting.alignment.menu',
     {
       icon: 'material-symbols:format-align-left',

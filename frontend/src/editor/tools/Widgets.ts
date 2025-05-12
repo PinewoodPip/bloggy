@@ -41,7 +41,7 @@ export const RegisterNoteTools = (editor: Editor.Editor) => {
 
   // Register menu
   const menu = RegisterMenuTool(editor,
-    new Tools.MenuTool('widgets.note.menu', {
+    new Tools.MultiTool('widgets.note.menu', {
       icon: 'material-symbols:lightbulb-2-outline',
       name: 'Toggle Note',
     },

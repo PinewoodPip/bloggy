@@ -56,7 +56,7 @@ export const RegisterArticleImageTools = (manager: Editor.Editor) => {
   toolbar.registerTool(editTool)
 
   // Register menu
-  const menu = new Tools.MenuTool('media.image', {
+  const menu = new Tools.MultiTool('media.image', {
     icon: 'material-symbols:image',
     name: 'Insert image',
   }, imageTools)

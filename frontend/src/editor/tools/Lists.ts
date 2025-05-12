@@ -24,7 +24,7 @@ export const RegisterListTools = (editor: Editor.Editor) => {
   })
 
   // Register menu and tools
-  const menu = new Tools.MenuTool(
+  const menu = new Tools.MultiTool(
     'lists.menu',
     {
       icon: 'material-symbols:format-list-bulleted',

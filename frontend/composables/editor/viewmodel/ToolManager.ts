@@ -23,9 +23,9 @@ export const useEditorToolbarItems = () => {
 
   /** Toolbar groups to show, based on user preferences. */
   const visibleGroups = computed(() => {
-    const groups: Tools.ToolPalette[] = []
-    const group = toolManager.value.getToolGroup('toolbar')
-    for (const toolSet of group.toolPalettes) {
+    const groups: Tools.ToolGroup[] = []
+    const group = toolManager.value.getToolPalette('toolbar')
+    for (const toolSet of group.toolGroups) {
       // Check if any action in the group is visible
       const visible = getVisibleGroupItems(toolSet).length > 0
       if (visible) {
@@ -36,16 +36,16 @@ export const useEditorToolbarItems = () => {
   })
 
   /** Returns the visible items of a toolbar group. */
-  function getVisibleGroupItems(group: Tools.ToolPalette) {
+  function getVisibleGroupItems(group: Tools.ToolGroup) {
     const items: Tools.Tool[] = []
     for (const id of group.tools) {
       const tool = toolManager.value.getTool(id)
       let visible = false
       if (tool.type === 'action' || tool.type === 'callback') {
         visible = toolManager.value.isToolVisible(tool.id)
-      } else if (tool.type === 'menu') {
+      } else if (tool.type === 'multitool') {
         // Menu is visible if any of its subitems is
-        const menuActions = (tool as Tools.MenuTool).subitems
+        const menuActions = (tool as Tools.MultiTool).subitems
         visible = ArrayUtils.anyInArray(menuActions, (item) => {
           return toolManager.value.isToolVisible(item.id)
         })

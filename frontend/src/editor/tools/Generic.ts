@@ -20,7 +20,7 @@ export const RegisterCallbackTool = (manager: Editor.Editor, tool: Tools.Callbac
 }
 
 /** Registers a menu tool. */
-export const RegisterMenuTool = (manager: Editor.Editor, tool: Tools.MenuTool) => {
+export const RegisterMenuTool = (manager: Editor.Editor, tool: Tools.MultiTool) => {
   manager.getToolManager().registerTool(tool)
   return tool
 }

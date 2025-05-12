@@ -64,9 +64,9 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   const annotation = WidgetTools.RegisterAnnotationTool(editor)
 
   // Define toolbar
-  toolManager.registerToolGroup({
+  toolManager.registerToolPalette({
     id: 'toolbar',
-    toolPalettes: [
+    toolGroups: [
       // History
       {
         name: 'History',
@@ -136,9 +136,9 @@ export const useArticleEditor = (pmViewGetter: () => EditorView) => {
   })
 
   // Define context menu
-  toolManager.registerToolGroup({
+  toolManager.registerToolPalette({
     id: 'context-menu',
-    toolPalettes: [
+    toolGroups: [
       // Clipboard
       {
         name: 'Clipboard',
@@ -291,17 +291,17 @@ export const useArticleEditorQueries = () => {
 
 /** Composable for items to show in the main editor menu bar. */
 export const useArticleEditorMainMenu = () => {
-  const itemGroup: Tools.MenuTool = {
+  const itemGroup: Tools.MultiTool = {
     id: 'Document',
     def: {
       name: 'Document',
       icon: 'i-heroicons-document-text',
     },
-    type: 'menu',
+    type: 'multitool',
     subitems: [
       // File menu
       {
-        type: 'menu',
+        type: 'multitool',
         id: 'Document.File',
         def: {
           name: 'File',
@@ -333,10 +333,10 @@ export const useArticleEditorMainMenu = () => {
             },
           }
         ],
-      } as Tools.MenuTool,
+      } as Tools.MultiTool,
       // View menu
       {
-        type: 'menu',
+        type: 'multitool',
         id: 'Document.View',
         def: {
           name: 'View',
@@ -360,7 +360,7 @@ export const useArticleEditorMainMenu = () => {
             },
           },
         ],
-      } as Tools.MenuTool,
+      } as Tools.MultiTool,
       // Settings
       {
         type: 'callback',

@@ -4,7 +4,7 @@
 import type * as Tools from '~/src/editor/ToolManager'
 
 /** Viewmodel for a toolbar ActionMenu item. */
-export const useMenuTool = (menuGetter: () => Tools.MenuTool, onUse: (item: Tools.Tool) => void) => {
+export const useEditorMultiTool = (menuGetter: () => Tools.MultiTool, onUse: (item: Tools.Tool) => void) => {
   const { editor, editorState, tools } = useEditorInjects()
   const menu = computed(() => menuGetter())
 

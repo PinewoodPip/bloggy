@@ -47,7 +47,7 @@ export const RegisterHeadingTools = (editor: Editor.Editor) => {
   }
 
   // Register menu with all heading tools
-  const menuTool = new Tools.MenuTool('sectioning.heading.menu', {
+  const menuTool = new Tools.MultiTool('sectioning.heading.menu', {
     icon: 'i-material-symbols-h-mobiledata-badge-outline',
     name: 'Set Heading',
   }, tools)

@@ -5,7 +5,7 @@ import { type EditorState, type Transaction } from 'prosemirror-state'
 import { MarkType, NodeType } from 'prosemirror-model'
 import { toggleMark } from 'prosemirror-commands'
 import type { actionID, alignmentType, keybind } from '../Editor'
-import type { ToolGroup, ActionTool, MenuTool, CallbackTool, Tool } from '../ToolManager'
+import type { ToolPalette, ActionTool, MultiTool, CallbackTool, Tool } from '../ToolManager'
 import { Action } from './Action'
 
 export class ToggleMark extends Action {
