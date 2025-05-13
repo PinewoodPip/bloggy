@@ -9,6 +9,7 @@
 <script setup lang="ts">
 import type * as Tools from '~/src/editor/ToolManager'
 
+const { editor, editorState } = useEditorInjects()
 const { useTool } = useEditorTools()
 
 const props = defineProps<{
@@ -22,6 +23,7 @@ const dropdownItems = computed(() => {
       label: item.def.name,
       icon: item.def.icon,
       click: () => useTool(item),
+      disabled: !editor.value.isToolApplicable(editorState.value, item),
     }))];
   }
   return []; // Don't show dropdown

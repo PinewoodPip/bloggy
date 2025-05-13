@@ -119,9 +119,14 @@ export class Editor {
     return this.toolManager
   }
 
-  /** Returns whether a toolbar item is currently being used. */
+  /** Returns whether a tool is currently being used. */
   isToolActive(state: EditorState, item: Tool): boolean {
     return item.isActive && item.isActive(state)
+  }
+
+  /** Returns whether a tool is applicable to the current document state and selection. */
+  isToolApplicable(state: EditorState, item: Tool): boolean {
+    return !item.isApplicable || item.isApplicable(state)
   }
 
   /** Returns the keybind for an action. */

@@ -62,7 +62,7 @@ export const RegisterCodeBlockTool = (editor: Editor.Editor) => {
 /** Registers a tool to insert footnotes. */
 export const RegisterFootnoteTool = (editor: Editor.Editor) => {
   return RegisterActionTool(editor, new WidgetActions.InsertFootnote(), {
-    name: 'Insert Footnote',
+    name: 'Add Footnote',
     icon: 'material-symbols:edit-note',
   })
 }
@@ -71,7 +71,7 @@ export class RequestAnnotationTool extends Tools.CallbackTool {
   action: Editor.IAction
   constructor() {
     super('annotation.request', {
-      name: 'Insert Annotation',
+      name: 'Add Annotation',
       icon: 'material-symbols:comment',
     })
     this.action = new WidgetActions.SetAnnotation()

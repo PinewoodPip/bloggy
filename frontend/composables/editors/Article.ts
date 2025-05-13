@@ -355,6 +355,9 @@ export const useArticleEditorMainMenu = () => {
               name: 'Markdown mode',
               icon: 'i-material-symbols-markdown-outline',
             },
+            isApplicable: (state: EditorState) => {
+              return false // TODO
+            }
           },
           {
             type: 'callback',
