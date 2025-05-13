@@ -8,7 +8,7 @@
     </figure>
 
     <!-- Navbar -->
-    <SiteNavigationBar />
+    <SiteNavigationBar :nodes="navigationBarNodes" :can-search="true" />
 
     <!-- Main -->
     <div class="flex gap-x-5 w-full">
@@ -33,6 +33,7 @@
 <script setup lang="ts">
 
 const runtimeConfig = useRuntimeConfig()
+const navigation = useNavigationBar()
 
 const { title, showSidebar = true } = defineProps<{
   title: string,
@@ -41,6 +42,10 @@ const { title, showSidebar = true } = defineProps<{
 
 const logoPath = computed(() => {
   return runtimeConfig.public.apiUrl + 'site/logo'
+})
+
+const navigationBarNodes = computed(() => {
+  return navigation.value.root_nodes
 })
 
 useHead({

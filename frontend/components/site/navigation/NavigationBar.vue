@@ -6,7 +6,7 @@
     </ul>
 
     <!-- Search bar -->
-    <SiteSearchBar />
+    <SiteSearchBar v-if="canSearch" />
 
     <!-- Login button -->
     <!-- At the moment unnecessary here; re-add once user accounts can do more than just post comments -->
@@ -16,11 +16,15 @@
 
 <script setup lang="ts">
 const navigationNodeComponentGetter = useNavigationNodeComponents()
-const navigation = useNavigationBar()
+
+const props = defineProps<{
+  nodes: NavigationNode[],
+  canSearch?: boolean,
+}>()
 
 const nodes = computed(() => {
   const nodes = []
-  for (const item of navigation.value.root_nodes) {
+  for (const item of props.nodes) {
     nodes.push(navigationNodeComponentGetter(item))
   }
   return nodes
