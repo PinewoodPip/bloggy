@@ -6,7 +6,7 @@
       <HorizontalFill/>
 
       <!-- Only admins can create accounts -->
-      <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-sm" @click="addUser">Add editor</IconButton>
+      <IconButton v-if="loggedInUser?.role === 'admin'" icon="i-heroicons-user-plus" class="btn-primary btn-smp" @click="addUser">Add editor</IconButton>
     </div>
 
     <FaintHr class="mb-2"/>

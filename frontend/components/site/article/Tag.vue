@@ -1,6 +1,6 @@
 <!-- An article tag badge, linking to a tag-based search. -->
 <template>
-  <div class="badge badge-md bg-secondary hover:bg-secondary/80 hover:underline text-secondary-content">
+  <div class="badge badge-md bg-secondary hover:bg-secondary/80 hover:underline text-secondary-content !h-[1.6rem]">
     <RouterLink :to="tagSearchURL">
       #{{ tag }}
     </RouterLink>

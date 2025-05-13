@@ -1,6 +1,6 @@
 <!-- Displays article metadata as a card. -->
 <template>
-  <div class="card bg-base-100 w-96 shadow-xl">
+  <div class="card bg-base-200 w-96 shadow-xl">
     <!-- Cover image -->
     <figure v-if="article.featured_image_path" class="max-h-48 -mb-4">
       <img :src="coverImageURL" alt="Cover image" />

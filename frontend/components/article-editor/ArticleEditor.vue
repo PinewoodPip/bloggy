@@ -15,7 +15,8 @@
       </div>
 
       <!-- Document -->
-      <div class="large-content-block flex-grow" @contextmenu.prevent="onContextMenu">
+      <!-- Has extra bottom margin to compensate for sticky status bar -->
+      <div class="large-content-block flex-grow mb-[4rem]" @contextmenu.prevent="onContextMenu">
         <EditorDocument v-if="articleData" key="editorDocument" ref="document" :initial-content="initialContent!" @initialized="onEditorInitialized" />
         <LoadingSpinner v-else />
       </div>

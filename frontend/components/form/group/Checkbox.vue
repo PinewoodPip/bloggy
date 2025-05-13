@@ -4,9 +4,9 @@
     <div class="form-control">
       <label class="label justify-start cursor-pointer rounded-md bg-base-300 pl-2 gap-x-2">
         <input type="checkbox" v-model="model" class="checkbox checkbox-neutral checkbox-sm" />
-        <span class="flex flex-grow justify-between items-center label-text pr-1">
-          {{ props.label }}
+        <span class="flex flex-grow gap-x-2 items-center label-text pr-1">
           <UIcon class="size-6" :name="props.icon" />
+          {{ props.label }}
         </span>
       </label>
     </div>

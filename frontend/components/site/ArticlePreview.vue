@@ -9,10 +9,12 @@
     </figure>
     <!-- Card content -->
     <div class="card-body p-4"> <!-- Default card padding is 2x larger, way too large -->
-      <h2 class="card-title link">
-        <RouterLink :to="articleURL">{{ article.title }}</RouterLink>
-      </h2>
-      <SiteArticleMetadataSubtitle :article="article" :show-category="true" />
+      <div class="flexcol">
+        <h2 class="card-title hover:link">
+          <RouterLink :to="articleURL">{{ article.title }}</RouterLink>
+        </h2>
+        <SiteArticleMetadataSubtitle :article="article" :show-category="true" />
+      </div>
       
       <FaintHr class="faint-hr" />
 

@@ -1,11 +1,11 @@
 <template>
   <!-- TODO list all authors -->
-  <span class="flex gap-x-1">Posted by
+  <span class="flex gap-x-1 text-base-content/90">Posted by
     <!-- Avatar and name, linking to a filter search -->
     <RouterLink :to="authorSearchURL">
       <span class="flex items-center">
         <UserAvatar class="size-4 mr-1" :user="article.authors[0]" />
-        <span class="underline">
+        <span class="hover:underline">
           {{ article.authors[0].display_name }}
         </span>
       </span>

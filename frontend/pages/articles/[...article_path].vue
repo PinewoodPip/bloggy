@@ -23,7 +23,7 @@
 
           <!-- Article footer -->
           <div class="flexcol gap-y-2">
-            <p>Posted in <RouterLink class="link link-neutral" :to="'/categories' + article.category_path">{{ article.category.name }}</RouterLink></p>
+            <p>Posted in <RouterLink class="hover:link link-neutral" :to="'/categories' + article.category_path">{{ article.category.name }}</RouterLink></p>
 
             <!-- Tags -->
             <div class="flex flex-grow gap-x-2 flex-wrap">
@@ -32,17 +32,17 @@
 
             <!-- Author cards -->
             <!-- TODO show all authors -->
-            <div v-if="author" class="card bg-base-100 w-fit shadow-sm p-3">
+            <div v-if="author" class="card bg-base-100 w-fit shadow-sm p-3 my-2">
               <div class="flex items-center gap-x-2">
                 <!-- Avatar -->
                 <UserAvatar class="size-24" :user="author" />
 
                 <!-- Name, bio and call to action -->
                 <div class="flexcol gap-y-1">
-                  <p class="text-lg">{{ author.display_name }}</p>
+                  <p class="text-lg">Written by <b>{{ author.display_name }}</b></p>
                   <p>{{ author.biography }}</p>
                   <div class="card-actions">
-                    <button class="btn btn-sm btn-primary" @click="onViewAuthorArticles">View articles</button>
+                    <button class="btn btn-sm btn-primary" @click="onViewAuthorArticles">View more articles</button>
                   </div>
                 </div>
               </div>
