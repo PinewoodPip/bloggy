@@ -39,7 +39,7 @@ async def patch_config(config_update: SiteSchemas.ConfigUpdate, db: Session=Depe
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     
-@router.get("/sidebar", response_model=ArticleSchemas.ArticleOutput)
+@router.get("/sidebar", response_model=SiteSchemas.ConfigSidebarOutput)
 async def get_sidebar(db: Session=Depends(get_db)):
     """
     Returns the site's sidebar document.
@@ -48,7 +48,7 @@ async def get_sidebar(db: Session=Depends(get_db)):
         config = SiteCrud.get_config(db)
         if not config.sidebar_document:
             raise HTTPException(status_code=404)
-        return ArticleCrud.create_article_output(db, config.sidebar_document)
+        return SiteSchemas.ConfigSidebarOutput(content=config.sidebar_document)
     except ValueError as e:
         raise HTTPException(status_code=500, detail=str(e))
 

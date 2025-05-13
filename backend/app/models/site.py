@@ -23,12 +23,11 @@ class SiteConfig(Base):
     logo_file_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     favicon_file_id = Column(Integer, ForeignKey("files.id"), nullable=True)
     navigation = Column(JSON)
-    sidebar_document_id = Column(Integer, ForeignKey("articles.id"), nullable=True)
+    sidebar_document = Column(String, nullable=True)
 
     # Relations
     logo: Mapped["File"] = relationship("File", foreign_keys=[logo_file_id])
     favicon: Mapped["File"] = relationship("File", foreign_keys=[favicon_file_id])
-    sidebar_document: Mapped["Article"] = relationship("Article")
 
 class SocialNetwork(Base):
     """

@@ -52,9 +52,8 @@ def update_config(db: Session, config_update: ConfigUpdate) -> SiteConfig:
             raise e
         
     # Patch sidebar document
-    if config_update.sidebar_document_path:
-        article = ArticleCrud.get_article_by_full_path(db, config_update.sidebar_document_path)
-        config.sidebar_document = article
+    if config_update.sidebar_document:
+        config.sidebar_document = config_update.sidebar_document
         
     # Update enabled social networks
     if config_update.social_networks != None:
@@ -139,13 +138,12 @@ def create_configuration_output(db: Session, config: SiteConfig) -> ConfigOutput
     """
     logo = FileCrud.create_file_output(db, config.logo) if config.logo else None
     favicon = FileCrud.create_file_output(db, config.favicon) if config.favicon else None
-    sidebar_path = ArticleCrud.get_article_path(db, config.sidebar_document) if config.sidebar_document else None
     return ConfigOutput(
         site_name=config.site_name,
         theme=config.theme,
         logo=logo,
         favicon=favicon,
-        sidebar_document_path=sidebar_path,
+        sidebar_document=config.sidebar_document,
         navigation=create_navigation_output(db, config.navigation),
         social_networks={
             network.id: create_social_network_output(db, network) for network in get_social_networks(db)
