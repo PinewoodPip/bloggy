@@ -74,7 +74,7 @@ export type SiteConfigUpdate = {
   theme?: string,
   favicon_path?: string,
   logo_path?: string,
-  sidebar_document_path?: string,
+  sidebar_document?: string | null,
   navigation?: NavigationUpdate,
   social_networks?: string[],
 }
@@ -84,9 +84,13 @@ export type SiteConfig = {
   theme: string,
   favicon?: SiteFile,
   logo?: SiteFile,
-  sidebar_document_path?: string,
+  sidebar_document?: string,
   navigation: Navigation,
   social_networks: {[id: string]: SocialNetworkOutput},
+}
+
+export type SiteSidebar = {
+  content?: string,
 }
 
 class SiteService extends Service {
@@ -107,7 +111,7 @@ class SiteService extends Service {
   }
 
   /** Fetches the site's sidebar document. */
-  async getSidebar(): Promise<Article> {
+  async getSidebar(): Promise<SiteSidebar> {
     return (await this.get('/site/sidebar')).data
   }
 }

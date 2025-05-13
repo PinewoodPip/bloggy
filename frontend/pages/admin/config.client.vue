@@ -12,7 +12,7 @@
         <FormGroupSiteFile v-model="configUpdate.favicon_path" label="Favicon" hint="Icon shown by the browser tab." icon="material-symbols:star" />
         
         <!-- Sidebar -->
-        <FormGroupArticle v-model="configUpdate.sidebar_document_path" type="article" label="Sidebar document" hint="Contents of the site's sidebar." icon="material-symbols:thumbnail-bar" />
+        <!-- <FormGroupArticle v-model="configUpdate.sidebar_document" type="article" label="Sidebar document" hint="Contents of the site's sidebar." icon="material-symbols:thumbnail-bar" /> -->
       </div>
       <div class="flexcol flex-grow">
         <FormGroupSiteImage v-model="configUpdate.logo_path" label="Logo" />
@@ -25,6 +25,13 @@
     <div v-if="configStatus === 'success'" class="flex-grow">
       <!-- Theming -->
       <FormGroupMultiselect v-model="configUpdate.theme" :options="themes" :multiple="false" label="Theme" help="Determines the site's color scheme." :show-labels="true" :searchable="true" placeholder="Select theme" aria-label="select theme" @update:model-value="onThemeChanged" />
+
+      <FaintHr class="my-2" />
+      
+      <!-- Sidebar editor -->
+      <h2>Sidebar</h2>
+      <p>Leave blank to remove the sidebar.</p>
+      <AdminSidebarEditor ref="sidebarEditorRef" class="mt-2" />
 
       <FaintHr class="my-2" />
 
@@ -53,6 +60,7 @@ const siteService = useSiteService()
 const responseToast = useResponseToast()
 const { data: config, status: configStatus } = useSiteConfig()
 const colorMode = useColorMode();
+const sidebarEditor = useTemplateRef('sidebarEditorRef')
 
 const themes = [
   "system", ...new Set(daisyThemes)
@@ -62,6 +70,7 @@ const enabledNetworks: Reactive<{[id: string]: boolean}> = reactive({})
 const configUpdate: Reactive<SiteConfigUpdate> = reactive({})
 
 function applyChanges() {
+  const sidebar = sidebarEditor.value?.getContent()!
   const enabledNetworksList: string[] = []
   for (const network in enabledNetworks) {
     if (enabledNetworks[network] === true) {
@@ -71,6 +80,7 @@ function applyChanges() {
   requestPatch({
     ...configUpdate, // Should be done first so its "unused" properties get overwritten (ex. the network map)
     social_networks: enabledNetworksList,
+    sidebar_document: sidebar,
   })
 }
 
@@ -79,7 +89,6 @@ function initializeModel() {
   configUpdate.logo_path = config.value?.logo?.path
   configUpdate.favicon_path = config.value?.favicon?.path
   configUpdate.theme = config.value?.theme
-  configUpdate.sidebar_document_path = config.value?.sidebar_document_path
   for (const network in config.value?.social_networks) {
     enabledNetworks[network] = config.value.social_networks[network].can_share
   }
