@@ -1,20 +1,27 @@
 <template>
-  <UContainer class="large-content-block flexcol max-w-md">
-    <h1 class="text-center">Login</h1>
-    <!-- TODO inform guests this is not the right login page for them -->
+  <div class="flex min-w-screen min-h-screen">
+    <UContainer class="large-content-block flexcol max-w-sm flex-grow mx-auto my-auto">
+      <h1 class="text-center">Login</h1>
 
-    <!-- Form fields -->
-    <div class="flexcol gap-y-2">
-      <UFormGroup label="Username">
-        <FormInputField v-model="username" placeholder="username" icon="i-heroicons-user" required />
-      </UFormGroup>
-      <UFormGroup label="Password">
-        <FormInputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" required />
-      </UFormGroup>
-    </div>
+      <div class="flexcol items-center">
+        <p>Log-in to the control panel.</p>
+        <p>Lost? <RouterLink class="text-secondary-content link" to="/">Return to the site</RouterLink>.</p>
+      </div>
 
-    <IconButton icon="i-heroicons-arrow-left-on-rectangle" :disabled="!areFieldsFilledIn" class="btn-smp btn-primary mt-3" @click="login">Log-in</IconButton>
-  </UContainer>
+      <!-- Form fields -->
+      <div class="flexcol gap-y-2">
+        <UFormGroup label="Username">
+          <FormInputField v-model="username" placeholder="username" icon="i-heroicons-user" required />
+        </UFormGroup>
+        <UFormGroup label="Password">
+          <FormInputField v-model="password" type="password" placeholder="" icon="i-heroicons-hashtag" required />
+        </UFormGroup>
+      </div>
+
+      <IconButton icon="i-heroicons-arrow-left-on-rectangle" :disabled="!areFieldsFilledIn" class="btn-smp btn-primary mt-3" @click="login">Log-in</IconButton>
+    </UContainer>
+
+  </div>
 </template>
 
 <script setup lang="ts">
