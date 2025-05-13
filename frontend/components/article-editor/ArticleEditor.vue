@@ -9,8 +9,8 @@
 
     <!-- Content area -->
     <div class="flex gap-x-2">
-      <!-- Sidebar -->
-      <div v-if="sidebarVisible" class="large-content-block max-w-md max-h-fit">
+      <!-- Sidebar; needs a high top margin due to the toolbar also being sticky -->
+      <div v-if="sidebarVisible" class="large-content-block sticky top-[4.5rem] max-w-md max-h-fit">
         <ArticleEditorSidebar @heading-selected="onHeadingSelected" @hide="sidebarVisible = false" />
       </div>
 
