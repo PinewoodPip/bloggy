@@ -188,7 +188,7 @@ export const useArticleEditorQueries = () => {
 
   /** Query for fetching article metadata and initial content */
   const articleQuery = useQuery({
-    queryKey: ['articleContent'],
+    queryKey: ['articleContent', computed(() => route.query['article'])], // Needs to be keyed by article for the query to refetch when the article changes
     queryFn: async () => {
       if (route.query['article']) {
         const article = await articleService.getArticle(route.query['article'] as string, true)
