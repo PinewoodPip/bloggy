@@ -15,7 +15,7 @@
           <!-- Path -->
           <span class="flex items-center">
             <UIcon name="i-material-symbols-link" class="mr-2" />
-            <RouterLink :to="publishedArticlePath" class="hover:link link-neutral">
+            <RouterLink :to="publishedArticlePath" target="_blank" class="hover:link link-neutral">
               <code class="text-base-content/80">{{ article?.path }}</code>
             </RouterLink>
           </span>
@@ -154,7 +154,7 @@ watchEffect(() => {
     articlePatchData.title = props.article.title
 
     // Set default save mode based on article publishing state
-    saveBtnMode.value = articleService.isPublished(props.article) ? 'draft' : 'publish'
+    saveBtnMode.value = articleService.isPublished(props.article) ? 'publish' : 'draft'
   }
 })
 
