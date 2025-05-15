@@ -10,7 +10,7 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from core.security import get_HTTPBearer, get_optional_HTTPBearer, decode_google_jwt_token
 from core.config import CONFIG, get_db
-from crud.user import User, get_by_username
+from crud.user import User, create_reader, get_by_oauth, get_by_username
 
 def get_current_user(db: Session=Depends(get_db), credentials: HTTPAuthorizationCredentials=Depends(get_HTTPBearer)) -> User:
     """
@@ -29,6 +29,13 @@ def get_current_user(db: Session=Depends(get_db), credentials: HTTPAuthorization
             payload = decode_google_jwt_token(token)
             token_data = TokenPayload(**payload)
             is_oauth = True
+
+            # Fetch or create reader account
+            user_id = token_data.sub
+            try:
+                user = get_by_oauth(db, user_id)
+            except ValueError:
+                user = create_reader(db, user_id)
         except:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Could not validate credentials")
 

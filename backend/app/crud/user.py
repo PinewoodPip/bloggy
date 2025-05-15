@@ -220,19 +220,6 @@ def authenticate(db: Session, login_input: UserLogin) -> tuple[User, str]:
     
     return user, token
 
-def authenticate_with_google(db: Session, credentials: str) -> User:
-    """Logs-in with a Google identity token and creates an account for the user if necessary."""
-    payload = decode_google_jwt_token(credentials)
-
-    # Fetch or create account
-    user_id = payload["sub"]
-    try:
-        user = get_by_oauth(db, user_id)
-    except ValueError:
-        user = create_reader(db, user_id)
-
-    return user
-
 def deauthenticate(db: Session, user: User):
     """
     Invalidates JWT tokens for a user.

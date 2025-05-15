@@ -19,17 +19,6 @@ async def login(login_input: UserLogin, db: Session=Depends(get_db)):
         return UserLoginOutput(token=token, **UserCrud.create_user_output(user).model_dump())
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
-@router.post("/googleLogin", response_model=UserLoginOutput)
-async def login_with_google(credentials: UserOAuthLogin, db: Session=Depends(get_db)):
-    """
-    Authenticates a user using a Google OAuth token.
-    """
-    try:
-        user = UserCrud.authenticate_with_google(db, credentials.credentials)
-        return UserLoginOutput(token=credentials.credentials, **UserCrud.create_user_output(user).model_dump())
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
 
 @router.post("/logout", response_model=str)
 async def logout(db: Session=Depends(get_db), current_user: User=Depends(get_current_user)):
