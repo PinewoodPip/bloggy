@@ -6,8 +6,11 @@
     </template>
     <template #form>
       
-      <FormGroupInputField v-model="fileModel.path" label="Path" hint="Must end in an extension." icon="material-symbols:folder" :required="true" />
+      <!-- File -->
       <FormGroupInputField v-model="content" label="File" icon="material-symbols:image-arrow-up" type="file" :required="true" @change="onFileChanged" />
+
+      <!-- Filename -->
+      <FormGroupInputField v-model="fileModel.path" label="Path" hint="Must end in an extension." icon="material-symbols:folder" :required="true" />
 
     </template>
 
@@ -71,7 +74,7 @@ function confirm() {
 }
 
 const canConfirm = computed(() => {
-  return encodedContent.value !== null
+  return encodedContent.value != ''
 })
 
 /** Encodes chosen file as base64 string. */
@@ -79,6 +82,11 @@ async function onFileChanged(e: InputEvent) {
   // @ts-ignore
   const file = e.target!.files[0]
   let blob = new Blob([file])
+
+  // Set name field if it was empty before
+  if (fileModel.value.path === '') {
+    fileModel.value.path = file.name
+  }
 
   var reader = new FileReader();
   reader.readAsDataURL(blob); 
