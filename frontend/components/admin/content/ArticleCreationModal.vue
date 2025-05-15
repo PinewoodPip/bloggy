@@ -5,12 +5,15 @@
     </template>
 
     <template #form>
+      <!-- Category -->
+      <FormGroupArticle v-model="categoryPath" type="category" label="Category" hint="Category the article will be created in." icon="material-symbols:folder" />
+      
       <!-- Title -->
       <FormGroupInputField v-model="articleData.title" label="Title" icon="i-material-symbols-title" :required="true" />
       
       <!-- Filename -->
       <!-- TODO preview path in help -->
-      <FormGroupInputField v-model="articleData.filename" label="File name" help="Determines the URL of the article." icon="i-material-symbols-link" :required="true" />
+      <FormGroupInputField v-model="articleData.filename" label="File name" hint="Determines the URL of the article." icon="i-material-symbols-link" :required="true" />
     </template>
 
     <template #footer>
@@ -45,6 +48,7 @@ const articleData: Reactive<ArticleCreationRequest> = reactive({
   summary: '',
   text: '',
 })
+const categoryPath = ref('')
 
 function confirm() {
   requestCreation(articleData)
@@ -60,13 +64,14 @@ watchEffect(() => {
     articleData.filename = ''
     articleData.title = ''
     articleData.content = ' '
+    categoryPath.value = props.categoryPath
   }
 })
 
 /** Query for creating the article */
 const { mutate: requestCreation, status: creationStatus } = useMutation({
   mutationFn: (request: ArticleCreationRequest) => {
-    return articleService.createArticle((props.categoryPath === '/' ? '' : props.categoryPath) + '/' + request.filename, request)
+    return articleService.createArticle((categoryPath.value === '/' ? '' : categoryPath.value) + '/' + request.filename, request)
   },
   onSuccess: (article) => {
     emit('create', article)
