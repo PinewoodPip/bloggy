@@ -39,7 +39,7 @@ const areFieldsFilledIn = computed(() => {
 function login() {
   userService.login(username.value, password.value).then(() => {
     responseToast.showSuccess('Logged in', `Welcome back ${userService.getCurrentUsername()}`)
-    router.push("/admin/users") // Redirect to control panel
+    router.push("/admin/content") // Redirect to control panel
   }).catch((err) => {
     responseToast.showError('Failed to login', err)
   })

@@ -34,7 +34,7 @@
           <!-- Buttons -->
           <template #buttons="{ canCreateNode, canCreateLeaf, canEdit, item: childItem }">
             <!-- Create node button -->
-            <UTooltip v-if="canCreateNode" text="Create folder" tabindex="2">
+            <UTooltip v-if="canCreateNode" text="Create category" tabindex="2">
               <IconButton class="btn-sm btn-secondary" icon="material-symbols:create-new-folder" @click.stop="onCategoryCreateChildRequested(childItem)" />
             </UTooltip>
             <!-- Create leaf button -->

@@ -34,6 +34,9 @@
 
       <!-- Tags -->
       <FormGroupMultiselect v-model="chosenTags" :options="tagOptions" :multiple="true" track-by="name" option-label-key="name" label="Tags" help="Categorizes the article thematically." :show-labels="true" :searchable="true" placeholder="Select tags" aria-label="select tags" @search-change="onTagSearchChanged" />
+
+      <!-- Category sorting index -->
+      <FormGroupInputField v-model="patchData.category_sorting_index" type="number" min="-1" label="Sorting index in category" help="Determines the order within the category, if it's set to order articles manually." icon="material-symbols:sort" />
     </template>
 
     <template #footer>
@@ -73,8 +76,8 @@ const patchData: Reactive<ArticleUpdateRequest> = reactive({
   view_type: 'single_page',
   can_comment: true,
   show_authors: true,
-  // TODO category path, sorting index
-  // category_sorting_index: 0,
+  // TODO category path
+  category_sorting_index: 0,
 })
 
 const chosenAuthors: Ref<User[]> = ref([])
@@ -120,6 +123,7 @@ watchEffect(() => {
     patchData.view_type = article.view_type
     patchData.can_comment = article.can_comment
     patchData.show_authors = article.show_authors
+    patchData.category_sorting_index = article.category_sorting_index
     patchData.tags = article.tags
     patchData.featured_image_path = article.featured_image_path
     chosenAuthors.value = article.authors
