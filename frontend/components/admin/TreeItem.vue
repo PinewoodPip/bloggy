@@ -4,14 +4,14 @@
     <div class="group flex items-center active:bg-secondary/80 rounded-btn cursor-pointer p-1" :class="extraContainerClasses" @click="onClick">
       <div class="flex items-center gap-x-2">
         <!-- Folder icon indicates open/collapsed state. Leaf items always show as open -->
-        <UIcon class="size-6" :name="icon" />
+        <UIcon class="size-6" :class="getters.getNameClass ? getters.getNameClass(item) : {}" :name="icon" />
 
         <!-- Path and title -->
         <UTooltip :text="getters.getTooltip(item)" :popper="{ placement: 'left', offsetDistance: 40 }">
           <template v-if="tooltipComponent" #text>
             <component :is="tooltipComponent.component" v-bind="tooltipComponent.props" />
           </template>
-          <p>{{ getters.getName(item) }}</p>
+          <p :class="getters.getNameClass ? getters.getNameClass(item) : {}">{{ getters.getName(item) }}</p>
         </UTooltip>
 
         <slot name="label" :item="item" />
@@ -71,6 +71,7 @@ export type TreeItemGetters<Node, Leaf> = {
   isSelected?: (node: Node | Leaf) => boolean,
   /** Allows customizing the tooltip element by the name of the item. */
   getTooltipComponent?: (node: Node | Leaf) => DynamicComponentDef | null,
+  getNameClass?: (node: Node | Leaf) => object,
   leafIcon: string,
   canCollapse?: boolean,
 }

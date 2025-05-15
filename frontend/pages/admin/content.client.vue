@@ -224,6 +224,24 @@ const canCreateArticles = computed(() => {
   return user.data.value ? userService.isEditor(user.data.value) : false
 })
 
+/** Grey out articles and categories not relevant to search term. */
+nodeGetters.getNameClass = (node: Category | ArticlePreview): object => {
+  if (searchTerm.value === '') {
+    return {} // No class change
+  }
+  const term = searchTerm.value.toLocaleLowerCase()
+  if (nodeGetters.getNodeType(node) === 'leaf') {
+    node = node as ArticlePreview
+    return {
+      'text-base-content/40': !node.filename.toLocaleLowerCase().includes(term) && !node.title.toLocaleLowerCase().includes(term),
+    }
+  } else {
+    node = node as Category
+    return {
+      'text-base-content/40': !node.directory_name.toLocaleLowerCase().includes(term) && !node.name.toLocaleLowerCase().includes(term),
+    }
+  }
+}
 
 // Refresh ID map when content changes
 watchEffect(() => {
