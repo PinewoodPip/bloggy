@@ -1,8 +1,8 @@
 <!-- Emoji selector widget. -->
 <template>
-  <UContextMenu v-model="isOpen" :virtual-element="virtualElement">
+  <UContextMenu v-model="isOpen" :virtual-element="virtualElement" tabindex="0" @keydown.esc="isOpen = false">
     <div class="p-4">
-      <Picker class="max-w-md max-h-128" :data="emojiIndex" :darkMode="true" set="twitter" @select="onEmojiSelected" />
+      <Picker class="max-w-md max-h-128" :data="emojiIndex" :darkMode="true" set="twitter" @select="onEmojiSelected" title="Emoji Picker" />
     </div>
   </UContextMenu>
 </template>
@@ -50,6 +50,18 @@ watch(isOpen, () => {
     left
   })
 })
+
+// Escape shortcut to close
+defineShortcuts({
+  escape: {
+    usingInput: true,
+    whenever: [isOpen],
+    handler: () => {
+      isOpen.value = false
+    },
+  }
+})
+
 </script>
 
 <style lang="css">
