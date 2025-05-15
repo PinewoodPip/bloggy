@@ -17,7 +17,7 @@
           <div v-if="articleViewMode === 'vertical'" class="flexcol gap-y-3">
             <SiteArticlePreview v-for="article in articles" :article="article" />
           </div>
-          <div v-if="articleViewMode === 'grid'" class="flex justify-center flex-wrap gap-4">
+          <div v-if="articleViewMode === 'grid'" class="flex justify-around flex-wrap gap-4">
             <SiteArticleCard v-for="article in articles" :article="article" />
           </div>
         </div>

@@ -7,7 +7,7 @@
         <!-- Comment box -->
         <div>
           <h2 class="mb-2">Post a comment</h2>
-          <p v-if="!isEditor">Comments are anonymous; your name will not be displayed.</p>
+          <p v-if="!isEditor" class="mb-1">Comments are anonymous; your name will not be displayed.</p>
 
           <!-- Comment editor box -->
           <SiteArticleCommentEditor v-if="canComment" ref="postBox" :parent-comment="replyComment" @post="onCommentPosted" @cancel-reply="onReplyCancelled" />

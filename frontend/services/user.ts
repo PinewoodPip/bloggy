@@ -75,11 +75,7 @@ class UserService extends Service {
 
   /** Sends a login request via Google identity services. */
   async googleLogin(credentials: string) {
-    const response = await this.post("/users/googleLogin", {
-      "credentials": credentials,
-    });
-    Cookies.set("auth_token", response.data.token);
-    return response
+    Cookies.set("auth_token", credentials);
   }
 
   /** Sends a logout request and clears auth cookies if successful */
