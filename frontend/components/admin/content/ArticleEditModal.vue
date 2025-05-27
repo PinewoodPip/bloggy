@@ -15,6 +15,9 @@
       <!-- Featured image -->
       <FormGroupSiteImage v-model="patchData.featured_image_path" label="Featured image" help="Cover image for the article." icon="i-material-symbols:image" />
 
+      <!-- Summary -->
+      <FormGroupTextArea v-model="patchData.summary" label="Summary" help="Short description of the article, displayed in pagination on the site." icon="i-material-symbols-description" :rows="4" />
+
       <!-- Visibility -->
       <FormGroupCheckbox v-model="patchData.is_visible" label="Visible" help="Determines whether the article is visible in the published site." icon="i-material-symbols-visibility-rounded" />
 
@@ -76,6 +79,7 @@ const patchData: Reactive<ArticleUpdateRequest> = reactive({
   view_type: 'single_page',
   can_comment: true,
   show_authors: true,
+  summary: '',
   // TODO category path
   category_sorting_index: 0,
 })
@@ -126,6 +130,7 @@ watchEffect(() => {
     patchData.category_sorting_index = article.category_sorting_index
     patchData.tags = article.tags
     patchData.featured_image_path = article.featured_image_path
+    patchData.summary = article.summary
     chosenAuthors.value = article.authors
     publishDate.value = article.publish_time ? article.publish_time : undefined
   }

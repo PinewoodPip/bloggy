@@ -309,7 +309,7 @@ export const useArticleEditorMainMenu = () => {
         type: 'multitool',
         id: 'Document.File',
         def: {
-          name: 'File',
+          name: 'Article',
           icon: 'i-heroicons-document-text',
         },
         subitems: [
@@ -333,7 +333,7 @@ export const useArticleEditorMainMenu = () => {
             type: 'callback',
             id: 'Document.Properties',
             def: {
-              name: 'Article properties',
+              name: 'Properties',
               icon: 'i-heroicons-document-text',
             },
           }
