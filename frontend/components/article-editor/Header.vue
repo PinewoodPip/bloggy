@@ -13,7 +13,7 @@
           <span class="min-w-10 font-bold text-lg px-2 mr-3" ref="titleField" contenteditable="true" @focusout="onTitleFieldFocusOut">{{ articlePatchData.title }}</span> <!-- Contenteditable does not support v-model -->
 
           <!-- Path -->
-          <span class="flex items-center">
+          <span v-if="isPublished" class="flex items-center">
             <UIcon name="i-material-symbols-link" class="mr-2" />
             <RouterLink :to="publishedArticlePath" target="_blank" class="hover:link link-neutral">
               <code class="text-base-content/80">{{ article?.path }}</code>
@@ -113,9 +113,14 @@ function onTitleFieldFocusOut() {
 /** Saves the article to the CMS. */
 function saveArticle(isDraft?: boolean) {
   // Other document data is added by the composable
- saveDocument({
+  const obj = {
     is_draft: isDraft ?? saveBtnMode.value === 'draft',
-  })
+  }
+  if (!isPublished.value) {
+    obj.is_visible = true
+  }
+  saveDocument(obj)
+  wasPublished.value = !isDraft
 }
 
 function toggleMarkdownView() {
@@ -141,6 +146,11 @@ function exit() {
 function onMetadataUpdated(article: Article) {
   emit('metadataUpdated', article)
 }
+
+const wasPublished = ref(false)
+const isPublished = computed(() => {
+  return (props.article && articleService.isPublished(props.article)) || wasPublished.value
+})
 
 const publishedArticlePath = computed(() => {
   const path = props.article?.path
