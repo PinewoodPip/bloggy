@@ -79,8 +79,7 @@ const canPost = computed(() => {
 const isCommentEmpty = computed(() => {
   const state = editorDocument.value?.editorState!
   if (state && state.doc) {
-    const text = state.doc.textContent as string
-    return text.length == 0
+    return state.doc.nodeSize <= 4 // Initial document node is 4 tokens
   } else {
     return true
   }
