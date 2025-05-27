@@ -2,7 +2,7 @@
 <template>
   <article class="card card-side card-border bg-base-200 shadow-md flex-grow max-h-64">
     <!-- Cover image -->
-    <figure v-if="article.featured_image_path" class="object-cover max-h-full m-4 mr-0 rounded-md">
+    <figure v-if="article.featured_image_path" class="object-cover max-h-full max-w-xs m-4 mr-0 rounded-md">
       <RouterLink class="flex items-center !max-w-2xl" :to="articleURL">
         <img class="hover:opacity-80" :src="coverImageURL" alt="Cover image" />
       </RouterLink>

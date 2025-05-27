@@ -14,6 +14,8 @@
           <!-- Metadata -->
           <SiteArticleMetadataSubtitle :article="article" />
 
+          <FaintHr class="mt-2" />
+
           <!-- Article content -->
           <!-- Will switch from SSR view to client one once mounted -->
           <SiteArticleContent v-if="mounted" :schema="ArticleEditorSchema" :initial-content="article?.content" />

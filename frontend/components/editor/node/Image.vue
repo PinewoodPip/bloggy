@@ -2,7 +2,7 @@
 <template>
   <!-- Allow resizing the image via the native resize handles while editing the document -->
   <UTooltip ref="containerRef" :class="{ 'resize-y': editorView?.editable }" class="overflow-auto" :text="node.attrs.alt" @mousedown="wasResizing = true">
-    <img :style="style" :src="node.attrs.src" :alt="node.attrs.alt" @dblclick="selectNode" />
+    <img :style="style" :src="node.attrs.src" :alt="node.attrs.alt" @dblclick="selectNode" loading="lazy" />
   </UTooltip>
 </template>
 
