@@ -55,7 +55,7 @@ function confirm() {
 }
 
 const canConfirm = computed(() => {
-  return true // TODO validate fields
+  return articleData.filename != '' && articleData.title != '' && categoryPath.value != ''
 })
 
 // Reset field values when the category prop is set
@@ -63,7 +63,7 @@ watchEffect(() => {
   if (props.categoryPath) {
     articleData.filename = ''
     articleData.title = ''
-    articleData.content = ' '
+    articleData.content = 'Write your article here...'
     categoryPath.value = props.categoryPath
   }
 })
