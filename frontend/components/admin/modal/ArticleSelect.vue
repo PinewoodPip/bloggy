@@ -31,6 +31,12 @@ getters.canCollapse = false
 getters.isSelected = (node: Category | ArticlePreview) => {
   return selectedFilePath.value === node.path
 }
+getters.getNameClass = (node => {
+  const nodeType = getters.getNodeType(node)
+  return {
+    'text-base-content/40': (nodeType === 'leaf' && !props.canSelectArticles) || (nodeType === 'node' && !props.canSelectCategories)
+  }
+})
 provide<TreeItemGetters<Category, ArticlePreview>>('siteFileTree', getters)
 
 const emit = defineEmits<{
