@@ -62,7 +62,7 @@ function editAccount() {
 /** Closes the session and exits of the admin panel. */
 function logout() {
   userService.logout().then(() => {
-    router.push("/")
+    router.push("/admin/login")
   }).catch((err) => {
     responseToast.showError('Error while logging out', err)
   })
