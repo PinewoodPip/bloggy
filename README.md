@@ -1,5 +1,5 @@
 # Bloggy
-Bloggy is a full-stack blogging CMS site built with Nuxt & FastAPI, which allows for creating and managing rich text articles through a control panel with an integrated WSIWYG editor and publishing them for reading on a theme-able SSR site.
+Bloggy is a full-stack blogging CMS site built with Nuxt & FastAPI, which allows for creating and managing rich text articles through a control panel with an integrated WYSIWYG editor and publishing them for reading on a theme-able SSR site.
 
 Bloggy is simple but feature-rich, being usable out of the box while also aiming to be extensible and customizable for building more complex sites centered around article content.
 
@@ -59,9 +59,13 @@ With the env files prepared, launch all services using Docker Compose:
 docker-compose up --build
 ```
 
-This will build and run the frontend, backend, and database services. The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:8000`.
+This will build and run the frontend, backend, and database services. The frontend will be available at `http://localhost:3000` and the backend at `http://localhost:8000`. **Elasticsearch is not included in the compose file due to performance overhead.**
 
 Additionally, pgAdmin is available at `http://localhost:8001` for managing the PostgreSQL database.
+
+### Demo
+
+Some mock data for the database is provided in `backend/mock_data`, which may be applied by running the `populate_db.py` script while the backend is running. This script creates users, articles, files and configs to model a cooking-themed blog site; the same one that is shown in the screenshots below.
 
 ## Features and usage
 

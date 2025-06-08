@@ -1,0 +1,102 @@
+{
+    "articles": {
+        "pasta": {
+            "carbonara": {
+                "name": "Carbonara",
+                "img": "pasta/carbonara.jpg",
+                "tags": ["pasta"]
+            },
+            "fusilli": {
+                "name": "Fusilli a la napolitana",
+                "img": "pasta/fusilli_like.jpg",
+                "tags": ["pasta"]
+            },
+            "gorgonzola": {
+                "name": "Rigatoni with gorgonzola and truffle",
+                "img": "pasta/gorgonzola.jpg",
+                "tags": ["pasta"]
+            },
+            "tagliatella": {
+                "name": "Tagliatella with fried veggies",
+                "img": "pasta/tagliatella.jpg",
+                "tags": ["pasta"]
+            }
+        },
+        "pastries": {
+            "cheese_pie": {
+                "name": "Cheese & blueberry pie",
+                "img": "pastries/cheese_and_blueberry.jpg",
+                "tags": ["pastries"]
+            },
+            "easter_cake": {
+                "name": "Easter cake",
+                "img": "pastries/easter_cake.jpg",
+                "tags": ["pastries"]
+            },
+            "nutcake": {
+                "name": "Nutcake",
+                "img": "pastries/nutcake.jpg",
+                "tags": ["pastries"]
+            },
+            "orange_cake": {
+                "name": "Orange Cake",
+                "img": "pastries/orange_cake.jpg",
+                "tags": ["pastries"]
+            },
+            "szarlotka": {
+                "name": "Szarlotka",
+                "img": "pastries/szarlotka.jpg",
+                "tags": ["pastries"]
+            }
+        },
+        "polish": {
+            "mushroom_soup": {
+                "name": "Mushroom soup",
+                "img": "polish/mushroom_soup.jpg",
+                "tags": ["polish"]
+            },
+            "pumpkin_soup": {
+                "name": "Pumpkin soup",
+                "img": "polish/pumpkin_soup.jpg",
+                "tags": ["polish"]
+            },
+            "traditional": {
+                "name": "Traditional Polish soup",
+                "img": "polish/traditional.jpg",
+                "tags": ["polish"]
+            }
+        },
+        "oriental": {
+            "chicken_ramen": {
+                "name": "Chicken ramen",
+                "img": "oriental/chicken_ramen.jpg",
+                "tags": ["oriental"]
+            },
+            "curry": {
+                "name": "Curry with cilantro",
+                "img": "oriental/cilantro_rice.jpg",
+                "tags": ["oriental"]
+            },
+            "donburi": {
+                "name": "Donburi",
+                "img": "oriental/donburi.jpg",
+                "tags": ["oriental"]
+            },
+            "red_curry": {
+                "name": "Red Curry",
+                "img": "oriental/red_curry.jpg",
+                "tags": ["oriental"]
+            },
+            "spicy_wok": {
+                "name": "Spicy Wok",
+                "img": "oriental/spicy_wok.jpg",
+                "tags": ["oriental"]
+            },
+            "teriyaki_mushrooms": {
+                "name": "Teriyaki Mushrooms",
+                "img": "oriental/teriyaki_mushrooms.jpg",
+                "tags": ["oriental"]
+            }
+        }
+    }
+}

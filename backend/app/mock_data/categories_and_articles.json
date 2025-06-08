@@ -1,0 +1,68 @@
+{
+    "categories": [
+        {
+            "name": "Pasta",
+            "description": "The best pasta recipes out there!",
+            "directory_name": "pasta",
+            "parent_category_path": "/",
+            "random_tags": [
+                "easy",
+                "quick",
+                "healthy",
+                "lunch",
+                "dinner"
+            ]
+        },
+        {
+            "name": "Oriental cooking",
+            "description": "The best oriental recipes out there!",
+            "directory_name": "oriental",
+            "parent_category_path": "/",
+            "random_tags": [
+                "spicy",
+                "mild",
+                "lunch",
+                "chinese"
+            ]
+        },
+        {
+            "name": "Pastries",
+            "description": "The best cake & sweets recipes out there!",
+            "directory_name": "pastries",
+            "parent_category_path": "/",
+            "random_tags": [
+                "easy",
+                "sweet",
+                "dessert"
+            ]
+        },
+        {
+            "name": "Polish cooking",
+            "description": "The best traditional Polish recipes out there!",
+            "directory_name": "polish",
+            "parent_category_path": "/",
+            "random_tags": [
+                "traditional",
+                "lunch"
+            ]
+        },
+        {
+            "name": "Restaurant reviews",
+            "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis egestas, lorem quis vulputate laoreet, quam quam volutpat mi, non laoreet orci felis non leo. Duis non turpis eget libero dignissim rutrum in in sapien. Sed ultricies elementum turpis, eu viverra enim maximus rutrum. Proin in lobortis sapien.",
+            "directory_name": "restaurant_reviews",
+            "parent_category_path": "/",
+            "random_tags": [
+                "fine dining",
+                "fast food",
+                "casual dining",
+                "cafe",
+                "buffet",
+                "food truck",
+                "street food",
+                "brunch",
+                "dinner",
+                "lunch"
+            ]
+        }
+    ]
+}

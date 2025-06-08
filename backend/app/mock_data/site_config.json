@@ -1,0 +1,52 @@
+{
+    "site_name": "Cuisineer's Haven",
+    "theme": "cupcake",
+    "social_networks": ["facebook", "x", "reddit", "pinterest"],
+    "logo_path": "/logo.png",
+    "favicon_path": "/favicon.png",
+    "navigation": {
+        "root_nodes": [
+            {
+                "type": "external_url",
+                "title": "Home",
+                "url": "/"
+            },
+            {
+                "type": "category",
+                "category_path": "/pasta"
+            },
+            {
+                "type": "group",
+                "name": "National cuisines",
+                "children": [
+                    {
+                        "type": "category",
+                        "category_path": "/polish"
+                    },
+                    {
+                        "type": "category",
+                        "category_path": "/oriental"
+                    }
+                ]
+            },
+            {
+                "type": "category",
+                "category_path": "/pastries"
+            },
+            {
+                "type": "category",
+                "category_path": "/restaurant_reviews"
+            },
+            {
+                "type": "external_url",
+                "title": "About",
+                "url": "/about"
+            },
+            {
+                "type": "external_url",
+                "title": "Contact",
+                "url": "/contact"
+            }
+        ]
+    }
+}

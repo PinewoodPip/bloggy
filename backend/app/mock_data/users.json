@@ -1,0 +1,24 @@
+{
+    "users": [
+        {
+            "username": "editor123A",
+            "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tincidunt orci orci, eu laoreet felis finibus ut. Vivamus interdum sodales orci, faucibus vehicula diam laoreet eu.",
+            "display_name": "Mr. Editor A"
+        },
+        {
+            "username": "editor123B",
+            "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tincidunt orci orci, eu laoreet felis finibus ut. Vivamus interdum sodales orci, faucibus vehicula diam laoreet eu.",
+            "display_name": "Mr. Editor B"
+        },
+        {
+            "username": "DummyUser",
+            "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tincidunt orci orci, eu laoreet felis finibus ut. Vivamus interdum sodales orci, faucibus vehicula diam laoreet eu.",
+            "display_name": "Anonymous"
+        },
+        {
+            "username": "editor123C",
+            "biography": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut tincidunt orci orci, eu laoreet felis finibus ut. Vivamus interdum sodales orci, faucibus vehicula diam laoreet eu.",
+            "display_name": "Mr. Editor C"
+        }
+    ]
+}
