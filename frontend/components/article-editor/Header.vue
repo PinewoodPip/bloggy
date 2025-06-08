@@ -157,6 +157,8 @@ const publishedArticlePath = computed(() => {
   return path ? CMSUtils.resolveArticlePath(path) : ''
 })
 
+defineExpose({editDocumentProperties})
+
 // Re-initialize fields when article is updated
 watchEffect(() => {
   if (props.article) {

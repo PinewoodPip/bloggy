@@ -2,7 +2,7 @@
 <template>
   <UContainer class="flexcol gap-y-2">
     <!-- Header -->
-    <ArticleEditorHeader :article="articleData" @metadata-updated="onMetadataUpdated" @toggle-sidebar="sidebarVisible = !sidebarVisible" @exit="emit('exit')" />
+    <ArticleEditorHeader ref="editorHeader" :article="articleData" @metadata-updated="onMetadataUpdated" @toggle-sidebar="sidebarVisible = !sidebarVisible" @exit="emit('exit')" />
 
     <!-- Toolbar; only rendered once editor is initialized -->
     <ArticleEditorToolbar v-if="editorDocument?.editorState" />
@@ -19,6 +19,18 @@
       <div class="large-content-block flex-grow mb-[4rem]" @contextmenu.prevent="onContextMenu">
         <EditorDocument v-if="articleData" key="editorDocument" ref="document" :initial-content="initialContent!" @initialized="onEditorInitialized" />
         <LoadingSpinner v-else />
+
+        <FaintHr class="mb-3" />
+
+        <!-- Tags -->
+        <div class="flex gap-x-2">
+          <UTooltip v-for="tag in articleData?.tags" text="Remove tag">
+            <SiteArticleTag class="cursor-pointer" :key="tag" :tag="tag" :disable-link="true" @click="removeTag(tag)" />
+          </UTooltip>
+          <UTooltip text="Add tag">
+            <SiteArticleTag class="cursor-pointer" tag="+" :hide-prefix="true" :disable-link="true" @click="openMetadataModal" />
+          </UTooltip>
+        </div>
       </div>
     </div>
 
@@ -54,6 +66,7 @@ const editor = ref(useArticleEditor(() => editorDocument.value!.editorView))
 const editorDocument = useTemplateRef('document')
 const contextMenu = useTemplateRef('contextMenu')
 const widgets = useTemplateRef('widgets')
+const editorHeader = useTemplateRef('editorHeader')
 useEditorProvides(editor, editorDocument)
 const { editorView } = useEditorInjects()
 const editorQueries = useArticleEditorQueries()
@@ -86,8 +99,23 @@ const articleData = computed(() => {
   return editorQueries.articleQuery.data.value
 })
 
+/** Removes a tag from the article. Updates the article on the CMS immediately. */
+function removeTag(tag: string) {
+  if (!articleData.value) return
+  const newTags = articleData.value.tags.filter(t => t !== tag)
+  editorQueries.articleMutation.mutate({
+    is_draft: true,
+    tags: newTags,
+  })
+}
+
 function onContextMenu() {
   contextMenu.value!.open()
+}
+
+/** Opens the modal to edit article properties. */
+function openMetadataModal() {
+  editorHeader.value!.editDocumentProperties()
 }
 
 /** Provide callbacks for nodes to notify they should be selected. */
