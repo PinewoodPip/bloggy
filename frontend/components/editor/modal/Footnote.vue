@@ -5,7 +5,7 @@
       Edit footnote
     </template>
     <template #form>
-      <textarea v-model="footnote.text" class="textarea textarea-primary" />
+      <textarea v-model="footnote.text" class="textarea textarea-info rounded-md" />
     </template>
     <template #footer>
       <IconButton class="btn-primary" icon="i-material-symbols-edit-document" @click="onConfirmFootnote">Confirm</IconButton>
